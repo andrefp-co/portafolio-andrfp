@@ -1,13 +1,19 @@
 export const personalData = {
-  name: "Andres",
-  profile: '/profile.png',
-  designation: "Electrical Engineer - Full-Stack developer ",
-  description: "Hi! I’m Andres, an electrical engineering student and independent full-stack developer specializing in microcontrollers, aerospace R&D, and the founder of SWORT.",
-  email: 'penaavilaandresfelipe@gmail.com',
-  phone: '+1 (516)906-9229',
-  address: 'Purdue University ',
-  github: 'https://github.com/andrefp-co',
-  linkedIn: 'https://www.linkedin.com/in/andrespenaavila',
+  name: "Andres Peña",
+  profile: "/profile.png",
+  designation: "Electrical Engineering Student & Full-Stack Developer",
+  description:
+    "Electrical engineering student and independent full-stack developer focused on embedded systems, aerospace R&D, and applied software engineering. Founder of SWORT, with hands-on experience spanning firmware, system design, and scalable web platforms.",
+  email: "penaavilaandresfelipe@gmail.com",
+  phone: "+1 (516) 906-9229",
+  address: "Purdue University",
+
+  github: "https://github.com/andrefp-co",
+  linkedIn: "https://www.linkedin.com/in/andrespenaavila",
+  twitter: "https://x.com/andrfpco",
+  leetcode: "https://leetcode.com/u/andrefp-co/",
   devUsername: "andrfp",
-  resume: "https://limewire.com/d/4dNLo#OzOeh8C5xL"
-}
+
+  resume: "https://drive.google.com/file/d/1LDX7VC9w9ddEaOmkFx_0LFiIcXl4K5f9/view"
+};
+

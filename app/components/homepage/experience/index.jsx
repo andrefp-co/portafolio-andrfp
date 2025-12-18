@@ -62,33 +62,28 @@ function Experience() {
                             <p key={i} className="text-sm sm:text-base text-gray-300">{line}</p>
                           ))}
                         </div>
-                        {exp.link && (
-                          <a
-                            href={exp.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs sm:text-sm text-[#16f2b3] mt-2 inline-block hover:underline"
-                          >
-                            Learn More
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </GlowCard>
-              ))}
+              {exp.link && (
+                <a
+                  href={exp.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs sm:text-sm text-[#16f2b3] mt-2 inline-block hover:underline"
+                >
+                  Learn More
+                </a>
+              )}
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  );
+      </GlowCard>
+    ))}
+  </div>
+</div>
+</div>
+</div>
+</div>
+);
 }
 
 export default Experience;
 
-        )}
-      </div>
-    </div>
-  </div>
-</GlowCard>

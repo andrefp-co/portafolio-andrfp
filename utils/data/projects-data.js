@@ -1,46 +1,43 @@
 export const projectsData = [
     {
         id: 1,
-        name: 'AI Powered Financial App',
-        description: "Me and my team built an AI-powered financial mobile application. I have developed API using Express, Typescript, OpenAI, AWS, and MongoDB. Used OTP via AWS SES, Google, and Facebook for the authentication system. Built AI assistants using OpenAI's latest model and trained using our dataset. Voice messages are converted to text using AWS Transcribe. The app fetches data from Google Sheets and generates a PDF term sheet, sent via AWS SES.",
-        tools: ['Express', 'MongoDB', 'OpenAI API', 'AWS SES', 'AWS S3', 'Node Mailer', 'Joi', 'Puppeteer', 'EC2', 'PM2', 'Nginx'],
-        role: 'Backend Developer',
+        name: 'Autonomous UAV Sensor & Control Platform',
+        description: "Designed and implemented a high-frequency sensor acquisition and control system for autonomous UAVs using ESP32-class hardware. Developed modular MicroPython firmware sampling IMU, environmental, and GPS sensors at ~100 Hz. Integrated closed-loop control algorithms and real-time telemetry, enabling precise stabilization and waypoint tracking in dynamic environments. Conducted PCB-level testing and iterative debugging cycles to optimize signal integrity and power efficiency.",
+        tools: ['ESP32', 'MicroPython', 'C/C++', 'MATLAB', 'LTSpice', 'Arduino', 'PCB Design', 'IMU Sensors', 'Telemetry Systems'],
+        role: 'Lead Embedded Systems Engineer',
         code: '',
         demo: '',
     },
     {
         id: 2,
-        name: 'Travel Agency App',
-        description: 'I have designed and developed a full-stack web app for 2Expedition, a travel agency in Armenia. I created the UI using NextJS, Typescript, MUI, TailwindCSS, Google Maps, Sun-Editor, and React Slick. The app supports multiple languages and currencies. I developed the API using NestJS, Typescript, MySQL, TypeORM, AWS, and Nodemailer. I deployed the front-end app to AWS Amplify and the back-end app to AWS EC2.',
-        tools: ['NextJS', 'Tailwind CSS', "Google Maps", "NestJS", "TypeScript", "MySQL", "AWS S3", "Sun-Editor", "Gmail Passkey"],
-        role: 'Full Stack Developer',
+        name: 'Electromechanical Brake System Integration',
+        description: "Modeled and implemented a full electromechanical brake system for a high-efficiency prototype vehicle. Performed dynamic load analysis in MATLAB and Simulink, validated hydraulic/electrical actuation, and reduced projected stopping distances by ~12%. Designed control interface and integrated VESC motor controllers for regenerative braking. Oversaw mechanical-electrical co-simulation, ensuring seamless cross-disciplinary performance.",
+        tools: ['MATLAB', 'Simulink', 'VESC', 'SolidWorks', 'Fusion 360', 'Hydraulic Actuators', 'OnShape', 'Electromechanical Design'],
+        role: 'Electromechanical Systems Engineer',
         code: '',
         demo: '',
     },
     {
         id: 3,
-        name: 'AI Powered Real Estate',
-        description: 'My team built an AI-based real estate app using Replicate API and OpenAI. We used Express, Typescript, OpenAI, Replicate, Stripe, and Mongoose to develop the API. We utilized NextJS, Formik, TailwindCSS, and other npm libraries for the UI. We have trained multiple AI assistants using the latest GPT model and integrated Replicate API for image processing. We added role-based auth, subscription plans, Cron job scheduling, and payment integration with Stripe.',
-        tools: ['React', 'Bootstrap', 'SCSS', 'Stripe', 'Express', 'TypeScript', 'MongoDB', 'Azure Blob', 'OpenAI API', 'Replicate AI', 'Cronjob', 'JWT'],
+        name: 'Embedded Avionics Flight Control',
+        description: "Developed firmware for a multi-module avionics system supporting flight stabilization at update rates of 200–500 Hz. Wrote ~2,500 lines of embedded C/C++ for sensor fusion, control loops, and telemetry. Led hardware integration and testing campaigns including IMU calibration, actuator interfacing, and board-level diagnostics. Optimized power delivery and signal integrity for high-performance flight scenarios.",
+        tools: ['C/C++', 'Embedded Systems', 'IMU Sensors', 'PCB Testing', 'LTSpice', 'Flight Control Algorithms', 'Telemetry'],
+        role: 'Electrical Engineer',
         code: '',
-        role: 'Full Stack Developer',
         demo: '',
     },
     {
         id: 4,
-        name: 'Newsroom Management',
-        description: "My team and I developed a newspaper management dashboard application called Newsroom Management. As a front-end developer, I worked on creating the dashboard using NextJS, Material UI, Redux, Calendar, and other necessary npm libraries. We used React Redux to manage the application's state and React-hook-form and Sun Editor to handle forms.",
-        tools: ['NextJS', 'Material UI', 'Redux', 'Sun Editor', "Calendar"],
+        name: 'Engineering Systems Toolkit',
+        description: "Built a cross-platform engineering toolkit to automate firmware flashing, debugging, and sensor calibration for embedded systems projects. Integrated Linux and macOS utilities with Python scripts to streamline hardware testing, data acquisition, and performance logging. Enabled faster iteration cycles (~40% reduction) for embedded systems and UAV control projects.",
+        tools: ['Python', 'Linux', 'macOS', 'ESP32', 'Arduino', 'Automation Scripts', 'Firmware Debugging', 'Data Acquisition'],
+        role: 'Systems Engineer',
         code: '',
         demo: '',
-        role: 'Full Stack Developer',
     }
 ];
 
-
-// Do not remove any property.
-// Leave it blank instead as shown below
-
+// Template for future entries
 // {
 //     id: 1,
 //     name: '',
