@@ -1,27 +1,30 @@
-import { NextResponse } from "next/server";
-import { Resend } from "resend";
+import emailjs from '@emailjs/browser';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-export async function POST(request) {
-  try {
-    const { name, email, message } = await request.json();
-
-    if (!name || !email || !message) {
-      return NextResponse.json({ success: false, message: "Missing fields" }, { status: 400 });
+export default function ContactForm() {
+  const sendEmail = async (e) => {
+    e.preventDefault();
+    try {
+      await emailjs.sendForm(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,   // service ID
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,  // template ID
+        e.target,
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY   // public key
+      );
+      alert('Email sent!');
+    } catch (error) {
+      console.error(error);
+      alert('Failed to send email.');
     }
+  };
 
-    await resend.emails.send({
-      from: process.env.EMAIL_FROM,
-      to: process.env.EMAIL_TO,
-      subject: `New Message from ${name}`,
-      replyTo: email,
-      html: `<p>Name: ${name}</p><p>Email: ${email}</p><p>Message: ${message}</p>`,
-    });
-
-    return NextResponse.json({ success: true, message: "Email sent successfully" });
-  } catch (error) {
-    console.error("Contact API error:", error);
-    return NextResponse.json({ success: false, message: "Failed to send email" }, { status: 500 });
-  }
+  return (
+    <form onSubmit={sendEmail}>
+      <input name="name" required placeholder="Your Name" />
+      <input name="email" required placeholder="Your Email" />
+      <textarea name="message" required placeholder="Your Message" />
+      <button type="submit">Send</button>
+    </form>
+  );
 }
+
+

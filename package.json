@@ -1,13 +1,14 @@
 {
-  "name": "developer-portfolio",
-  "description": "Portfolio of Abu Said",
+  "name": "portafolio-andrfp",
+  "description": "Personal portfolio of Andres Peña",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "export": "next export -o out"
   },
   "dependencies": {
     "@emailjs/browser": "^4.3.1",
@@ -35,3 +36,4 @@
     "tailwindcss": "latest"
   }
 }
+
