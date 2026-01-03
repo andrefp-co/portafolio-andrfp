@@ -5,7 +5,7 @@ export const personalData = {
   description:
     "My name is Andres and I'm an electrical engineering student and independent full-stack developer focused on embedded systems, aerospace R&D, and applied software engineering. Founder of SWORT LLC, with hands-on experience spanning firmware, system design, hardware and scalable systems.",
   email: "penaavilaandresfelipe@gmail.com",
-  phone: "+1 (516) 906-9229",
+  phone: "+1 (301)633-8696",
   address: "Purdue University",
 
   github: "https://github.com/andrefp-co",
@@ -15,6 +15,5 @@ export const personalData = {
   leetcode: "https://leetcode.com/u/andrefp-co/",
   stackOverflow: "https://stackoverflow.com/users/32070657/andres", 
   devUsername: "andrfp",
-  resume: "https://drive.google.com/file/d/1LDX7VC9w9ddEaOmkFx_0LFiIcXl4K5f9/view"
+  resume: "https://drive.google.com/file/d/1Vo45tFeCH9X0pMTjxQVkgQbSuYalB7Vl/view"
 };
-
