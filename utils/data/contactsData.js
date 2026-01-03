@@ -1,6 +1,6 @@
 export const contactsData = {
     email: 'penaavilaandresfelipe@gmail.com',
-    phone: '+1 (516)906-9229',
+    phone: '+1 (301)633-8696',
     address: 'Purdue University',
     github: 'https://github.com/andrefp-co',
     facebook: 'https://www.facebook.com/abusaid.riyaz/',
