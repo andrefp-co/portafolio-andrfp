@@ -52,21 +52,18 @@ function ContactForm() {
 
   return (
     <div>
-      <p className="font-medium mb-5 text-[#16f2b3] text-xl uppercase">
-        Contact with me
-      </p>
-
-      <div className="max-w-3xl text-white rounded-lg border border-[#464c6a] p-3 lg:p-5">
-        <p className="text-sm text-[#d3d8e8]">
+      <div className="max-w-3xl border border-[var(--sw-border)] bg-[var(--sw-black-raised)] p-6 lg:p-8">
+        <p className="sw-lede">
           If you have any questions or concerns, feel free to reach out. I’m open
           to opportunities that align with my skills and ambitions.
         </p>
 
-        <form onSubmit={handleSendMail} className="mt-6 flex flex-col gap-4">
+        <form onSubmit={handleSendMail} className="mt-8 flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            <label>Your Name</label>
+            <label htmlFor="contact-name" className="sw-label">Your Name</label>
             <input
-              className="bg-[#10172d] border border-[#353a52] rounded-md px-3 py-2"
+              id="contact-name"
+              className="sw-field"
               type="text"
               value={userInput.name}
               onChange={(e) =>
@@ -77,9 +74,10 @@ function ContactForm() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label>Your Email</label>
+            <label htmlFor="contact-email" className="sw-label">Your Email</label>
             <input
-              className="bg-[#10172d] border border-[#353a52] rounded-md px-3 py-2"
+              id="contact-email"
+              className="sw-field"
               type="email"
               value={userInput.email}
               onChange={(e) =>
@@ -93,17 +91,18 @@ function ContactForm() {
               }
             />
             {error.email && (
-              <p className="text-sm text-red-400">
+              <p className="sw-field-error">
                 Please provide a valid email.
               </p>
             )}
           </div>
 
           <div className="flex flex-col gap-2">
-            <label>Your Message</label>
+            <label htmlFor="contact-message" className="sw-label">Your Message</label>
             <textarea
-              className="bg-[#10172d] border border-[#353a52] rounded-md px-3 py-2"
-              rows="4"
+              id="contact-message"
+              className="sw-field"
+              rows="5"
               value={userInput.message}
               onChange={(e) =>
                 setUserInput({ ...userInput, message: e.target.value })
@@ -113,15 +112,15 @@ function ContactForm() {
           </div>
 
           {error.required && (
-            <p className="text-sm text-red-400">All fields are required.</p>
+            <p className="sw-field-error">All fields are required.</p>
           )}
 
           <button
             type="submit"
             disabled={isLoading}
-            className="flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-500 to-violet-600 px-8 py-3 text-sm font-semibold uppercase tracking-wider transition-all hover:gap-4"
+            className="sw-btn sw-btn-primary self-start"
           >
-            {isLoading ? "Sending…" : <>Send Message <TbMailForward size={20} /></>}
+            {isLoading ? "Sending…" : <>Send Message <TbMailForward size={16} /></>}
           </button>
         </form>
       </div>

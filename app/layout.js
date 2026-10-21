@@ -1,13 +1,23 @@
 import { GoogleTagManager } from "@next/third-parties/google";
-import { Inter } from "next/font/google";
+import { Bebas_Neue, DM_Mono } from "next/font/google";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Footer from "./components/footer";
 import ScrollToTop from "./components/helper/scroll-to-top";
 import Navbar from "./components/navbar";
-import "./css/card.scss";
 import "./css/globals.scss";
-const inter = Inter({ subsets: ["latin"] });
+
+const dmMono = DM_Mono({
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
+  variable: "--font-dm-mono",
+});
+
+const bebasNeue = Bebas_Neue({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-bebas-neue",
+});
 
 export const metadata = {
   title: "Portfolio of Andres - Electrical Engineer",
@@ -17,11 +27,11 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <ToastContainer />
-        <main className="min-h-screen relative mx-auto px-6 sm:px-12 lg:max-w-[70rem] xl:max-w-[76rem] 2xl:max-w-[92rem] text-white">
-          <Navbar />
+    <html lang="en" className={`${dmMono.variable} ${bebasNeue.variable}`}>
+      <body>
+        <ToastContainer theme="dark" />
+        <Navbar />
+        <main className="min-h-screen relative">
           {children}
           <ScrollToTop />
         </main>

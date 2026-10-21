@@ -2,87 +2,60 @@
 import { personalData } from '@/utils/data/personal-data';
 import Link from 'next/link';
 import { BiLogoLinkedin } from "react-icons/bi";
-import { CiLocationOn } from "react-icons/ci";
 import { FaFacebook, FaStackOverflow } from 'react-icons/fa';
 import { FaXTwitter } from "react-icons/fa6";
-import { IoLogoGithub, IoMdCall } from "react-icons/io";
-import { MdAlternateEmail } from "react-icons/md";
+import { IoLogoGithub } from "react-icons/io";
 import ContactForm from './contact-form';
+
+const socials = [
+  { label: "GitHub", href: personalData.github, Icon: IoLogoGithub },
+  { label: "LinkedIn", href: personalData.linkedIn, Icon: BiLogoLinkedin },
+  { label: "X / Twitter", href: personalData.twitter, Icon: FaXTwitter },
+  { label: "Stack Overflow", href: personalData.stackOverflow, Icon: FaStackOverflow },
+  { label: "Facebook", href: personalData.facebook, Icon: FaFacebook },
+];
 
 function ContactSection() {
   return (
-    <div id="contact" className="my-12 lg:my-16 relative mt-24 text-white">
-      <div className="hidden lg:flex flex-col items-center absolute top-24 -right-8">
-        <span className="bg-[#1a1443] w-fit text-white rotate-90 p-2 px-5 text-xl rounded-md">
-          CONTACT
-        </span>
-        <span className="h-36 w-[2px] bg-[#1a1443]"></span>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-        <ContactForm />
-        <div className="lg:w-3/4 ">
-          <div className="flex flex-col gap-5 lg:gap-9">
-            <p className="text-sm md:text-xl flex items-center gap-3">
-              <MdAlternateEmail
-                className="bg-[#8b98a5] p-2 rounded-full hover:bg-[#16f2b3] hover:scale-110 transition-all duration-300 text-gray-800 cursor-pointer"
-                size={36}
-              />
-              <span>{personalData.email}</span>
-            </p>
-            <p className="text-sm md:text-xl flex items-center gap-3">
-              <IoMdCall
-                className="bg-[#8b98a5] p-2 rounded-full hover:bg-[#16f2b3] hover:scale-110 transition-all duration-300 text-gray-800 cursor-pointer"
-                size={36}
-              />
-              <span>
-                {personalData.phone}
-              </span>
-            </p>
-            <p className="text-sm md:text-xl flex items-center gap-3">
-              <CiLocationOn
-                className="bg-[#8b98a5] p-2 rounded-full hover:bg-[#16f2b3] hover:scale-110 transition-all duration-300 text-gray-800 cursor-pointer"
-                size={36}
-              />
-              <span>
-                {personalData.address}
-              </span>
-            </p>
-          </div>
-          <div className="mt-8 lg:mt-16 flex items-center gap-5 lg:gap-10">
-            <Link target="_blank" href={personalData.github}>
-              <IoLogoGithub
-                className="bg-[#8b98a5] p-3 rounded-full hover:bg-[#16f2b3] hover:scale-110 transition-all duration-300 text-gray-800 cursor-pointer"
-                size={48}
-              />
-            </Link>
-            <Link target="_blank" href={personalData.linkedIn}>
-              <BiLogoLinkedin
-                className="bg-[#8b98a5] p-3 rounded-full hover:bg-[#16f2b3] hover:scale-110 transition-all duration-300 text-gray-800 cursor-pointer"
-                size={48}
-              />
-            </Link>
-            <Link target="_blank" href={personalData.twitter}>
-              <FaXTwitter
-                className="bg-[#8b98a5] p-3 rounded-full hover:bg-[#16f2b3] hover:scale-110 transition-all duration-300 text-gray-800 cursor-pointer"
-                size={48}
-              />
-            </Link>
-            <Link target="_blank" href={personalData.stackOverflow}>
-              <FaStackOverflow
-                className="bg-[#8b98a5] p-3 rounded-full hover:bg-[#16f2b3] hover:scale-110 transition-all duration-300 text-gray-800 cursor-pointer"
-                size={48}
-              />
-            </Link>
-            <Link target="_blank" href={personalData.facebook}>
-              <FaFacebook
-                className="bg-[#8b98a5] p-3 rounded-full hover:bg-[#16f2b3] hover:scale-110 transition-all duration-300 text-gray-800 cursor-pointer"
-                size={48}
-              />
-            </Link>
+    <section id="contact" className="sw-section">
+      <div className="sw-container">
+        <p className="sw-eyebrow">Contact</p>
+        <h2 className="sw-head">Get in touch.</h2>
+
+        <div className="mt-10 grid grid-cols-1 items-start gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:gap-16">
+          <ContactForm />
+
+          <div>
+            <div className="sw-rows">
+              <div className="border-b border-[var(--sw-rule)] py-5">
+                <span className="sw-label">Email</span>
+                <a href={`mailto:${personalData.email}`} className="mt-2 inline-block break-all text-sm text-white underline decoration-[var(--sw-gray)] underline-offset-4 hover:decoration-white">
+                  {personalData.email}
+                </a>
+              </div>
+              <div className="border-b border-[var(--sw-rule)] py-5">
+                <span className="sw-label">Phone</span>
+                <a href={`tel:${personalData.phone.replace(/[^\d+]/g, '')}`} className="mt-2 inline-block text-sm text-white">
+                  {personalData.phone}
+                </a>
+              </div>
+              <div className="border-b border-[var(--sw-rule)] py-5">
+                <span className="sw-label">Location</span>
+                <p className="mt-2 text-sm text-white">{personalData.address}</p>
+              </div>
+            </div>
+
+            <div className="mt-8 flex flex-wrap gap-2">
+              {socials.map(({ label, href, Icon }) => (
+                <Link key={label} target="_blank" href={href} aria-label={label} className="sw-icon-btn">
+                  <Icon size={18} />
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
