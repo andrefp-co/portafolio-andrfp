@@ -20,7 +20,7 @@ function TimelineItem({ exp }) {
       />
       <p className="sw-label pt-[3px]">{exp.duration}</p>
       <div className="min-w-0">
-        <h3 className="font-[family-name:var(--sw-font-display)] text-[28px] leading-[1.05] tracking-[0.02em] text-white">
+        <h3 className="font-[family-name:var(--sw-font-display)] text-[28px] leading-[1.05] tracking-[0.02em] text-[var(--sw-white)]">
           {exp.title}
         </h3>
         <p className="mt-1 text-xs uppercase tracking-[0.14em] text-[var(--sw-silver)]">{exp.company}</p>

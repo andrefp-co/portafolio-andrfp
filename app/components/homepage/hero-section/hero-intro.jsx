@@ -45,6 +45,9 @@ export default function HeroIntro() {
               {word.split("").map((char) => {
                 const i = letterIndex++;
                 return (
+                  // Outer span: the one-time reveal. Inner span: a springy
+                  // key that lifts under a pointer or finger, kept separate
+                  // so letting go never replays the reveal's stagger delay.
                   <motion.span
                     key={`${char}-${i}`}
                     className="inline-block"
@@ -52,7 +55,14 @@ export default function HeroIntro() {
                     animate={{ y: "0%" }}
                     transition={{ delay: 0.15 + i * 0.04, duration: 0.9, ease: EASE }}
                   >
-                    {char}
+                    <motion.span
+                      className="inline-block cursor-default"
+                      whileHover={{ y: "-10%" }}
+                      whileTap={{ y: "-14%", scale: 0.94 }}
+                      transition={{ type: "spring", stiffness: 520, damping: 14 }}
+                    >
+                      {char}
+                    </motion.span>
                   </motion.span>
                 );
               })}
@@ -68,11 +78,11 @@ export default function HeroIntro() {
       <motion.dl className="mt-8 grid max-w-md grid-cols-2 gap-6 border-t border-[var(--sw-rule)] pt-5" {...rise(0.85)}>
         <div>
           <dt className="sw-label">Based in</dt>
-          <dd className="mt-1 text-sm text-white">{personalData.address}</dd>
+          <dd className="mt-1 text-sm text-[var(--sw-white)]">{personalData.address}</dd>
         </div>
         <div>
           <dt className="sw-label">Local time</dt>
-          <dd className="mt-1 text-sm text-white">
+          <dd className="mt-1 text-sm text-[var(--sw-white)]">
             <LocalTime timeZone={personalData.timeZone} />
           </dd>
         </div>

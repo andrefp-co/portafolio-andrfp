@@ -32,6 +32,7 @@
   --sw-grid-line-faint: rgba(255, 255, 255, 0.045);
 
   --sw-danger-text: #ca7875;
+  --sw-ok-text: #7d947e;
 
   --sw-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --sw-dur-ctrl: 0.2s;
@@ -502,7 +503,9 @@
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background: radial-gradient(60% 70% at 78% 45%, rgba(255, 255, 255, 0.05), transparent 70%);
+    background:
+      radial-gradient(420px circle at var(--mx, 70%) var(--my, 40%), rgba(255, 255, 255, 0.06), transparent 70%),
+      radial-gradient(60% 70% at 78% 45%, rgba(255, 255, 255, 0.04), transparent 70%);
   }
 
   .sw-live-dot {
@@ -525,6 +528,240 @@
     }
 
     .sw-live-dot {
+      animation: none;
+    }
+  }
+
+  /* ── Paper surface ────────────────────────────────────────────────────────
+     swort.net's warm-free white reading surface (#f2f2f2, ink #181818). It
+     re-points the palette tokens for its subtree, so every component that
+     reads the tokens (type, buttons, tags, rules, links, fields, focus)
+     renders correctly on white without a second set of classes. "white" in
+     a token name means "strongest foreground" here, which on paper is ink. */
+  .sw-paper {
+    --sw-white: #0a0a0a;
+    --sw-white-soft: #181818;
+    --sw-silver: #3c4044;
+    --sw-gray: #55595f;
+    --sw-dim: #696969;
+    --sw-body: #55595f;
+    --sw-rule: #d8d8d8;
+    --sw-grid-rule: #d8d8d8;
+    --sw-border: rgba(0, 0, 0, 0.14);
+    --sw-border-strong: rgba(0, 0, 0, 0.24);
+    --sw-black: #f2f2f2;
+    --sw-black-raised: #fafafa;
+    --sw-cell: #fafafa;
+    --sw-graphite: #ebebeb;
+    --sw-graphite-light: #e2e2e2;
+    --sw-grid-line-soft: rgba(0, 0, 0, 0.05);
+    --sw-grid-line-faint: rgba(0, 0, 0, 0.035);
+    --sw-danger-text: #b64a46;
+    color-scheme: light;
+    background: #f2f2f2;
+    color: #181818;
+  }
+
+  .sw-paper ::selection {
+    background: rgba(24, 24, 24, 0.16);
+    color: #0a0a0a;
+  }
+
+  .sw-paper .sw-field {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.22);
+  }
+
+  .sw-paper .sw-field:focus {
+    border-color: #181818;
+  }
+
+  /* ── Status badge (research) ──────────────────────────────────────────── */
+  .sw-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border: 1px solid var(--sw-border-strong);
+    color: var(--sw-silver);
+  }
+
+  .sw-status::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background: currentColor;
+  }
+
+  /* ── Hero feed (Higgsfield video panel) ───────────────────────────────── */
+  .sw-feed-corner {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-color: rgba(255, 255, 255, 0.7);
+    pointer-events: none;
+  }
+
+  /* ── Long-form prose (blog and research pages) ────────────────────────── */
+  .sw-prose {
+    max-width: 68ch;
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--sw-silver);
+  }
+
+  .sw-prose > * + * {
+    margin-top: 1.2em;
+  }
+
+  .sw-prose h2,
+  .sw-prose h3 {
+    font-family: var(--sw-font-display);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--sw-white);
+    line-height: 1.05;
+    margin-top: 2em;
+  }
+
+  .sw-prose h2 {
+    font-size: clamp(26px, 3vw, 34px);
+  }
+
+  .sw-prose h3 {
+    font-size: clamp(21px, 2.4vw, 26px);
+  }
+
+  .sw-prose a {
+    color: var(--sw-white);
+    text-decoration: underline;
+    text-decoration-color: var(--sw-gray);
+    text-underline-offset: 4px;
+  }
+
+  .sw-prose strong {
+    color: var(--sw-white);
+    font-weight: 500;
+  }
+
+  .sw-prose ul,
+  .sw-prose ol {
+    padding-left: 1.4em;
+  }
+
+  .sw-prose ul {
+    list-style: square;
+  }
+
+  .sw-prose ol {
+    list-style: decimal;
+  }
+
+  .sw-prose li + li {
+    margin-top: 0.4em;
+  }
+
+  .sw-prose code {
+    font-size: 0.92em;
+    padding: 0.1em 0.35em;
+    background: var(--sw-graphite);
+    color: var(--sw-white-soft);
+  }
+
+  .sw-prose pre {
+    overflow-x: auto;
+    padding: 18px 20px;
+    background: var(--sw-graphite);
+    border: 1px solid var(--sw-border);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .sw-prose pre code {
+    padding: 0;
+    background: none;
+  }
+
+  .sw-prose blockquote {
+    border-left: 3px solid var(--sw-gray);
+    padding: 4px 0 4px 18px;
+    color: var(--sw-silver);
+  }
+
+  .sw-prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .sw-prose th,
+  .sw-prose td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--sw-rule);
+    vertical-align: top;
+  }
+
+  .sw-prose th {
+    font-weight: 500;
+    color: var(--sw-white);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* ── Vault terminal ───────────────────────────────────────────────────── */
+  .vt-screen {
+    position: relative;
+    background: #020202;
+    color: #d6d6d6;
+    font-family: var(--sw-font-body);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  /* CRT scanlines and a soft vignette, monochrome by construction. */
+  .vt-screen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 3px),
+      radial-gradient(120% 90% at 50% 50%, transparent 60%, rgba(0, 0, 0, 0.55) 100%);
+  }
+
+  .vt-ok {
+    color: var(--sw-ok-text);
+  }
+
+  .vt-fail {
+    color: var(--sw-danger-text);
+  }
+
+  .vt-dim {
+    color: #7c7c7c;
+  }
+
+  /* Box-drawing glyphs need a system monospace; DM Mono does not carry them. */
+  .vt-banner {
+    font-family: ui-monospace, Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
+  }
+
+  .vt-caret {
+    display: inline-block;
+    width: 0.6em;
+    height: 1.15em;
+    vertical-align: text-bottom;
+    background: #d6d6d6;
+    animation: sw-blink 1.06s steps(2, jump-none) infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vt-caret {
       animation: none;
     }
   }

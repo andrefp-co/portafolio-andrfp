@@ -11,10 +11,14 @@ const links = [
   { label: "About", href: "/#about" },
   { label: "Experience", href: "/#experience" },
   { label: "Projects", href: "/#projects" },
+  { label: "Research", href: "/research" },
   { label: "Skills", href: "/#skills" },
-  { label: "Education", href: "/#education" },
   { label: "Blog", href: "/blog" },
 ];
+
+// Home-page sections whose links point at their own pages.
+const SECTION_PAGES = { "/#research": "/research", "/#blogs": "/blog" };
+const OBSERVED = ["about", "experience", "projects", "research", "skills", "education", "blogs", "contact"];
 
 const EASE = [0.22, 1, 0.36, 1];
 
@@ -34,7 +38,10 @@ function Navbar() {
     setOpen(false);
   }
 
-  const active = pathname === "/" ? sectionInView : pathname === "/blog" ? "/blog" : null;
+  const active =
+    pathname === "/"
+      ? SECTION_PAGES[sectionInView] ?? sectionInView
+      : ["/research", "/blog"].find((page) => pathname.startsWith(page)) ?? null;
 
   // Slide away while reading down the page; come back on any scroll up.
   useMotionValueEvent(scrollY, "change", (y) => {
@@ -45,10 +52,7 @@ function Navbar() {
   // Mark the section currently under the middle of the viewport.
   useEffect(() => {
     if (pathname !== "/") return;
-    const sections = links
-      .filter((link) => link.href.startsWith("/#"))
-      .map((link) => document.getElementById(link.href.slice(2)))
-      .filter(Boolean);
+    const sections = OBSERVED.map((id) => document.getElementById(id)).filter(Boolean);
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -72,6 +76,9 @@ function Navbar() {
       window.removeEventListener("keydown", onKey);
     };
   }, [open]);
+
+  // The vault is a full-screen terminal with its own chrome.
+  if (pathname.startsWith("/vault")) return null;
 
   return (
     <>

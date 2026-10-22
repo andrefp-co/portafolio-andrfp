@@ -1,3 +1,4 @@
+import { getPosts, getResearch } from "@/utils/content";
 import { personalData } from "@/utils/data/personal-data";
 import AboutSection from "./components/homepage/about";
 import Blog from "./components/homepage/blog";
@@ -7,6 +8,7 @@ import Experience from "./components/homepage/experience";
 import HeroSection from "./components/homepage/hero-section";
 import Highlights from "./components/homepage/highlights";
 import Projects from "./components/homepage/projects";
+import ResearchTeaser from "./components/homepage/research";
 import Skills from "./components/homepage/skills";
 
 async function getData() {
@@ -30,6 +32,8 @@ async function getData() {
 
 export default async function Home() {
   const blogs = await getData();
+  const posts = getPosts();
+  const research = getResearch();
 
   return (
     <div suppressHydrationWarning >
@@ -38,9 +42,10 @@ export default async function Home() {
       <AboutSection />
       <Experience />
       <Projects />
+      <ResearchTeaser entries={research} />
       <Skills />
       <Education />
-      <Blog blogs={blogs} />
+      <Blog posts={posts} blogs={blogs} />
       <ContactSection />
     </div>
   )

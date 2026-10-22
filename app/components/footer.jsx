@@ -14,7 +14,10 @@ function Footer() {
           <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--sw-gray)] md:text-center">
             {personalData.address} · <LocalTime timeZone={personalData.timeZone} />
           </p>
-          <div className="flex items-center gap-6 md:justify-end">
+          <div className="flex flex-wrap items-center gap-6 md:justify-end">
+            <Link href="/vault" className="text-[11px] uppercase tracking-[0.14em] text-[var(--sw-gray)] transition-colors hover:text-white" aria-label="Restricted portfolio">
+              <span aria-hidden="true">▮ </span>Restricted
+            </Link>
             <Link target="_blank" href={personalData.github} className="sw-link">
               GitHub <span className="sw-link-arrow" aria-hidden="true">↗</span>
             </Link>

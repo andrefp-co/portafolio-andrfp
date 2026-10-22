@@ -35,11 +35,11 @@ function ContactSection() {
               </div>
               <div className="border-b border-[var(--sw-rule)] py-5">
                 <span className="sw-label">Phone</span>
-                <p className="mt-2 text-sm text-white">{personalData.phone}</p>
+                <p className="mt-2 text-sm text-[var(--sw-white)]">{personalData.phone}</p>
               </div>
               <div className="border-b border-[var(--sw-rule)] py-5">
                 <span className="sw-label">Location</span>
-                <p className="mt-2 text-sm text-white">{personalData.address}</p>
+                <p className="mt-2 text-sm text-[var(--sw-white)]">{personalData.address}</p>
                 <p className="mt-1 text-xs text-[var(--sw-gray)]">
                   Local time <LocalTime timeZone={personalData.timeZone} />
                 </p>

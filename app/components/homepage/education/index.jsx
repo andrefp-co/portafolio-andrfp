@@ -14,7 +14,7 @@ function Education() {
               <span className="text-xs uppercase tracking-[0.14em] text-[var(--sw-gray)]">
                 {education.duration}
               </span>
-              <p className="text-sm font-medium text-white">{education.title}</p>
+              <p className="text-sm font-medium text-[var(--sw-white)]">{education.title}</p>
               <p className="text-sm text-[var(--sw-silver)]">{education.institution}</p>
             </div>
           ))}

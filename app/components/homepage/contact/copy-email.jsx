@@ -29,14 +29,14 @@ export default function CopyEmail({ email }) {
       <a
         id="contact-email-address"
         href={`mailto:${email}`}
-        className="break-all text-sm text-white underline decoration-[var(--sw-gray)] underline-offset-4 hover:decoration-white"
+        className="break-all text-sm text-[var(--sw-white)] underline decoration-[var(--sw-gray)] underline-offset-4 hover:decoration-[var(--sw-white)]"
       >
         {email}
       </a>
       <button
         type="button"
         onClick={copy}
-        className="relative h-8 min-w-[72px] overflow-hidden border border-[var(--sw-border-strong)] px-3 text-[10px] uppercase tracking-[0.14em] text-[var(--sw-silver)] transition-colors hover:border-white hover:text-white"
+        className="relative h-8 min-w-[72px] overflow-hidden border border-[var(--sw-border-strong)] px-3 text-[10px] uppercase tracking-[0.14em] text-[var(--sw-silver)] transition-colors hover:border-[var(--sw-white)] hover:text-[var(--sw-white)]"
       >
         <AnimatePresence mode="wait" initial={false}>
           <motion.span
