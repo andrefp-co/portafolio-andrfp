@@ -41,26 +41,38 @@ This portfolio highlights projects, work experience, and technical capabilities 
 git clone https://github.com/username/portfolio.git
 cd portfolio
 npm install
-Environment Variables
-Create a .env.local file in the root:
+```
 
-ini
-Copy code
+### Environment Variables
+Create a `.env.local` file in the root (see `.env.example`):
+
+```bash
 RESEND_API_KEY=your_resend_api_key
 EMAIL_TO=your_email@example.com
-EMAIL_FROM=Portfolio <onboarding@resend.dev>
-Run Locally
-bash
-Copy code
+EMAIL_FROM="Portfolio <onboarding@resend.dev>"
+NEXT_PUBLIC_GTM=            # optional Google Tag Manager ID
+```
+
+Without `RESEND_API_KEY` and `EMAIL_TO` the site still runs; the contact form
+tells visitors to email directly instead.
+
+### Run Locally
+
+```bash
 npm run dev
+```
+
 Open http://localhost:3000 to view the portfolio.
 
-Project Structure
-vbnet
-Copy code
+## Project Structure
+
+```
 /app        - Next.js app directory with pages and components
 /public     - Static assets like images and icons
-/utils      - Utility functions (e.g., email validation)
-Deployment
+/utils      - Data files and utility functions
+```
+
+## Deployment
+
 This portfolio is ready to deploy on any Next.js 16 compatible platform like Vercel or Netlify.
 

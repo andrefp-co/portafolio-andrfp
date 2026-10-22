@@ -1,20 +1,20 @@
 export const educations = [
   {
     id: 1,
-    title: "Bachelor Degree",
-    duration: "2025 - Present",
-    institution: "Purdue University Northwest",
+    title: "Electrical Engineering",
+    duration: "2025 – Present",
+    institution: "Montgomery College",
   },
   {
     id: 2,
-    title: "Higher Secondary Certificate",
-    duration: "2022 - 2025",
-    institution: "Floral Park Memorial High School",
+    title: "Engineering studies",
+    duration: "2025",
+    institution: "Purdue University",
   },
   {
     id: 3,
-    title: "Secondary School Certificate",
-    duration: "2020 - 2022",
-    institution: "Military Academy Aquileo Parra",
+    title: "High school diploma",
+    duration: "2022 – 2025",
+    institution: "Floral Park Memorial High School",
   },
 ];

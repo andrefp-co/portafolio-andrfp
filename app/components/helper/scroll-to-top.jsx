@@ -1,35 +1,36 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
+import { useState } from "react";
 import { FaArrowUp } from "react-icons/fa6";
 
-const DEFAULT_BTN_CLS =
-  "fixed bottom-8 right-6 z-50 flex items-center rounded-full bg-gradient-to-r from-pink-500 to-violet-600 p-4 hover:text-xl transition-all duration-300 ease-out";
-const SCROLL_THRESHOLD = 50;
+const SCROLL_THRESHOLD = 400;
 
 const ScrollToTop = () => {
-  const [btnCls, setBtnCls] = useState(DEFAULT_BTN_CLS);
+  const { scrollY } = useScroll();
+  const [visible, setVisible] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > SCROLL_THRESHOLD) {
-        setBtnCls(DEFAULT_BTN_CLS.replace(" hidden", ""));
-      } else {
-        setBtnCls(DEFAULT_BTN_CLS + " hidden");
-      }
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", handleScroll, { passive: true });
-    };
-  }, []);
+  useMotionValueEvent(scrollY, "change", (y) => setVisible(y > SCROLL_THRESHOLD));
 
   const onClickBtn = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   return (
-    <button className={btnCls} onClick={onClickBtn}>
-      <FaArrowUp />
-    </button>
+    <AnimatePresence>
+      {visible && (
+        <motion.button
+          key="scroll-to-top"
+          className="fixed bottom-8 right-6 z-50 flex h-11 w-11 items-center justify-center border border-[var(--sw-gray)] bg-[var(--sw-black)] text-white transition-colors duration-200 hover:border-white hover:bg-white hover:text-black"
+          onClick={onClickBtn}
+          aria-label="Scroll to top"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 12 }}
+          transition={{ duration: 0.25 }}
+        >
+          <FaArrowUp size={14} />
+        </motion.button>
+      )}
+    </AnimatePresence>
   );
 };
 

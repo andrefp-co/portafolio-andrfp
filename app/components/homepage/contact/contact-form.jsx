@@ -2,18 +2,31 @@
 // @flow strict
 import { isValidEmail } from "@/utils/check-email";
 import axios from "axios";
-import { useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
 import { TbMailForward } from "react-icons/tb";
-import { toast } from "react-toastify";
+import ProtectedEmail from "../../helper/protected-email";
+import { PREVIEW } from "@/utils/preview";
+
+const EMPTY = { name: "", email: "", message: "" };
 
 function ContactForm() {
   const [error, setError] = useState({ email: false, required: false });
-  const [isLoading, setIsLoading] = useState(false);
-  const [userInput, setUserInput] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
+  const [status, setStatus] = useState({ state: "idle", message: "" });
+  const [userInput, setUserInput] = useState(EMPTY);
+  // Spam signals the server checks: when the form was first shown, and a
+  // hidden field that only bots fill in.
+  const shownAt = useRef(0);
+  const honeypot = useRef(null);
+  useEffect(() => {
+    shownAt.current = Date.now();
+  }, []);
+  const isSending = status.state === "sending";
+
+  const update = (field) => (e) => {
+    setUserInput((prev) => ({ ...prev, [field]: e.target.value }));
+    if (status.state !== "idle" && status.state !== "sending") setStatus({ state: "idle", message: "" });
+  };
 
   const checkRequired = () => {
     if (userInput.name && userInput.email && userInput.message) {
@@ -34,95 +47,133 @@ function ContactForm() {
       return;
     }
 
+    if (PREVIEW) {
+      setStatus({ state: "error", message: "This preview has no server, so it can't send messages. The form sends from andres.swort.net." });
+      return;
+    }
+
     try {
-      setIsLoading(true);
-
-      await axios.post("/api/contact", userInput);
-
-      toast.success("Message sent successfully!");
-      setUserInput({ name: "", email: "", message: "" });
+      setStatus({ state: "sending", message: "" });
+      await axios.post("/api/contact", {
+        ...userInput,
+        website: honeypot.current?.value ?? "",
+        elapsed: Date.now() - shownAt.current,
+      });
+      setStatus({ state: "sent", message: "Message sent. I'll reply to the address you gave." });
+      setUserInput(EMPTY);
     } catch (err) {
-      toast.error(
-        err?.response?.data?.message || "Something went wrong"
-      );
-    } finally {
-      setIsLoading(false);
+      setStatus({
+        state: "error",
+        message: err?.response?.data?.message || "Your message didn't go through. Email me directly instead.",
+      });
     }
   };
 
   return (
-    <div>
-      <p className="font-medium mb-5 text-[#16f2b3] text-xl uppercase">
-        Contact with me
-      </p>
-
-      <div className="max-w-3xl text-white rounded-lg border border-[#464c6a] p-3 lg:p-5">
-        <p className="text-sm text-[#d3d8e8]">
+    <div className="min-w-0">
+      <div className="sw-paper max-w-3xl border border-[var(--sw-border)] p-6 lg:p-8">
+        <p className="sw-lede">
           If you have any questions or concerns, feel free to reach out. I’m open
           to opportunities that align with my skills and ambitions.
         </p>
 
-        <form onSubmit={handleSendMail} className="mt-6 flex flex-col gap-4">
+        <form onSubmit={handleSendMail} className="mt-8 flex flex-col gap-5" noValidate>
+          {/* Honeypot: hidden from people and assistive tech, filled by bots. */}
+          <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+            <label htmlFor="contact-website">Website</label>
+            <input ref={honeypot} id="contact-website" type="text" name="website" tabIndex={-1} autoComplete="off" defaultValue="" />
+          </div>
           <div className="flex flex-col gap-2">
-            <label>Your Name</label>
+            <label htmlFor="contact-name" className="sw-label">Your Name</label>
             <input
-              className="bg-[#10172d] border border-[#353a52] rounded-md px-3 py-2"
+              id="contact-name"
+              className="sw-field"
               type="text"
+              autoComplete="name"
+              aria-invalid={(error.required && !userInput.name) || undefined}
+              aria-describedby={error.required && !userInput.name ? "contact-required-error" : undefined}
               value={userInput.name}
-              onChange={(e) =>
-                setUserInput({ ...userInput, name: e.target.value })
-              }
+              onChange={update("name")}
               onBlur={checkRequired}
             />
           </div>
 
           <div className="flex flex-col gap-2">
-            <label>Your Email</label>
+            <label htmlFor="contact-email" className="sw-label">Your Email</label>
             <input
-              className="bg-[#10172d] border border-[#353a52] rounded-md px-3 py-2"
+              id="contact-email"
+              className="sw-field"
               type="email"
+              autoComplete="email"
+              aria-invalid={error.email || (error.required && !userInput.email) || undefined}
+              aria-describedby={error.email ? "contact-email-error" : error.required && !userInput.email ? "contact-required-error" : undefined}
               value={userInput.email}
-              onChange={(e) =>
-                setUserInput({ ...userInput, email: e.target.value })
-              }
+              onChange={update("email")}
               onBlur={() =>
                 setError((prev) => ({
                   ...prev,
-                  email: !isValidEmail(userInput.email),
+                  email: Boolean(userInput.email) && !isValidEmail(userInput.email),
                 }))
               }
             />
             {error.email && (
-              <p className="text-sm text-red-400">
-                Please provide a valid email.
+              <p id="contact-email-error" className="sw-field-error">
+                Enter a valid email address, like name@example.com.
               </p>
             )}
           </div>
 
           <div className="flex flex-col gap-2">
-            <label>Your Message</label>
+            <label htmlFor="contact-message" className="sw-label">Your Message</label>
             <textarea
-              className="bg-[#10172d] border border-[#353a52] rounded-md px-3 py-2"
-              rows="4"
+              id="contact-message"
+              className="sw-field"
+              rows="5"
+              aria-invalid={(error.required && !userInput.message) || undefined}
+              aria-describedby={error.required && !userInput.message ? "contact-required-error" : undefined}
               value={userInput.message}
-              onChange={(e) =>
-                setUserInput({ ...userInput, message: e.target.value })
-              }
+              onChange={update("message")}
               onBlur={checkRequired}
             />
           </div>
 
           {error.required && (
-            <p className="text-sm text-red-400">All fields are required.</p>
+            <p id="contact-required-error" role="alert" className="sw-field-error">
+              Fill in your name, email and message.
+            </p>
           )}
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-500 to-violet-600 px-8 py-3 text-sm font-semibold uppercase tracking-wider transition-all hover:gap-4"
-          >
-            {isLoading ? "Sending…" : <>Send Message <TbMailForward size={20} /></>}
-          </button>
+          <div className="flex flex-wrap items-center gap-5">
+            <button
+              type="submit"
+              disabled={isSending}
+              className="sw-btn sw-btn-primary"
+            >
+              {isSending ? "Sending…" : <>Send message <TbMailForward size={16} /></>}
+            </button>
+
+            <AnimatePresence mode="wait">
+              {(status.state === "sent" || status.state === "error") && (
+                <motion.p
+                  key={status.state}
+                  role="status"
+                  className={`text-xs leading-relaxed ${status.state === "sent" ? "text-[var(--sw-silver)]" : "text-[var(--sw-danger-text)]"}`}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {status.message}
+                  {status.state === "error" && (
+                    <>
+                      {" "}
+                      <ProtectedEmail link className="underline underline-offset-4" />
+                    </>
+                  )}
+                </motion.p>
+              )}
+            </AnimatePresence>
+          </div>
         </form>
       </div>
     </div>

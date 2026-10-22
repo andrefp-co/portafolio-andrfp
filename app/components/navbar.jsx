@@ -1,43 +1,209 @@
-// @flow strict
-import Link from "next/link";
+"use client";
 
+import { lockScroll } from "@/utils/scroll";
+import { personalData } from "@/utils/data/personal-data";
+import { notePath } from "@/utils/nav-history";
+import ProtectedEmail from "./helper/protected-email";
+import { AnimatePresence, motion, useMotionValueEvent, useScroll, useSpring } from "motion/react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import ScrambleText from "./motion/scramble-text";
+
+// Same order as the sections on the home page.
+const links = [
+  { label: "About", href: "/#about" },
+  { label: "Experience", href: "/#experience" },
+  { label: "Projects", href: "/#projects" },
+  { label: "Skills", href: "/#skills" },
+  { label: "Research", href: "/research" },
+  { label: "Book", href: "/#books" },
+  { label: "Blog", href: "/blog" },
+];
+
+// Home-page sections whose links point at their own pages.
+const SECTION_PAGES = { "/#research": "/research", "/#blogs": "/blog" };
+const OBSERVED = ["about", "experience", "projects", "skills", "research", "books", "blogs", "contact"];
+
+const EASE = [0.22, 1, 0.36, 1];
 
 function Navbar() {
+  const pathname = usePathname();
+  const { scrollY, scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, { stiffness: 200, damping: 30, restDelta: 0.001 });
+  const [hidden, setHidden] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [sectionInView, setSectionInView] = useState(null);
+  const [menuPath, setMenuPath] = useState(pathname);
+
+  // Close the mobile menu whenever the route changes (adjusting state during
+  // render, as React recommends, rather than in an effect).
+  if (menuPath !== pathname) {
+    setMenuPath(pathname);
+    setOpen(false);
+  }
+
+  const active =
+    pathname === "/"
+      ? SECTION_PAGES[sectionInView] ?? sectionInView
+      : ["/research", "/blog"].find((page) => pathname.startsWith(page)) ?? null;
+
+  // Lets the vault's "Exit" step back to the page the visitor came from.
+  useEffect(() => notePath(pathname), [pathname]);
+
+  // Slide away while reading down the page; come back on any scroll up.
+  useMotionValueEvent(scrollY, "change", (y) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    setHidden(y > previous && y > 160);
+  });
+
+  // Mark the section currently under the middle of the viewport.
+  useEffect(() => {
+    if (pathname !== "/") return;
+    const sections = OBSERVED.map((id) => document.getElementById(id)).filter(Boolean);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setSectionInView(`/#${entry.target.id}`);
+        }
+      },
+      { rootMargin: "-45% 0px -50% 0px" }
+    );
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, [pathname]);
+
+  // The mobile menu owns the screen while it is open.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => e.key === "Escape" && setOpen(false);
+    const unlock = lockScroll(document.documentElement);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      unlock();
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  // The vault is a full-screen terminal with its own chrome.
+  if (pathname.startsWith("/vault")) return null;
+
   return (
-    <nav className="bg-transparent">
-      <div className="flex items-center justify-between py-5">
-        <div className="flex flex-shrink-0 items-center">
-          <Link
-            href="/"
-            className=" text-[#16f2b3] text-3xl font-bold">
-            Andres 
+    <>
+      <motion.nav
+        className="sticky top-0 z-[60] border-b border-[var(--sw-rule)] bg-[rgba(5,5,5,0.92)] backdrop-blur-md"
+        animate={{ y: hidden && !open ? "-100%" : "0%" }}
+        transition={{ duration: 0.35, ease: EASE }}
+      >
+        <div className="flex h-[76px] items-center justify-between px-5 sm:px-10">
+          <Link href="/" className="sw-tap text-[13px] font-medium uppercase tracking-[0.3em] text-white">
+            {personalData.name}
           </Link>
+
+          <ul className="hidden items-center gap-1 lg:flex">
+            {links.map((link) => (
+              <li key={link.href} className="relative">
+                <Link
+                  href={link.href}
+                  aria-current={active === link.href ? "true" : undefined}
+                  className={`block px-4 py-2 text-[11px] uppercase tracking-[0.14em] transition-colors duration-200 hover:text-white ${active === link.href ? "text-white" : "text-[var(--sw-gray)]"}`}
+                >
+                  <ScrambleText trigger="hover">{link.label}</ScrambleText>
+                </Link>
+                {active === link.href && (
+                  <motion.span
+                    layoutId="nav-active"
+                    className="absolute inset-x-4 -bottom-[19px] h-px bg-white"
+                    transition={{ duration: 0.4, ease: EASE }}
+                  />
+                )}
+              </li>
+            ))}
+          </ul>
+
+          <div className="flex items-center gap-3">
+            <Link href="/#contact" className="sw-btn sw-btn-nav hidden sm:inline-flex">
+              Contact
+            </Link>
+            <button
+              type="button"
+              className="sw-icon-btn lg:hidden"
+              aria-expanded={open}
+              aria-controls="mobile-menu"
+              aria-label={open ? "Close menu" : "Open menu"}
+              onClick={() => setOpen((v) => !v)}
+            >
+              <span className="relative block h-3 w-5" aria-hidden="true">
+                <motion.span
+                  className="absolute left-0 top-0 h-px w-5 bg-current"
+                  animate={open ? { top: "50%", rotate: 45 } : { top: "0%", rotate: 0 }}
+                  transition={{ duration: 0.3, ease: EASE }}
+                />
+                <motion.span
+                  className="absolute bottom-0 left-0 h-px w-5 bg-current"
+                  animate={open ? { bottom: "calc(50% - 1px)", rotate: -45 } : { bottom: "0%", rotate: 0 }}
+                  transition={{ duration: 0.3, ease: EASE }}
+                />
+              </span>
+            </button>
+          </div>
         </div>
 
-        <ul className="mt-4 flex h-screen max-h-0 w-full flex-col items-start text-sm opacity-0 md:mt-0 md:h-auto md:max-h-screen md:w-auto md:flex-row md:space-x-1 md:border-0 md:opacity-100" id="navbar-default">
-          <li>
-            <Link className="block px-4 py-2 no-underline outline-none hover:no-underline" href="/#about">
-              <div className="text-sm text-white transition-colors duration-300 hover:text-pink-600">ABOUT</div>
-            </Link>
-          </li>
-          <li>
-            <Link className="block px-4 py-2 no-underline outline-none hover:no-underline" href="/#experience"><div className="text-sm text-white transition-colors duration-300 hover:text-pink-600">EXPERIENCE</div></Link>
-          </li>
-          <li>
-            <Link className="block px-4 py-2 no-underline outline-none hover:no-underline" href="/#skills"><div className="text-sm text-white transition-colors duration-300 hover:text-pink-600">SKILLS</div></Link>
-          </li>
-          <li>
-            <Link className="block px-4 py-2 no-underline outline-none hover:no-underline" href="/#education"><div className="text-sm text-white transition-colors duration-300 hover:text-pink-600">EDUCATION</div></Link>
-          </li>
-          <li>
-            <Link className="block px-4 py-2 no-underline outline-none hover:no-underline" href="/blog"><div className="text-sm text-white transition-colors duration-300 hover:text-pink-600">BLOGS</div></Link>
-          </li>
-          <li>
-            <Link className="block px-4 py-2 no-underline outline-none hover:no-underline" href="/#projects"><div className="text-sm text-white transition-colors duration-300 hover:text-pink-600">PROJECTS</div></Link>
-          </li>
-        </ul>
-      </div>
-    </nav>
+        {/* Reading progress along the bottom hairline. */}
+        <motion.div
+          aria-hidden="true"
+          className="absolute inset-x-0 -bottom-px h-px origin-left bg-white"
+          style={{ scaleX: progress }}
+        />
+      </motion.nav>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            id="mobile-menu"
+            className="fixed inset-x-0 bottom-0 top-[76px] z-[55] flex flex-col overflow-y-auto bg-[var(--sw-black)] px-5 pb-10 pt-6 sm:px-10 lg:hidden"
+            initial={{ clipPath: "inset(0 0 100% 0)" }}
+            animate={{ clipPath: "inset(0 0 0% 0)" }}
+            exit={{ clipPath: "inset(0 0 100% 0)" }}
+            transition={{ duration: 0.5, ease: EASE }}
+          >
+            <ul className="flex flex-col">
+              {[...links, { label: "Contact", href: "/#contact" }].map((link, i) => (
+                <motion.li
+                  key={link.href}
+                  className="border-b border-[var(--sw-rule)]"
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ delay: 0.12 + i * 0.05, duration: 0.5, ease: EASE }}
+                >
+                  <Link
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className="flex items-baseline gap-5 py-4"
+                  >
+                    <span className="sw-cell-num" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+                    <span className="font-[family-name:var(--sw-font-display)] text-[40px] leading-none tracking-[0.02em] text-white">
+                      {link.label}
+                    </span>
+                  </Link>
+                </motion.li>
+              ))}
+            </ul>
+            <motion.div
+              className="mt-auto pt-10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ delay: 0.5, duration: 0.4 }}
+            >
+              <p className="sw-label">{personalData.address}</p>
+              <ProtectedEmail className="mt-2 block break-all text-sm text-white" />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

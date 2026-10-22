@@ -1,111 +1,67 @@
-export const skillsData = [
-  'HTML',
-  'CSS',
-  'Javascript',
-  'PHP',
-  'React',
-  'Next JS',
-  'C',
-  'C++',
-  'MySQL',
-  'PostgreSQL',
-  'Git',
-  'AWS',
-  'Python',
-  'Matlab',
-  'Go',
-  'Ruby',
-  'Firebase',
-  'MaterialUI',
-  'Go',
-	'Linux', 
-  'Julia'
-]
-
-// Choose your skills from below. Make sure it's in the same format and spelled correctly.
-// Couldn't find the required skills? Raise an issue on github at https://github.com/hhhrrrttt222111/developer-portfolio/issues/new
-
-
-// AVAILABLE SKILLS
-
-/* 
-  HTML
-  CSS
-  JS 
-  React
-  Next JS
-  Nuxt JS
-  Node JS
-  Vue
-  Angular
-  Docker
-  Photoshop
-  Illustrator
-  Svelte
-  GCP
-  Azure
-  Fastify
-  Haxe
-  Ionic
-  Markdown
-  Microsoft Office
-  Picsart
-  Sketch
-  Unity
-  WolframAlpha
-  Adobe XD
-  After Effects
-  Bootstrap
-  Bulma
-  CapacitorJs
-  Coffeescript
-  MemSQL
-  C
-  C++
-  C#
-  Python
-  Java
-  Julia
-  Matlab
-  Swift
-  Ruby
-  Kotlin
-  Go
-  PHP
-  Flutter
-  Dart
-  Typescript
-  Swift
-  Git
-  Figma
-  Canva
-  Ubuntu
-  Bootstrap
-  MongoDB
-  Tailwind
-  ViteJS
-  VuetifyJS
-  MySQL
-  PostgreSQL
-  Prisma
-  AWS
-  Firebase
-  Blender
-  Premiere Pro
-  Adobe Audition
-  Deno
-  Django
-  Gimp
-  Graphql
-  Lightroom
-  MaterialUI
-  Nginx
-  Numpy
-  OpenCV
-  Pytorch
-  Selenium
-  Strapi
-  Tensorflow
-  Webex
-  Wordpress
-*/
+// Grouped as in the engineering CV's technical skills. `icon` is a Simple
+// Icons export from react-icons/si; entries without one render as a short
+// text mark on the skills globe.
+export const skillGroups = [
+  {
+    discipline: "Embedded",
+    skills: [
+      { name: "STM32H7", icon: "SiStmicroelectronics" },
+      { name: "ESP32", icon: "SiEspressif" },
+      { name: "Raspberry Pi", icon: "SiRaspberrypi" },
+      { name: "Arduino", icon: "SiArduino" },
+      { name: "C", icon: "SiC" },
+      { name: "C++", icon: "SiCplusplus" },
+      { name: "MicroPython", icon: "SiMicropython" },
+    ],
+  },
+  {
+    discipline: "Interfaces & flight stack",
+    skills: [
+      { name: "UART", mark: "UART" },
+      { name: "SPI", mark: "SPI" },
+      { name: "I2C", mark: "I2C" },
+      { name: "CAN", mark: "CAN" },
+      { name: "MAVLink", mark: "MAV" },
+      { name: "PX4 SITL", mark: "PX4" },
+      { name: "ArduPilot SITL", mark: "APM" },
+    ],
+  },
+  {
+    discipline: "Electronics & CAD",
+    skills: [
+      { name: "PCB / schematic review", mark: "PCB" },
+      { name: "Altium", icon: "SiAltiumdesigner" },
+      { name: "KiCad", icon: "SiKicad" },
+      { name: "EasyEDA Pro", icon: "SiEasyeda" },
+      { name: "LTspice", icon: "SiLtspice" },
+      { name: "SolidWorks", icon: "SiDassaultsystemes" },
+      { name: "Onshape", mark: "OS" },
+    ],
+  },
+  {
+    discipline: "Test & build",
+    skills: [
+      { name: "Soldering & assembly", mark: "SLD" },
+      { name: "Oscilloscope & bench test", mark: "OSC" },
+      { name: "Fault injection", mark: "FI" },
+      { name: "Regression testing", mark: "REG" },
+      { name: "Bill of materials", mark: "BOM" },
+      { name: "Additive manufacturing", mark: "AM" },
+      { name: "Metal-part fabrication", mark: "FAB" },
+    ],
+  },
+  {
+    discipline: "Software & tools",
+    skills: [
+      { name: "Python", icon: "SiPython" },
+      { name: "MATLAB", mark: "MAT" },
+      { name: "Linux", icon: "SiLinux" },
+      { name: "Git", icon: "SiGit" },
+      { name: "Docker", icon: "SiDocker" },
+      { name: "pytest", icon: "SiPytest" },
+      { name: "JavaScript", icon: "SiJavascript" },
+      { name: "React", icon: "SiReact" },
+      { name: "Next.js", icon: "SiNextdotjs" },
+    ],
+  },
+];

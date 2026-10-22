@@ -1,50 +1,87 @@
 // @flow strict
+import SectionHeading from "@/app/components/helper/section-heading";
+import Image from "next/image";
 import Link from 'next/link';
-import { FaArrowRight } from 'react-icons/fa';
 import BlogCard from './blog-card';
 
-function Blog({ blogs }) {
+const KIND = { essay: "Essay", paper: "Paper", article: "Article", photo: "Photo", book: "Book" };
+
+function FeedTile({ item }) {
+  const inner = (
+    <>
+      <span className={`relative block aspect-[4/3] overflow-hidden ${item.image?.figure ? "bg-white" : "bg-black"}`}>
+        <Image
+          src={item.video?.poster ?? item.image.src}
+          alt={item.image?.alt ?? ""}
+          fill
+          sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
+          className={`transition-transform duration-700 group-hover:scale-[1.04] ${item.image?.figure ? "object-contain p-3" : "object-cover"}`}
+        />
+      </span>
+      <span className="flex flex-1 flex-col gap-2 p-5">
+        <span className="flex items-center gap-2 text-[11px] text-[var(--sw-gray)]">
+          <span className="border border-[var(--sw-border-strong)] px-1.5 py-px text-[9px] uppercase tracking-[0.14em] text-[var(--sw-silver)]">{KIND[item.kind]}</span>
+          {item.dateLabel}
+        </span>
+        <span className="text-[15px] font-medium leading-snug text-[var(--sw-white)]">{item.title || item.text}</span>
+        {item.title && <span className="line-clamp-2 text-[13px] leading-relaxed text-[var(--sw-silver)]">{item.text}</span>}
+      </span>
+    </>
+  );
+  const cls = "group flex h-full flex-col overflow-hidden border border-[var(--sw-border)] bg-[var(--sw-cell)] transition-colors hover:border-[var(--sw-border-strong)]";
+  if (item.external) {
+    return (
+      <a href={item.href} target="_blank" rel="noopener noreferrer" className={cls}>
+        {inner}
+      </a>
+    );
+  }
+  return (
+    <Link href={item.href ?? "/blog"} className={cls}>
+      {inner}
+    </Link>
+  );
+}
+
+// Latest writing from the blog feed, as image cards, then dev.to articles if
+// any. Photo posts and papers are left to the feed itself: their pictures
+// already appear in Experience and Research on this page.
+function Blog({ items = [], blogs = [] }) {
+  const tiles = items.filter((i) => (i.kind === "essay" || i.kind === "article") && (i.image || i.video)).slice(0, 3);
+  if (!tiles.length && !blogs.length) return null;
 
   return (
-    <div id='blogs' className="relative z-50 border-t my-12 lg:my-24 border-[#25213b]">
-      <div className="w-[100px] h-[100px] bg-violet-100 rounded-full absolute top-6 left-[42%] translate-x-1/2 filter blur-3xl  opacity-20"></div>
+    <section id='blogs' className="sw-section sw-paper">
+      <div className="sw-container">
+        <SectionHeading
+          eyebrow="Writing"
+          title="From the blog."
+          action={
+            <Link className="sw-btn sw-btn-ghost" href="/blog">
+              Open the feed <span aria-hidden="true">→</span>
+            </Link>
+          }
+        />
 
-      <div className="flex justify-center -translate-y-[1px]">
-        <div className="w-3/4">
-          <div className="h-[1px] bg-gradient-to-r from-transparent via-violet-500 to-transparent  w-full" />
-        </div>
-      </div>
+        {tiles.length > 0 && (
+          <ul className="-mx-4 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3 [&::-webkit-scrollbar]:hidden">
+            {tiles.map((item) => (
+              <li key={item.id} className="w-[82%] shrink-0 snap-start sm:w-auto">
+                <FeedTile item={item} />
+              </li>
+            ))}
+          </ul>
+        )}
 
-      <div className="flex justify-center my-5 lg:py-8">
-        <div className="flex  items-center">
-          <span className="w-24 h-[2px] bg-[#1a1443]"></span>
-          <span className="bg-[#1a1443] w-fit text-white p-2 px-5 text-xl rounded-md">
-            Blogs
-          </span>
-          <span className="w-24 h-[2px] bg-[#1a1443]"></span>
-        </div>
+        {blogs.length > 0 && (
+          <div className="sw-grid mt-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {blogs.slice(0, 3).map((blog, i) => (
+              <BlogCard blog={blog} key={i} />
+            ))}
+          </div>
+        )}
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-5 lg:gap-8 xl:gap-10">
-        {
-          blogs.slice(0, 6).map((blog, i) => (
-            blog?.cover_image &&
-            <BlogCard blog={blog} key={i} />
-          ))
-        }
-      </div>
-
-      <div className="flex justify-center  mt-5 lg:mt-12">
-        <Link
-          className="flex items-center gap-1 hover:gap-3 rounded-full bg-gradient-to-r from-pink-500 to-violet-600 px-3 md:px-8 py-3 md:py-4 text-center text-xs md:text-sm font-medium uppercase tracking-wider text-white no-underline transition-all duration-200 ease-out hover:text-white hover:no-underline md:font-semibold"
-          role="button"
-          href="/blog"
-        >
-          <span>View More</span>
-          <FaArrowRight size={16} />
-        </Link>
-      </div>
-    </div>
+    </section>
   );
 };
 

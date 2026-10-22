@@ -1,19 +1,25 @@
 export const personalData = {
   name: "Andres Peña",
-  profile: "/profile.png",
-  designation: "Electrical Engineering Student & Full-Stack Developer",
+  profile: "/andres-pena.jpg",
+  designation: "Embedded Systems, Avionics & Electronics Test",
   description:
-    "My name is Andres and I'm an electrical engineering student and independent full-stack developer focused on embedded systems, aerospace R&D, and applied software engineering. Founder of SWORT LLC, with hands-on experience spanning firmware, system design, hardware and scalable systems.",
-  email: "penaavilaandresfelipe@gmail.com",
-  phone: "+1 (301)633-8696",
-  address: "Purdue University",
+    "I'm an embedded systems technical lead with paid avionics development experience, and the founder of SWORT Aerospace, where I lead flight-controller programs from customer requirements to prototype acceptance. My work is hands-on: C/C++ and Python, PCB and schematic review, prototype assembly, soldering, hardware troubleshooting, and validation. I study electrical engineering at Montgomery College and work in English and Spanish.",
+  // Email and phone are deliberately not here: this file ships in the public
+  // JavaScript bundle. The email is encoded in utils/obfuscate.js and decoded
+  // in the browser; the phone is only in the restricted file.
+  address: "Washington, DC area",
+  timeZone: "America/New_York",
 
   github: "https://github.com/andrefp-co",
   linkedIn: "https://www.linkedin.com/in/andrespenaavila",
-  facebook: "https://www.facebook.com/people/Andres-Felipe/yourprofileid",
+  // Left empty: the previous value was an unfinished placeholder
+  // (".../people/Andres-Felipe/yourprofileid"). Links with no URL are hidden.
+  facebook: "",
   twitter: "https://x.com/andrfpco",
   leetcode: "https://leetcode.com/u/andrefp-co/",
-  stackOverflow: "https://stackoverflow.com/users/32070657/andres", 
+  stackOverflow: "https://stackoverflow.com/users/32070657/andres",
   devUsername: "andrfp",
-  resume: "https://drive.google.com/file/d/1Vo45tFeCH9X0pMTjxQVkgQbSuYalB7Vl/view"
+  // The engineering CV sits behind the vault's access code; this opens the
+  // terminal and, once unlocked, the résumé section of the file.
+  resume: "/vault?next=resume"
 };

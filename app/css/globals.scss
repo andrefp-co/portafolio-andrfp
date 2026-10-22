@@ -1,37 +1,900 @@
 @use "tailwindcss";
 
+/* ============================================================================
+   Design layer matched to swort.net: a fully neutral palette (black, graphite,
+   white, silver, grey, no accent hue), DM Mono for text, Bebas Neue for
+   headings, square corners and 1px hairlines. Values are taken from
+   swort.net's tokens.css and page.css so the two sites read as one system.
+
+   Everything below sits in Tailwind's base/components layers so a utility
+   class on an element still wins over these defaults.
+   ========================================================================= */
+
 :root {
-  --foreground-rgb: rgb(211, 216, 232);
+  --sw-black: #050505;
+  --sw-black-raised: #0a0a0b;
+  --sw-cell: #0b0b0b;
+  --sw-graphite: #111214;
+  --sw-graphite-light: #1a1c1f;
+
+  --sw-white: #ffffff;
+  --sw-white-soft: #f8f8f8;
+  --sw-silver: #bfc2c5;
+  --sw-gray: #8d9297;
+  --sw-dim: #8e8e8e;
+  --sw-body: #9a9a9a;
+
+  --sw-rule: #1c1c1c;
+  --sw-grid-rule: #212121;
+  --sw-border: rgba(255, 255, 255, 0.13);
+  --sw-border-strong: rgba(255, 255, 255, 0.24);
+  --sw-grid-line-soft: rgba(255, 255, 255, 0.062);
+  --sw-grid-line-faint: rgba(255, 255, 255, 0.045);
+
+  --sw-danger-text: #ca7875;
+  --sw-ok-text: #7d947e;
+
+  --sw-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --sw-dur-ctrl: 0.2s;
+
+  --sw-font-body: var(--font-dm-mono), ui-monospace, monospace;
+  --sw-font-display: var(--font-bebas-neue), sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    scrollbar-color: #333 #000;
+    scrollbar-width: thin;
+  }
+
+  body {
+    background: var(--sw-black);
+    color: var(--sw-white-soft);
+    font-family: var(--sw-font-body);
+    font-size: 15px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  code,
+  kbd,
+  samp,
+  pre {
+    font-family: inherit;
+  }
+
+  ::selection {
+    background: rgba(191, 194, 197, 0.32);
+    color: var(--sw-white);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--sw-white);
+    outline-offset: 2px;
+  }
+
+  [id] {
+    scroll-margin-top: 76px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background-color: #0d1224;
-}
+@layer components {
+  /* ── Layout ───────────────────────────────────────────────────────────── */
+  .sw-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
 
-#sticky-card-1 {
-  --index: 1;
-}
+  .sw-section {
+    position: relative;
+    padding: 96px 0;
+    border-top: 1px solid var(--sw-rule);
+  }
 
-#sticky-card-2 {
-  --index: 2;
-}
+  .sw-section-raised {
+    background: var(--sw-black-raised);
+  }
 
-#sticky-card-3 {
-  --index: 3;
-}
+  @media (max-width: 620px) {
+    .sw-container {
+      padding: 0 20px;
+    }
 
-#sticky-card-4 {
-  --index: 4;
-}
+    .sw-section {
+      padding: 64px 0;
+    }
+  }
 
-.sticky-card {
-  // padding-top: calc(var(--index) * 2.5rem);
-  top: calc(var(--index) * 4rem);
+  /* Coordinate grid behind the hero, same two-pitch field as swort.net. */
+  .sw-bg-grid {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .sw-bg-grid::before {
+    --pitch: clamp(28px, 3.4vw, 46px);
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, var(--sw-grid-line-soft) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--sw-grid-line-soft) 1px, transparent 1px),
+      linear-gradient(to right, var(--sw-grid-line-faint) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--sw-grid-line-faint) 1px, transparent 1px);
+    background-size:
+      calc(var(--pitch) * 4) calc(var(--pitch) * 4),
+      calc(var(--pitch) * 4) calc(var(--pitch) * 4),
+      var(--pitch) var(--pitch),
+      var(--pitch) var(--pitch);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 62%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 62%, transparent 100%);
+  }
+
+  /* ── Type ─────────────────────────────────────────────────────────────── */
+  .sw-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--sw-dim);
+    margin-bottom: 18px;
+  }
+
+  .sw-display {
+    font-family: var(--sw-font-display);
+    font-weight: 400;
+    font-size: clamp(56px, 8.4vw, 112px);
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    color: var(--sw-white);
+    text-wrap: balance;
+  }
+
+  .sw-title {
+    font-family: var(--sw-font-display);
+    font-weight: 400;
+    font-size: clamp(26px, 3vw, 38px);
+    line-height: 1.05;
+    letter-spacing: 0.02em;
+    color: var(--sw-silver);
+    text-wrap: balance;
+  }
+
+  .sw-head {
+    font-family: var(--sw-font-display);
+    font-weight: 400;
+    font-size: clamp(30px, 4.2vw, 50px);
+    line-height: 1.03;
+    letter-spacing: 0.02em;
+    color: var(--sw-white);
+    margin-bottom: 18px;
+    text-wrap: balance;
+  }
+
+  .sw-lede {
+    font-size: 14px;
+    line-height: 1.85;
+    color: var(--sw-gray);
+    max-width: 640px;
+    text-wrap: pretty;
+  }
+
+  .sw-label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--sw-dim);
+  }
+
+  /* ── Buttons ──────────────────────────────────────────────────────────── */
+  .sw-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 15px 28px;
+    font-family: var(--sw-font-body);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border: 1px solid;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition:
+      background-color var(--sw-dur-ctrl) var(--sw-ease-out),
+      color var(--sw-dur-ctrl) var(--sw-ease-out),
+      border-color var(--sw-dur-ctrl) var(--sw-ease-out),
+      transform var(--sw-dur-ctrl) var(--sw-ease-out);
+  }
+
+  .sw-btn:active {
+    transform: translateY(1px);
+  }
+
+  .sw-btn:disabled {
+    background: var(--sw-graphite-light);
+    color: var(--sw-gray);
+    border-color: var(--sw-graphite-light);
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .sw-btn-primary {
+    background: var(--sw-white);
+    color: var(--sw-black);
+    border-color: var(--sw-white);
+  }
+
+  .sw-btn-ghost {
+    background: transparent;
+    color: var(--sw-white-soft);
+    border-color: var(--sw-gray);
+  }
+
+  .sw-btn-nav {
+    min-height: 44px;
+    padding: 12px 18px;
+    background: transparent;
+    color: var(--sw-white);
+    border-color: var(--sw-white);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .sw-btn-primary:hover:not(:disabled) {
+      background: transparent;
+      color: var(--sw-white);
+      border-color: var(--sw-white);
+    }
+
+    .sw-btn-ghost:hover:not(:disabled),
+    .sw-btn-nav:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--sw-white);
+      border-color: var(--sw-white);
+    }
+  }
+
+  /* Square icon button for social links. */
+  .sw-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--sw-border-strong);
+    color: var(--sw-silver);
+    transition:
+      color var(--sw-dur-ctrl) var(--sw-ease-out),
+      border-color var(--sw-dur-ctrl) var(--sw-ease-out),
+      background-color var(--sw-dur-ctrl) var(--sw-ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .sw-icon-btn:hover {
+      color: var(--sw-white);
+      border-color: var(--sw-white);
+      background: rgba(255, 255, 255, 0.06);
+    }
+  }
+
+  /* Underlined text link, uppercase, with a small arrow that nudges on hover. */
+  .sw-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--sw-white-soft);
+    text-decoration: underline;
+    text-decoration-color: var(--sw-gray);
+    text-underline-offset: 5px;
+    transition:
+      color var(--sw-dur-ctrl) var(--sw-ease-out),
+      text-decoration-color var(--sw-dur-ctrl) var(--sw-ease-out);
+  }
+
+  .sw-link-arrow {
+    transition: transform var(--sw-dur-ctrl) var(--sw-ease-out);
+  }
+
+  /* On touch screens, standalone text links get an invisible 44px-tall hit
+     area so they are easy to tap without changing the layout. */
+  @media (pointer: coarse) {
+    .sw-link,
+    .sw-tap {
+      position: relative;
+    }
+
+    .sw-link::before,
+    .sw-tap::before {
+      content: "";
+      position: absolute;
+      inset: -12px -6px;
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .sw-link:hover {
+      color: var(--sw-white);
+      text-decoration-color: var(--sw-white);
+    }
+
+    .sw-link:hover .sw-link-arrow {
+      transform: translate(2px, -2px);
+    }
+  }
+
+  /* ── Technical grid ───────────────────────────────────────────────────────
+     Same look as swort.net's 1px-gap grid, but the rules are drawn per cell so
+     a short last row leaves empty space instead of a solid block of rule
+     colour, whatever the item count or column count. */
+  .sw-grid {
+    display: grid;
+    border-left: 1px solid var(--sw-grid-rule);
+    border-top: 1px solid var(--sw-grid-rule);
+  }
+
+  .sw-grid > * {
+    border-right: 1px solid var(--sw-grid-rule);
+    border-bottom: 1px solid var(--sw-grid-rule);
+  }
+
+  .sw-cell {
+    background: var(--sw-cell);
+    padding: 30px 28px;
+  }
+
+  .sw-cell-num {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--sw-dim);
+  }
+
+  .sw-cell-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--sw-white);
+    margin-bottom: 10px;
+  }
+
+  .sw-cell-body {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--sw-body);
+    text-wrap: pretty;
+  }
+
+  /* ── Tags ─────────────────────────────────────────────────────────────── */
+  .sw-tag {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border: 1px solid var(--sw-border-strong);
+    color: var(--sw-silver);
+    white-space: nowrap;
+  }
+
+  /* ── Definition rows ──────────────────────────────────────────────────── */
+  .sw-rows {
+    border-top: 1px solid var(--sw-rule);
+  }
+
+  .sw-row {
+    display: grid;
+    grid-template-columns: minmax(0, 200px) minmax(0, 1fr) minmax(0, 1fr);
+    gap: 28px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--sw-rule);
+  }
+
+  @media (max-width: 767px) {
+    .sw-row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 6px;
+    }
+  }
+
+  /* ── Forms ────────────────────────────────────────────────────────────── */
+  .sw-field {
+    width: 100%;
+    min-height: 44px;
+    padding: 12px 14px;
+    background: transparent;
+    color: var(--sw-white-soft);
+    font-size: 14px;
+    border: 1px solid var(--sw-border);
+    border-radius: 0;
+    transition: border-color var(--sw-dur-ctrl) var(--sw-ease-out);
+  }
+
+  .sw-field::placeholder {
+    color: var(--sw-gray);
+  }
+
+  .sw-field:focus {
+    outline: none;
+    border-color: var(--sw-white);
+  }
+
+  .sw-field[aria-invalid="true"] {
+    border-color: var(--sw-danger-text);
+  }
+
+  .sw-field-error {
+    font-size: 12px;
+    color: var(--sw-danger-text);
+  }
+
+  /* ── Code panel (hero) ────────────────────────────────────────────────── */
+  .sw-panel {
+    background: var(--sw-graphite);
+    border: 1px solid var(--sw-border);
+  }
+
+  .sw-panel-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--sw-border);
+  }
+
+  /* Syntax colour is carried by luminance only, never by hue. */
+  .tk-kw {
+    color: var(--sw-white);
+    font-weight: 500;
+  }
+
+  .tk-prop {
+    color: var(--sw-silver);
+  }
+
+  .tk-str {
+    color: var(--sw-white-soft);
+  }
+
+  .tk-pun {
+    color: var(--sw-gray);
+  }
+
+  /* ── Media ────────────────────────────────────────────────────────────── */
+  .sw-mono-img {
+    filter: grayscale(1);
+  }
+
+  /* ── Motion: scramble overlay (scramble-text.jsx) ─────────────────────── */
+  .sx-host {
+    position: relative;
+  }
+
+  /* Covers the host exactly and wraps where it wraps, so a label that runs
+     to two lines on a phone never draws past the edge of the screen. */
+  .sx-ghost {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    white-space: pre-wrap;
+    pointer-events: none;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    line-height: inherit;
+  }
+
+  /* ── Hero ─────────────────────────────────────────────────────────────── */
+  /* Entrance animations in CSS, so they run from the first paint instead of
+     waiting for JavaScript. --d sets each element's delay. */
+  @keyframes sw-rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+  }
+
+  @keyframes sw-letter {
+    from {
+      transform: translateY(135%);
+    }
+  }
+
+  @keyframes sw-feed-in {
+    from {
+      opacity: 0;
+      transform: scale(1.06);
+    }
+  }
+
+  .sw-rise {
+    animation: sw-rise 0.8s var(--sw-ease-out) var(--d, 0s) both;
+  }
+
+  .sw-letter {
+    animation: sw-letter 0.9s var(--sw-ease-out) var(--d, 0s) both;
+  }
+
+  .sw-feed-in {
+    animation: sw-feed-in 1.6s var(--sw-ease-out) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sw-rise,
+    .sw-letter,
+    .sw-feed-in {
+      animation: none !important;
+    }
+  }
+
+  /* A soft light falloff over the coordinate grid, brightest behind the
+     instrument panel, so the hero has depth without introducing a hue. */
+  .sw-hero-grid::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(420px circle at var(--mx, 70%) var(--my, 40%), rgba(255, 255, 255, 0.06), transparent 70%),
+      radial-gradient(60% 70% at 78% 45%, rgba(255, 255, 255, 0.04), transparent 70%);
+  }
+
+
+  @keyframes sw-blink {
+    50% {
+      opacity: 0.25;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sx-ghost {
+      display: none;
+    }
+  }
+
+  /* ── Paper surface ────────────────────────────────────────────────────────
+     swort.net's warm-free white reading surface (#f2f2f2, ink #181818). It
+     re-points the palette tokens for its subtree, so every component that
+     reads the tokens (type, buttons, tags, rules, links, fields, focus)
+     renders correctly on white without a second set of classes. "white" in
+     a token name means "strongest foreground" here, which on paper is ink. */
+  .sw-paper {
+    --sw-white: #0a0a0a;
+    --sw-white-soft: #181818;
+    --sw-silver: #3c4044;
+    --sw-gray: #55595f;
+    --sw-dim: #696969;
+    --sw-body: #55595f;
+    --sw-rule: #d8d8d8;
+    --sw-grid-rule: #d8d8d8;
+    --sw-border: rgba(0, 0, 0, 0.14);
+    --sw-border-strong: rgba(0, 0, 0, 0.24);
+    --sw-black: #f2f2f2;
+    --sw-black-raised: #fafafa;
+    --sw-cell: #fafafa;
+    --sw-graphite: #ebebeb;
+    --sw-graphite-light: #e2e2e2;
+    --sw-grid-line-soft: rgba(0, 0, 0, 0.05);
+    --sw-grid-line-faint: rgba(0, 0, 0, 0.035);
+    --sw-danger-text: #b64a46;
+    color-scheme: light;
+    background: #f2f2f2;
+    color: #181818;
+  }
+
+  /* Ink surface: the dark palette again, for an instrument or device that
+     sits on a paper section and must stay dark. */
+  .sw-ink {
+    --sw-white: #ffffff;
+    --sw-white-soft: #f8f8f8;
+    --sw-silver: #bfc2c5;
+    --sw-gray: #8d9297;
+    --sw-dim: #8e8e8e;
+    --sw-body: #9a9a9a;
+    --sw-rule: #1c1c1c;
+    --sw-grid-rule: #212121;
+    --sw-border: rgba(255, 255, 255, 0.13);
+    --sw-border-strong: rgba(255, 255, 255, 0.24);
+    --sw-black: #050505;
+    --sw-black-raised: #0a0a0b;
+    --sw-cell: #0b0b0b;
+    --sw-graphite: #111214;
+    --sw-graphite-light: #1a1c1f;
+    --sw-grid-line-soft: rgba(255, 255, 255, 0.062);
+    --sw-grid-line-faint: rgba(255, 255, 255, 0.045);
+    --sw-danger-text: #ca7875;
+    color-scheme: dark;
+    color: var(--sw-white-soft);
+  }
+
+  .sw-paper ::selection {
+    background: rgba(24, 24, 24, 0.16);
+    color: #0a0a0a;
+  }
+
+  .sw-paper .sw-field {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.22);
+  }
+
+  .sw-paper .sw-field:focus {
+    border-color: #181818;
+  }
+
+  .sw-paper .sw-field[aria-invalid="true"] {
+    border-color: var(--sw-danger-text);
+  }
+
+  /* ── Status badge (research) ──────────────────────────────────────────── */
+  .sw-status {
+    display: inline-flex;
+    align-items: center;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border: 1px solid var(--sw-border-strong);
+    color: var(--sw-silver);
+  }
+
+
+  /* ── Hero feed (video panel) ─────────────────────────────────────────── */
+  .sw-feed-corner {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-color: rgba(255, 255, 255, 0.7);
+    pointer-events: none;
+  }
+
+  /* ── Long-form prose (blog and research pages) ────────────────────────── */
+  .sw-prose {
+    max-width: 68ch;
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--sw-silver);
+  }
+
+  .sw-prose > * + * {
+    margin-top: 1.2em;
+  }
+
+  .sw-prose h2,
+  .sw-prose h3 {
+    font-family: var(--sw-font-display);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--sw-white);
+    line-height: 1.05;
+    margin-top: 2em;
+  }
+
+  .sw-prose h2 {
+    font-size: clamp(26px, 3vw, 34px);
+  }
+
+  .sw-prose h3 {
+    font-size: clamp(21px, 2.4vw, 26px);
+  }
+
+  .sw-prose a {
+    color: var(--sw-white);
+    text-decoration: underline;
+    text-decoration-color: var(--sw-gray);
+    text-underline-offset: 4px;
+  }
+
+  .sw-prose strong {
+    color: var(--sw-white);
+    font-weight: 500;
+  }
+
+  .sw-prose ul,
+  .sw-prose ol {
+    padding-left: 1.4em;
+  }
+
+  .sw-prose ul {
+    list-style: square;
+  }
+
+  .sw-prose ol {
+    list-style: decimal;
+  }
+
+  .sw-prose li + li {
+    margin-top: 0.4em;
+  }
+
+  .sw-prose code {
+    font-size: 0.92em;
+    padding: 0.1em 0.35em;
+    background: var(--sw-graphite);
+    color: var(--sw-white-soft);
+  }
+
+  .sw-prose pre {
+    overflow-x: auto;
+    padding: 18px 20px;
+    background: var(--sw-graphite);
+    border: 1px solid var(--sw-border);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .sw-prose pre code {
+    padding: 0;
+    background: none;
+  }
+
+  .sw-prose blockquote {
+    border-left: 3px solid var(--sw-gray);
+    padding: 4px 0 4px 18px;
+    color: var(--sw-silver);
+  }
+
+  .sw-prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .sw-prose th,
+  .sw-prose td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--sw-rule);
+    vertical-align: top;
+  }
+
+  .sw-prose th {
+    font-weight: 500;
+    color: var(--sw-white);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* Wide tables scroll inside the column instead of the page. */
+  @media (max-width: 640px) {
+    .sw-prose table {
+      display: block;
+      overflow-x: auto;
+    }
+  }
+
+  .sw-prose h2,
+  .sw-prose h3 {
+    position: relative;
+    scroll-margin-top: 96px;
+  }
+
+  /* Heading permalink, shown on hover in the left gutter on wide screens. */
+  .sw-anchor {
+    position: absolute;
+    left: -1.1em;
+    top: 0;
+    color: var(--sw-gray);
+    text-decoration: none !important;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .sw-prose h2:hover .sw-anchor,
+  .sw-prose h3:hover .sw-anchor {
+    opacity: 1;
+  }
+
+  @media (max-width: 1023px) {
+    .sw-anchor {
+      display: none;
+    }
+  }
+
+  .sw-code {
+    position: relative;
+  }
+
+  .sw-code pre {
+    padding-top: 40px;
+  }
+
+  .sw-code-lang {
+    position: absolute;
+    left: 20px;
+    top: 12px;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--sw-gray);
+  }
+
+  .sw-code-copy {
+    position: absolute;
+    right: 8px;
+    top: 6px;
+    padding: 6px 10px;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--sw-silver);
+    border: 1px solid var(--sw-border);
+    background: var(--sw-black);
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .sw-code-copy:hover,
+  .sw-code-copy[data-copied] {
+    color: var(--sw-white);
+    border-color: var(--sw-white);
+  }
+
+  /* ── Vault terminal ───────────────────────────────────────────────────── */
+  .vt-screen {
+    position: relative;
+    background: #020202;
+    color: #d6d6d6;
+    font-family: var(--sw-font-body);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .vt-ok {
+    color: var(--sw-ok-text);
+  }
+
+  .vt-fail {
+    color: var(--sw-danger-text);
+  }
+
+  .vt-dim {
+    color: #7c7c7c;
+  }
+
+  /* Box-drawing glyphs need a system monospace; DM Mono does not carry them. */
+  .vt-banner {
+    font-family: ui-monospace, Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
+  }
+
+  @media print {
+    .vx-noprint {
+      display: none !important;
+    }
+  }
+
+  .vt-caret {
+    display: inline-block;
+    width: 0.6em;
+    height: 1.15em;
+    vertical-align: text-bottom;
+    background: #d6d6d6;
+    animation: sw-blink 1.06s steps(2, jump-none) infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vt-caret {
+      animation: none;
+    }
+  }
 }
