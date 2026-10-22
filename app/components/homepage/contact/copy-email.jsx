@@ -2,10 +2,13 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
+import { useEmail } from "../../helper/protected-email";
 
 // Shows the address as selectable text, with a Copy button that confirms in
 // place. mailto: is unreliable in many browsers, so copying is the main path.
-export default function CopyEmail({ email }) {
+// The address is decoded in the browser, so the page source never carries it.
+export default function CopyEmail() {
+  const email = useEmail();
   const [copied, setCopied] = useState(false);
 
   const copy = async () => {
@@ -28,10 +31,10 @@ export default function CopyEmail({ email }) {
     <div className="mt-2 flex flex-wrap items-center gap-3">
       <a
         id="contact-email-address"
-        href={`mailto:${email}`}
+        href={email ? `mailto:${email}` : "#contact"}
         className="sw-tap break-all text-sm text-[var(--sw-white)] underline decoration-[var(--sw-gray)] underline-offset-4 hover:decoration-[var(--sw-white)]"
       >
-        {email}
+        {email ?? "Email"}
       </a>
       <button
         type="button"

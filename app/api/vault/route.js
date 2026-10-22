@@ -1,4 +1,5 @@
 import { TERMS_VERSION } from "@/utils/data/vault-terms";
+import { clientIp, rateLimit, sameOrigin } from "@/utils/security";
 import { LIMITS, SESSION_SECONDS, VAULT_COOKIE, checkCode, cleanField, createSession, vaultConfigured } from "@/utils/vault";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
@@ -31,6 +32,13 @@ async function notify({ name, org }) {
 // POST { code, agreed, terms, name, org } → sets the session cookie when the
 // current terms are accepted and the code is right.
 export async function POST(request) {
+  if (!sameOrigin(request)) {
+    return NextResponse.json({ message: "Forbidden." }, { status: 403 });
+  }
+  // Brute-force cap on top of the per-attempt delay: 10 tries per 15 minutes.
+  if (!rateLimit(`vault:${clientIp(request)}`, 10, 15 * 60 * 1000)) {
+    return NextResponse.json({ message: "Too many attempts. Wait 15 minutes and try again." }, { status: 429 });
+  }
   if (!vaultConfigured()) {
     return NextResponse.json({ message: "Access code not configured on this server." }, { status: 503 });
   }
@@ -73,7 +81,10 @@ export async function POST(request) {
 }
 
 // DELETE → locks the vault again.
-export async function DELETE() {
+export async function DELETE(request) {
+  if (!sameOrigin(request)) {
+    return NextResponse.json({ message: "Forbidden." }, { status: 403 });
+  }
   const response = NextResponse.json({ message: "Locked." });
   response.cookies.set(VAULT_COOKIE, "", { httpOnly: true, path: "/", maxAge: 0 });
   return response;

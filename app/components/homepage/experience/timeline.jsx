@@ -1,8 +1,10 @@
 "use client";
 
 import { motion, useInView, useScroll, useSpring } from "motion/react";
-import Image from "next/image";
+import Link from "next/link";
 import { useRef } from "react";
+import { openMail } from "@/utils/obfuscate";
+import Carousel from "../../motion/carousel";
 
 const EASE = [0.22, 1, 0.36, 1];
 
@@ -15,7 +17,7 @@ function TimelineItem({ exp }) {
     <li
       ref={ref}
       className={`relative grid grid-cols-1 gap-3 border-b border-[var(--sw-rule)] py-8 pl-10 md:grid-cols-[minmax(0,200px)_1fr] md:gap-7 md:pl-12 ${
-        exp.image ? "lg:grid-cols-[minmax(0,180px)_1fr_minmax(0,280px)]" : ""
+        exp.images?.length ? "lg:grid-cols-[minmax(0,180px)_1fr_minmax(0,300px)]" : ""
       }`}
     >
       <motion.span
@@ -42,17 +44,45 @@ function TimelineItem({ exp }) {
             </a>
           </div>
         )}
+        {exp.partnerAccess && (
+          <motion.div
+            className="mt-6 max-w-[560px] rounded-xl border border-[var(--sw-border-strong)] bg-[var(--sw-cell)] p-5"
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, ease: EASE }}
+          >
+            <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-[var(--sw-white)]">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                <rect x="5" y="10.5" width="14" height="10" rx="1.5" />
+                <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" />
+              </svg>
+              For companies and partners
+            </p>
+            <p className="mt-2 text-[13px] leading-relaxed text-[var(--sw-silver)]">
+              Want to know more about SWORT&apos;s programs? If your company has an access code, open the restricted file: program status, readiness, open gaps and the hardware itself.
+            </p>
+            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
+              <Link href="/vault" className="sw-btn sw-btn-primary">
+                I have an access code
+              </Link>
+              <button type="button" onClick={() => openMail("Access code request")} className="sw-link">
+                Request one
+              </button>
+            </div>
+          </motion.div>
+        )}
       </div>
-      {exp.image && (
-        <motion.figure
-          className="relative m-0 aspect-[4/3] max-w-[420px] overflow-hidden rounded-xl border border-[var(--sw-border)] md:col-start-2 lg:col-start-auto lg:mt-1"
+      {exp.images?.length > 0 && (
+        <motion.div
+          className="max-w-[420px] md:col-start-2 lg:col-start-auto lg:mt-1"
           initial={{ opacity: 0, y: 16, scale: 0.98 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, margin: "0px 0px -10% 0px" }}
           transition={{ duration: 0.7, ease: EASE }}
         >
-          <Image src={exp.image} alt={exp.imageAlt ?? ""} fill sizes="(min-width: 1024px) 280px, 420px" className="object-cover transition-transform duration-700 hover:scale-[1.04]" />
-        </motion.figure>
+          <Carousel images={exp.images} sizes="(min-width: 1024px) 300px, 420px" />
+        </motion.div>
       )}
     </li>
   );

@@ -4,6 +4,9 @@ import { notFound } from "next/navigation";
 import LearnCta from "../../components/helper/learn-cta";
 import PageHeader from "../../components/helper/page-header";
 import { getResearch, getResearchEntry } from "@/utils/content";
+import { absolute, breadcrumbs, graph, person } from "@/utils/seo";
+import JsonLd from "../../components/helper/json-ld";
+import MailButton from "../../components/helper/mail-button";
 
 export const dynamicParams = false;
 
@@ -14,7 +17,26 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const entry = getResearchEntry(slug);
-  return entry ? { title: entry.title, description: entry.summary } : {};
+  if (!entry) return {};
+  const path = `/research/${slug}`;
+  const images = entry.cover ? [{ url: entry.cover, alt: entry.coverAlt ?? entry.title }] : undefined;
+  return {
+    title: entry.title,
+    description: entry.summary,
+    alternates: { canonical: path },
+    authors: [{ name: "Andres Peña", url: "https://andres.swort.net" }],
+    openGraph: {
+      type: "article",
+      url: path,
+      title: entry.title,
+      description: entry.summary,
+      publishedTime: entry.published ? String(entry.published) : undefined,
+      authors: ["Andres Peña"],
+      tags: entry.tags,
+      images,
+    },
+    twitter: { card: "summary_large_image", title: entry.title, description: entry.summary, images: entry.cover ? [entry.cover] : undefined },
+  };
 }
 
 export default async function ResearchEntryPage({ params }) {
@@ -27,8 +49,28 @@ export default async function ResearchEntryPage({ params }) {
   const all = getResearch().filter((e) => (e.kind === "paper") === isPaper);
   const next = all[(all.findIndex((e) => e.slug === slug) + 1) % all.length];
 
+  const article = {
+    "@type": isPaper ? "ScholarlyArticle" : "TechArticle",
+    "@id": absolute(`/research/${slug}#article`),
+    headline: entry.title,
+    name: entry.title,
+    description: entry.summary,
+    abstract: isPaper ? entry.summary : undefined,
+    url: absolute(`/research/${slug}`),
+    author: { "@id": person["@id"] },
+    publisher: { "@type": "Organization", name: "SWORT Aerospace", url: "https://swort.net" },
+    datePublished: entry.published ? String(entry.published) : undefined,
+    image: entry.cover ? absolute(entry.cover) : undefined,
+    keywords: entry.tags?.join(", "),
+    isAccessibleForFree: true,
+    encoding: entry.pdf ? { "@type": "MediaObject", contentUrl: absolute(entry.pdf), encodingFormat: "application/pdf" } : undefined,
+    creativeWorkStatus: entry.status,
+    codeRepository: entry.repo,
+  };
+
   return (
     <>
+      <JsonLd data={graph(person, article, breadcrumbs([["Home", "/"], ["Research", "/research"], [entry.title, `/research/${slug}`]]))} />
       <PageHeader eyebrow={`Research · ${entry.area}`} title={entry.title} lede={entry.subtitle || entry.summary}>
         {entry.authors && <p className="mt-5 text-sm tracking-[0.04em] text-[var(--sw-silver)]">{entry.authors}</p>}
         <div className="mt-8 flex flex-wrap items-center gap-4">
@@ -39,12 +81,9 @@ export default async function ResearchEntryPage({ params }) {
             </a>
           )}
           {isPaper && !entry.pdf && (
-            <a
-              href={`mailto:andrfp@swort.net?subject=${encodeURIComponent(`Draft request: ${entry.title}`)}`}
-              className="sw-btn sw-btn-primary"
-            >
+            <MailButton subject={`Draft request: ${entry.title}`} className="sw-btn sw-btn-primary">
               Request the draft
-            </a>
+            </MailButton>
           )}
           {entry.repo && (
             <Link href={entry.repo} target="_blank" className="sw-link">
@@ -68,6 +107,7 @@ export default async function ResearchEntryPage({ params }) {
                 alt={entry.coverAlt ?? ""}
                 width={1800}
                 height={900}
+                priority
                 sizes="(min-width: 1280px) 1200px, 100vw"
                 className={`w-full ${/\/figures\//.test(entry.cover) ? "max-h-[520px] object-contain" : "max-h-[560px] object-cover"}`}
               />

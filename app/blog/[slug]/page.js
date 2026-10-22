@@ -1,3 +1,4 @@
+import { checkoutStatus } from "@/utils/checkout";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -9,6 +10,8 @@ import LearnCta from "../../components/helper/learn-cta";
 import PageHeader from "../../components/helper/page-header";
 import { personalData } from "@/utils/data/personal-data";
 import { getPost, getPosts, getRelatedPosts, readingTime } from "@/utils/content";
+import { absolute, breadcrumbs, graph, person } from "@/utils/seo";
+import JsonLd from "../../components/helper/json-ld";
 
 export const dynamicParams = false;
 
@@ -20,10 +23,25 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const post = getPost(slug);
   if (!post) return {};
+  const path = `/blog/${slug}`;
   return {
     title: post.title,
     description: post.summary,
-    openGraph: { type: "article", title: post.title, description: post.summary, publishedTime: String(post.date), tags: post.tags },
+    alternates: { canonical: path },
+    authors: [{ name: "Andres Peña", url: "https://andres.swort.net" }],
+    // Drafts render in development and previews only; never let one index.
+    robots: post.draft ? { index: false, follow: true } : undefined,
+    openGraph: {
+      type: "article",
+      url: path,
+      title: post.title,
+      description: post.summary,
+      publishedTime: String(post.date),
+      authors: ["Andres Peña"],
+      tags: post.tags,
+      images: post.cover ? [{ url: post.cover, alt: post.coverAlt ?? post.title }] : undefined,
+    },
+    twitter: { card: "summary_large_image", title: post.title, description: post.summary, images: post.cover ? [post.cover] : undefined },
   };
 }
 
@@ -40,8 +58,24 @@ export default async function PostPage({ params }) {
   const minutes = readingTime(post.body);
   const path = `/blog/${slug}`;
 
+  const article = {
+    "@type": "BlogPosting",
+    "@id": absolute(`${path}#article`),
+    headline: post.title,
+    description: post.summary,
+    url: absolute(path),
+    mainEntityOfPage: absolute(path),
+    datePublished: String(post.date),
+    author: { "@id": person["@id"] },
+    image: post.cover ? absolute(post.cover) : absolute("/og.jpg"),
+    keywords: post.tags?.join(", "),
+    wordCount: post.body.split(/\s+/).length,
+    timeRequired: `PT${minutes}M`,
+  };
+
   return (
     <>
+      <JsonLd data={graph(person, article, breadcrumbs([["Home", "/"], ["Blog", "/blog"], [post.title, path]]))} />
       <PageHeader eyebrow={`Writing${post.tags?.[0] ? ` · ${post.tags[0]}` : ""}`} title={post.title} lede={post.summary}>
         <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
           <span className="flex items-center gap-3">
@@ -152,7 +186,7 @@ export default async function PostPage({ params }) {
       )}
 
       <LearnCta />
-      <BookShelf tone="paper" eyebrow="From the author" />
+      <BookShelf tone="paper" eyebrow="From the author" checkout={checkoutStatus()} />
     </>
   );
 }

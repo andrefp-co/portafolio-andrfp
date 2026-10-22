@@ -92,7 +92,11 @@ export default function HeroIntro() {
         <Link href="#contact" className="sw-btn sw-btn-primary">
           Contact me
         </Link>
-        <Link href={personalData.resume} target="_blank" className="sw-btn sw-btn-ghost">
+        <Link href={personalData.resume} className="sw-btn sw-btn-ghost gap-2" title="The résumé opens with an access code">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+            <rect x="5" y="10.5" width="14" height="10" rx="1.5" />
+            <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" />
+          </svg>
           Get resume
         </Link>
       </motion.div>

@@ -1,10 +1,18 @@
 import { isValidEmail } from "@/utils/check-email";
+import { clientIp, looksLikeSpam, rateLimit, sameOrigin } from "@/utils/security";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
 const MAX_LENGTH = { name: 120, email: 200, message: 5000 };
 
 export async function POST(request) {
+  if (!sameOrigin(request)) {
+    return NextResponse.json({ message: "Forbidden." }, { status: 403 });
+  }
+  if (!rateLimit(`contact:${clientIp(request)}`, 5, 60 * 60 * 1000)) {
+    return NextResponse.json({ message: "Too many messages. Try again later." }, { status: 429 });
+  }
+
   let body;
   try {
     body = await request.json();
@@ -15,6 +23,11 @@ export async function POST(request) {
   const name = String(body?.name ?? "").trim();
   const email = String(body?.email ?? "").trim();
   const message = String(body?.message ?? "").trim();
+
+  // Bots get a quiet success so they learn nothing; nothing is sent.
+  if (looksLikeSpam({ honeypot: body?.website, elapsed: body?.elapsed, text: message })) {
+    return NextResponse.json({ message: "Message sent." });
+  }
 
   if (!name || !email || !message) {
     return NextResponse.json({ message: "Fill in your name, email and message." }, { status: 400 });

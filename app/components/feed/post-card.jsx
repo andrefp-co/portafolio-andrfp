@@ -4,6 +4,8 @@ import { AnimatePresence, motion, useInView, useReducedMotion } from "motion/rea
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { openMail } from "@/utils/obfuscate";
+import Carousel from "../motion/carousel";
 import { IconBookmark, IconDoc, IconHeart, IconPin, IconReply, IconShare } from "./icons";
 
 const EASE = [0.22, 1, 0.36, 1];
@@ -91,15 +93,15 @@ export function ActionBar({ item, liked, saved, onLike, onSave, className = "" }
     }
   };
 
-  const reply = `mailto:andrfp@swort.net?subject=${encodeURIComponent(`Re: ${item.title || "your post"}`)}`;
+
   const btn = "group relative flex min-h-[40px] items-center gap-2 px-2 text-[11px] uppercase tracking-[0.12em] text-[var(--sw-gray)] transition-colors";
 
   return (
     <div className={`-mx-2 flex items-center justify-between ${className}`}>
-      <a href={reply} className={`${btn} hover:text-[var(--sw-white)]`} aria-label="Reply by email">
+      <button type="button" onClick={() => openMail(`Re: ${item.title || "your post"}`)} className={`${btn} hover:text-[var(--sw-white)]`} aria-label="Reply by email">
         <IconReply />
         <span className="hidden sm:inline">Reply</span>
-      </a>
+      </button>
       <button type="button" onClick={like} aria-pressed={liked} aria-label={liked ? "Unlike" : "Like"} className={`${btn} ${liked ? "text-[#ff4d5e]" : "hover:text-[#ff4d5e]"}`}>
         <motion.span key={burst} className="relative inline-flex" animate={burst ? { scale: [1, 1.35, 0.92, 1] } : {}} transition={{ duration: 0.45 }}>
           <IconHeart filled={liked} />
@@ -137,8 +139,9 @@ function Media({ item, onOpenMedia, onDoubleLike }) {
   const [heart, setHeart] = useState(0);
   const lastTap = useRef(0);
 
-  // Double-tap or double-click likes, like every photo app.
-  const tap = () => {
+  // Double-tap or double-click likes, like every photo app; a single tap
+  // opens the photo (for a carousel, the one tapped).
+  const tap = (i = 0) => {
     const now = Date.now();
     if (now - lastTap.current < 320) {
       onDoubleLike();
@@ -148,13 +151,40 @@ function Media({ item, onOpenMedia, onDoubleLike }) {
     }
     lastTap.current = now;
     setTimeout(() => {
-      if (lastTap.current === now) onOpenMedia(item);
+      if (lastTap.current !== now) return;
+      onOpenMedia(item.images?.length > 1 ? { ...item, id: `${item.id}-${i}`, image: item.images[i] } : item);
     }, 330);
   };
 
+  const heartPop = (
+    <AnimatePresence>
+      {heart > 0 && (
+        <motion.span
+          key={heart}
+          className="pointer-events-none absolute inset-0 flex items-center justify-center text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]"
+          initial={{ opacity: 0, scale: 0.4 }}
+          animate={{ opacity: [0, 1, 1, 0], scale: [0.4, 1.15, 1, 1.1] }}
+          transition={{ duration: 0.9, times: [0, 0.25, 0.7, 1] }}
+          onAnimationComplete={() => setHeart(0)}
+        >
+          <IconHeart filled width={96} height={96} />
+        </motion.span>
+      )}
+    </AnimatePresence>
+  );
+
+  if (item.images?.length > 1) {
+    return (
+      <div className="relative mt-3">
+        <Carousel images={item.images} aspect={item.kind === "photo" ? "aspect-[4/3]" : "aspect-video"} sizes="(min-width: 1024px) 640px, 100vw" onTap={tap} />
+        {heartPop}
+      </div>
+    );
+  }
+
   const figure = item.image?.figure;
   return (
-    <button type="button" onClick={tap} className="relative mt-3 block w-full overflow-hidden rounded-xl border border-[var(--sw-border)] text-left" aria-label={`Open ${item.image?.alt || "media"}`}>
+    <button type="button" onClick={() => tap(0)} className="relative mt-3 block w-full overflow-hidden rounded-xl border border-[var(--sw-border)] text-left" aria-label={`Open ${item.image?.alt || "media"}`}>
       {item.video ? (
         <InViewVideo video={item.video} className="aspect-video w-full object-cover" />
       ) : (
@@ -169,20 +199,7 @@ function Media({ item, onOpenMedia, onDoubleLike }) {
           />
         </motion.div>
       )}
-      <AnimatePresence>
-        {heart > 0 && (
-          <motion.span
-            key={heart}
-            className="pointer-events-none absolute inset-0 flex items-center justify-center text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]"
-            initial={{ opacity: 0, scale: 0.4 }}
-            animate={{ opacity: [0, 1, 1, 0], scale: [0.4, 1.15, 1, 1.1] }}
-            transition={{ duration: 0.9, times: [0, 0.25, 0.7, 1] }}
-            onAnimationComplete={() => setHeart(0)}
-          >
-            <IconHeart filled width={96} height={96} />
-          </motion.span>
-        )}
-      </AnimatePresence>
+      {heartPop}
     </button>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { TERMS_VERSION, terms } from "@/utils/data/vault-terms";
+import { decodeEmail } from "@/utils/obfuscate";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
@@ -101,7 +102,7 @@ function ZuluClock() {
   );
 }
 
-export default function VaultTerminal({ authorized = false, viewer = null, content = null, demoCode, demoContent }) {
+export default function VaultTerminal({ authorized = false, viewer = null, content = null, demoCode, demoContent, next = null }) {
   const router = useRouter();
   const reduce = useReducedMotion();
   const [lines, setLines] = useState([]);
@@ -154,6 +155,7 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
       } else {
         print(
           line("Restricted portfolio. Access codes are issued personally."),
+          ...(next === "resume" ? [line("Requested file: résumé. It opens once you unlock with your access code.", "head")] : []),
           line("Type 'unlock' to read and sign the terms and enter your code, or 'help' for commands.", "dim"),
           line("")
         );
@@ -235,7 +237,7 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
         if (args[0] === "readme.txt") {
           return print(
             line("This is Andres Peña's restricted portfolio."),
-            line("Access codes are issued personally. Ask for one: andrfp@swort.net")
+            line(`Access codes are issued personally. Ask for one: ${decodeEmail()}`)
           );
         }
         if (args[0] === "terms.txt") return print(...termsLines());
@@ -541,7 +543,7 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
             animate={{ clipPath: "inset(0% 0 0 0)" }}
             transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
           >
-            <Dossier content={dossier} viewer={activeViewer} onLock={lock} termsVersion={TERMS_VERSION} />
+            <Dossier content={dossier} viewer={activeViewer} onLock={lock} termsVersion={TERMS_VERSION} focus={next} />
           </motion.div>
         )}
       </AnimatePresence>

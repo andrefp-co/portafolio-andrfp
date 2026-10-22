@@ -1,6 +1,7 @@
 "use client";
 
 import { personalData } from "@/utils/data/personal-data";
+import ProtectedEmail from "./helper/protected-email";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll, useSpring } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -190,7 +191,7 @@ function Navbar() {
               transition={{ delay: 0.5, duration: 0.4 }}
             >
               <p className="sw-label">{personalData.address}</p>
-              <p className="mt-2 break-all text-sm text-white">{personalData.email}</p>
+              <ProtectedEmail className="mt-2 block break-all text-sm text-white" />
             </motion.div>
           </motion.div>
         )}

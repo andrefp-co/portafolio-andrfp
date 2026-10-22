@@ -25,17 +25,13 @@ function ContactSection() {
         <SectionHeading eyebrow="Contact" title="Get in touch." />
 
         <div className="mt-10 grid grid-cols-1 items-start gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:gap-16">
-          <ContactForm email={personalData.email} />
+          <ContactForm />
 
           <div className="min-w-0">
             <div className="sw-rows">
               <div className="border-b border-[var(--sw-rule)] py-5">
                 <span className="sw-label">Email</span>
-                <CopyEmail email={personalData.email} />
-              </div>
-              <div className="border-b border-[var(--sw-rule)] py-5">
-                <span className="sw-label">Phone</span>
-                <p className="mt-2 text-sm text-[var(--sw-white)]">{personalData.phone}</p>
+                <CopyEmail />
               </div>
               <div className="border-b border-[var(--sw-rule)] py-5">
                 <span className="sw-label">Location</span>

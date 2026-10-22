@@ -1,4 +1,7 @@
+import { checkoutStatus } from "@/utils/checkout";
 import { getFeed, getStories, getTopics } from "@/utils/content";
+import { absolute, breadcrumbs, graph, person } from "@/utils/seo";
+import JsonLd from "../components/helper/json-ld";
 import { books } from "@/utils/data/books";
 import { personalData } from "@/utils/data/personal-data";
 import BookShelf from "../components/books/book-shelf";
@@ -6,9 +9,21 @@ import BlogFeed from "../components/feed/blog-feed";
 import LearnCta from "../components/helper/learn-cta";
 import BlogCard from "../components/homepage/blog/blog-card";
 
+const blogDescription =
+  "Essays, papers, photos and SWORT articles from Andres Peña: sensor integrity, runtime diagnosis, flight controllers, the Shell Eco-marathon and the Purdue Space Program.";
+
 export const metadata = {
   title: "Blog",
-  description: "Essays, papers, photos and SWORT articles from Andres Peña: sensor integrity, runtime diagnosis, flight controllers and the Shell Eco-marathon.",
+  description: blogDescription,
+  alternates: { canonical: "/blog" },
+  openGraph: {
+    type: "profile",
+    url: "/blog",
+    title: "Blog | Andres Peña",
+    description: blogDescription,
+    images: [{ url: "/media/feed/swort-avionics-board.jpg", width: 1440, height: 810, alt: "A SWORT avionics board" }],
+  },
+  twitter: { card: "summary_large_image", title: "Blog | Andres Peña", description: blogDescription, images: ["/media/feed/swort-avionics-board.jpg"] },
 };
 
 async function getDevToPosts() {
@@ -37,11 +52,28 @@ export default async function BlogPage() {
 
   return (
     <>
+      <JsonLd
+        data={graph(
+          person,
+          {
+            "@type": "Blog",
+            "@id": absolute("/blog#blog"),
+            url: absolute("/blog"),
+            name: "Andres Peña: notes from the bench",
+            description: blogDescription,
+            author: { "@id": person["@id"] },
+            blogPost: feed
+              .filter((i) => i.kind === "essay" && !i.draft)
+              .map((i) => ({ "@type": "BlogPosting", headline: i.title, url: absolute(i.href) })),
+          },
+          breadcrumbs([["Home", "/"], ["Blog", "/blog"]])
+        )}
+      />
       <section className="pb-10 lg:pt-6">
         <BlogFeed profile={profile} items={feed} stories={getStories(feed)} topics={getTopics(feed)} book={books[0]} />
       </section>
 
-      <BookShelf tone="paper" />
+      <BookShelf tone="paper" checkout={checkoutStatus()} />
 
       {devTo.length > 0 && (
         <section className="sw-section">

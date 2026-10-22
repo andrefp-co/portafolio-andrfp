@@ -269,7 +269,10 @@ export default function BlogFeed({ profile, items, stories, topics, book }) {
     if (tab === "saved") return saves.has(i.id);
     return true;
   });
-  const media = items.filter((i) => (i.image || i.video) && matches(i));
+  // Every photo gets its own tile, including each photo of a carousel post.
+  const media = items
+    .filter((i) => (i.image || i.video) && matches(i))
+    .flatMap((i) => (i.images?.length > 1 ? i.images.map((image, k) => ({ ...i, id: `${i.id}-${k}`, image, images: null })) : [i]));
 
   const openStory = (i) => {
     setStoryIndex(i);

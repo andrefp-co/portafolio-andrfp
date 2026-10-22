@@ -16,6 +16,17 @@ export const vault = {
   asOf: "October 2026",
   sections: [
     {
+      id: "resume",
+      kicker: "Résumé",
+      title: "Résumé",
+      document: {
+        title: "Andres Peña, engineering CV",
+        src: "/api/vault/media/andres-pena-cv.pdf",
+        download: "/api/vault/media/andres-pena-cv.pdf?download=1",
+        pages: ["/api/vault/media/andres-pena-cv-1.jpg"],
+      },
+    },
+    {
       id: "entity",
       kicker: "File 00",
       title: "Entity registration",
@@ -26,6 +37,20 @@ export const vault = {
         ["Primary NAICS", "541330 Engineering Services"],
       ],
       note: "Registration does not imply government endorsement, contract award, certification, product qualification or security clearance.",
+    },
+    {
+      id: "x8",
+      kicker: "Hardware",
+      title: "X8 flight controller, 50 × 50 mm",
+      video: {
+        src: "/api/vault/media/x8-board-review.mp4",
+        webm: "/api/vault/media/x8-board-review.webm",
+        poster: "/api/vault/media/x8-board-review.jpg",
+        caption: "3D layout review: eight ESC outputs, GPS, compass, RC and auxiliary ports and USB-C, on a four-layer stack (top, ground, power, bottom).",
+      },
+      paragraphs: [
+        "A paid flight-controller program Andres leads at SWORT: customer requirements, system architecture, schematic and PCB reviews, contractor coordination and prototype acceptance planning.",
+      ],
     },
     {
       id: "csia",
@@ -116,6 +141,23 @@ export const vault = {
       ],
     },
     {
+      id: "papers",
+      kicker: "Research",
+      title: "Papers",
+      links: [
+        {
+          title: "Measured Self-Occlusion in a Deployed Cross-Sensor Diagnostic Layer",
+          note: "Systems paper · submission package, October 2026 · 32 pp. with a 13-page supplement · full draft on request",
+          href: "/research/paper-self-occlusion",
+        },
+        {
+          title: "Posterior Distortion from Hypothesis-Dependent Validity Gating in Runtime Diagnosis",
+          note: "Mathematical paper · preprint v2.2, September 2026 · 12 pp.",
+          href: "/papers/gate-conditioning-v2.2.pdf",
+        },
+      ],
+    },
+    {
       id: "documents",
       kicker: "Records",
       title: "Source documents",
@@ -141,13 +183,14 @@ export const vault = {
       id: "direct",
       kicker: "Contact",
       title: "Direct line",
+      // Read from the server's environment so they are not in this public
+      // repository. Rows without a value are left out.
       rows: [
-        ["SWORT email", personalData.email],
-        ["Personal email", "penaavilaandresfelipe@gmail.com"],
-        ["Phone", personalData.phone],
-        ["Résumé", `https://andres.swort.net${personalData.resume}`],
+        ["SWORT email", process.env.VAULT_CONTACT_EMAIL],
+        ["Personal email", process.env.VAULT_CONTACT_PERSONAL_EMAIL],
+        ["Phone", process.env.VAULT_CONTACT_PHONE],
         ["LinkedIn", personalData.linkedIn],
-      ],
+      ].filter(([, v]) => v),
     },
   ],
 };

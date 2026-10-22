@@ -15,7 +15,7 @@ export const terms = {
     },
     {
       head: "No disclosure without approval",
-      text: "You will not share, forward, publish, quote, screenshot, record or otherwise disclose any of it, in whole or in part, unless Andres Peña approves it in writing first (andrfp@swort.net).",
+      text: "You will not share, forward, publish, quote, screenshot, record or otherwise disclose any of it, in whole or in part, unless Andres Peña approves it in writing first.",
     },
     {
       head: "Limited purpose",

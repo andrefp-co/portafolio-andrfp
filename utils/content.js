@@ -4,7 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { Marked } from "marked";
 import { articles } from "./data/articles";
-import { books, orderEmail } from "./data/books";
+import { books } from "./data/books";
 import { moments } from "./data/moments";
 
 const ROOT = path.join(process.cwd(), "content");
@@ -211,7 +211,8 @@ export function getFeed() {
     dateLabel: m.date ? shortDay(m.date) : m.event,
     title: "",
     text: m.text,
-    image: imageOf(m.image, m.imageAlt),
+    image: imageOf(m.images[0].src, m.images[0].alt),
+    images: m.images.map((img) => ({ ...imageOf(img.src, img.alt), fit: img.fit ?? null })),
     tags: m.tags ?? [],
     search: `${m.text} ${m.event ?? ""} ${(m.tags ?? []).join(" ")}`.toLowerCase(),
   }));
@@ -226,9 +227,7 @@ export function getFeed() {
     title: `${b.title}${b.volume ? `, ${b.volume}` : ""}`,
     text: b.blurb || `${b.title}${b.volume ? `, ${b.volume}` : ""}, by ${b.author}.${b.formats?.length ? ` ${b.formats.join(" and ")} edition.` : ""}`,
     book: b,
-    orderHref:
-      b.buyUrl ||
-      `mailto:${orderEmail}?subject=${encodeURIComponent(`Order: ${b.title}${b.volume ? `, ${b.volume}` : ""}`)}`,
+    orderHref: b.buyUrl || "#books",
     tags: ["Book", "Avionics"],
     search: `${b.title} ${b.volume ?? ""} ${b.subtitle ?? ""} ${b.blurb ?? ""} book`.toLowerCase(),
   }));
@@ -241,9 +240,15 @@ export function getFeed() {
 // Story highlights built from the feed: each is a run of posts that share a
 // topic, played as slides.
 export function getStories(feed) {
-  const pick = (test) => feed.filter(test).slice(0, 8);
+  // Carousel posts become one slide per photo.
+  const pick = (test) =>
+    feed
+      .filter(test)
+      .flatMap((i) => (i.images?.length > 1 ? i.images.map((image, k) => ({ ...i, id: `${i.id}-${k}`, image })) : [i]))
+      .slice(0, 8);
   const stories = [
     { id: "shell", label: "Shell Eco", items: pick((i) => i.tags.includes("Shell Eco-marathon")) },
+    { id: "psp", label: "Purdue", items: pick((i) => i.tags.includes("Purdue Space Program")) },
     { id: "csia", label: "CSIA", items: pick((i) => i.tags.includes("CSIA")) },
     { id: "papers", label: "Papers", items: pick((i) => i.kind === "paper") },
     { id: "swort", label: "SWORT", items: pick((i) => i.author.name === "SWORT Aerospace" && !i.tags.includes("SWORT Learn")) },
@@ -252,6 +257,7 @@ export function getStories(feed) {
   ].filter((s) => s.items.length > 0);
   // Circle covers read best as photos, so a few highlights name theirs.
   const covers = {
+    psp: "/media/feed/psp-toad-render.jpg",
     csia: "/media/project-uav.jpg",
     papers: "/media/figures/gate-conditioning-page1.jpg",
     swort: "/media/brand/swort-emblem-light.png",

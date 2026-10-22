@@ -1,16 +1,12 @@
 "use client";
 
-import { books, orderEmail } from "@/utils/data/books";
+import { books } from "@/utils/data/books";
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "motion/react";
 import Image from "next/image";
+import { useCallback, useState } from "react";
+import OrderSheet from "./order-sheet";
 
 const EASE = [0.22, 1, 0.36, 1];
-
-const orderHref = (book) =>
-  book.buyUrl ||
-  `mailto:${orderEmail}?subject=${encodeURIComponent(`Order: ${book.title}${book.volume ? `, ${book.volume}` : ""}`)}&body=${encodeURIComponent(
-    "Hi Andres,\n\nI'd like to order a copy.\n\nFormat:\nQuantity:\nShipping address:\n"
-  )}`;
 
 // A book as an object: front cover, spine and page block in 3D, turning
 // toward the pointer or finger and opening slightly on hover.
@@ -83,7 +79,11 @@ function Book3D({ book }) {
 
 // The book shelf: a 3D cover beside the title, details and an order button.
 // `tone="paper"` sits on the light sections.
-export default function BookShelf({ tone = "dark", eyebrow = "Books" }) {
+// `checkout` maps book ids to whether Stripe checkout is configured (computed
+// on the server, see utils/checkout.js).
+export default function BookShelf({ tone = "dark", eyebrow = "Books", checkout = {} }) {
+  const [ordering, setOrdering] = useState(null);
+  const close = useCallback(() => setOrdering(null), []);
   if (!books.length) return null;
 
   return (
@@ -124,22 +124,26 @@ export default function BookShelf({ tone = "dark", eyebrow = "Books" }) {
                   )}
                 </dl>
 
-                <div className="mt-7 flex flex-wrap gap-3">
-                  <motion.a
-                    href={orderHref(book)}
-                    target={book.buyUrl ? "_blank" : undefined}
-                    rel={book.buyUrl ? "noopener noreferrer" : undefined}
-                    whileTap={{ scale: 0.97 }}
-                    className="sw-btn sw-btn-primary"
-                  >
-                    {book.buyUrl ? "Buy the book" : "Order a copy"}
-                  </motion.a>
+                <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
+                  {book.buyUrl ? (
+                    <motion.a href={book.buyUrl} target="_blank" rel="noopener noreferrer" whileTap={{ scale: 0.97 }} className="sw-btn sw-btn-primary">
+                      Buy the book
+                    </motion.a>
+                  ) : (
+                    <motion.button type="button" onClick={() => setOrdering(book)} whileTap={{ scale: 0.97 }} className="sw-btn sw-btn-primary">
+                      Order a copy
+                    </motion.button>
+                  )}
+                  <span className="text-[11px] text-[var(--sw-gray)]">
+                    {checkout[book.id] ? "Secure checkout by Stripe" : "Order by request · nothing is charged until you confirm"}
+                  </span>
                 </div>
               </div>
             </article>
           ))}
         </div>
       </div>
+      {ordering && <OrderSheet key={ordering.id} book={ordering} open onClose={close} checkout={Boolean(checkout[ordering.id])} />}
     </section>
   );
 }

@@ -50,4 +50,4 @@ The October 2026 submission package is a 32-page manuscript with a 13-page suppl
 
 Submission package prepared in October 2026; not yet peer reviewed, and the title may still change. It is the systems companion to the [gate-conditioning paper](/research/paper-gate-conditioning), which gives the exact algebra behind the effect measured here.
 
-Drafts are shared on request: [andrfp@swort.net](mailto:andrfp@swort.net).
+Drafts are shared on request through the [contact form](/#contact).

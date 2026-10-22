@@ -3,7 +3,7 @@
 import { motion, useInView, useReducedMotion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 const EASE = [0.22, 1, 0.36, 1];
 
@@ -23,6 +23,22 @@ function Value({ value }) {
     );
   }
   return value;
+}
+
+// Site pages open in place; PDFs open in a new tab.
+function DocLink({ href, className, children }) {
+  if (/\.pdf$/.test(href)) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
+        {children}
+      </a>
+    );
+  }
+  return (
+    <Link href={href} className={className}>
+      {children}
+    </Link>
+  );
 }
 
 // A 1–9 readiness scale: solid to the level reached, dashed to the next
@@ -100,7 +116,15 @@ const today = () => new Date().toLocaleDateString("en-US", { year: "numeric", mo
 
 // The restricted file, set as a controlled document. Content arrives from the
 // server only after the terms are signed and the access code is right.
-export default function Dossier({ content, viewer, onLock, termsVersion }) {
+export default function Dossier({ content, viewer, onLock, termsVersion, focus = null }) {
+  // Arriving from "Get resume": bring the résumé into view once the file has
+  // drawn in.
+  useEffect(() => {
+    if (!focus) return;
+    const id = setTimeout(() => document.getElementById(`vx-${focus}`)?.scrollIntoView({ behavior: "smooth", block: "start" }), 900);
+    return () => clearTimeout(id);
+  }, [focus]);
+
   if (!content) return null;
   const scrollTo = (id) => document.getElementById(`vx-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
   const released = today();
@@ -186,6 +210,49 @@ export default function Dossier({ content, viewer, onLock, termsVersion }) {
                 </div>
                 <div className="pt-5">
                   {section.trl && <TrlScale trl={section.trl} />}
+                  {section.document && (
+                    <div className="mb-2">
+                      {/* Pages as images: they render the same on every device,
+                          unlike an embedded PDF viewer. */}
+                      <div className="flex flex-col gap-4">
+                        {section.document.pages?.map((src, i) => (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            key={src}
+                            src={src}
+                            alt={`${section.document.title}, page ${i + 1}`}
+                            className="w-full border border-black/15 bg-white shadow-[0_10px_30px_rgba(0,0,0,0.12)]"
+                            loading="lazy"
+                          />
+                        ))}
+                      </div>
+                      <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                        <a href={section.document.src} target="_blank" rel="noopener noreferrer" className="border border-black bg-black px-6 py-3 text-center text-[11px] uppercase tracking-[0.14em] text-white transition-colors hover:bg-white hover:text-black">
+                          Open the PDF
+                        </a>
+                        <a href={section.document.download} className="border border-black/30 px-6 py-3 text-center text-[11px] uppercase tracking-[0.14em] text-black transition-colors hover:border-black">
+                          Download
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                  {section.video && (
+                    <figure className="m-0 mb-6">
+                      <video
+                        className="aspect-[840/754] w-full border border-black/10 bg-black object-cover"
+                        poster={section.video.poster}
+                        controls
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                      >
+                        {section.video.webm && <source src={section.video.webm} type="video/webm" />}
+                        <source src={section.video.src} type="video/mp4" />
+                      </video>
+                      {section.video.caption && <figcaption className="mt-2 text-[12px] leading-relaxed text-[#555]">{section.video.caption}</figcaption>}
+                    </figure>
+                  )}
                   {section.paragraphs?.map((p, i) => (
                     <p key={i} className="max-w-[70ch] text-[14px] leading-[1.8] text-[#2a2a2a] [&+&]:mt-4">
                       {p}
@@ -202,6 +269,21 @@ export default function Dossier({ content, viewer, onLock, termsVersion }) {
                         ))}
                       </tbody>
                     </table>
+                  )}
+                  {section.links && (
+                    <ul className="border-t border-black/25">
+                      {section.links.map((l) => (
+                        <li key={l.href} className="border-b border-black/12">
+                          <DocLink href={l.href} className="group flex items-start justify-between gap-6 py-3.5">
+                            <span className="min-w-0">
+                              <span className="block text-[14px] leading-snug text-black group-hover:underline group-hover:underline-offset-4">{l.title}</span>
+                              <span className="mt-1 block text-[12px] text-[#6b6b6b]">{l.note}</span>
+                            </span>
+                            <span className="shrink-0 pt-0.5 text-[11px] uppercase tracking-[0.14em] text-black">{/\.pdf$/.test(l.href) ? "PDF ↗" : "Open →"}</span>
+                          </DocLink>
+                        </li>
+                      ))}
+                    </ul>
                   )}
                   {section.list && (
                     <ol className="flex flex-col gap-2.5">

@@ -3,15 +3,23 @@
 import { isValidEmail } from "@/utils/check-email";
 import axios from "axios";
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TbMailForward } from "react-icons/tb";
+import ProtectedEmail from "../../helper/protected-email";
 
 const EMPTY = { name: "", email: "", message: "" };
 
-function ContactForm({ email }) {
+function ContactForm() {
   const [error, setError] = useState({ email: false, required: false });
   const [status, setStatus] = useState({ state: "idle", message: "" });
   const [userInput, setUserInput] = useState(EMPTY);
+  // Spam signals the server checks: when the form was first shown, and a
+  // hidden field that only bots fill in.
+  const shownAt = useRef(0);
+  const honeypot = useRef(null);
+  useEffect(() => {
+    shownAt.current = Date.now();
+  }, []);
   const isSending = status.state === "sending";
 
   const update = (field) => (e) => {
@@ -40,7 +48,11 @@ function ContactForm({ email }) {
 
     try {
       setStatus({ state: "sending", message: "" });
-      await axios.post("/api/contact", userInput);
+      await axios.post("/api/contact", {
+        ...userInput,
+        website: honeypot.current?.value ?? "",
+        elapsed: Date.now() - shownAt.current,
+      });
       setStatus({ state: "sent", message: "Message sent. I'll reply to the address you gave." });
       setUserInput(EMPTY);
     } catch (err) {
@@ -60,6 +72,11 @@ function ContactForm({ email }) {
         </p>
 
         <form onSubmit={handleSendMail} className="mt-8 flex flex-col gap-5" noValidate>
+          {/* Honeypot: hidden from people and assistive tech, filled by bots. */}
+          <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+            <label htmlFor="contact-website">Website</label>
+            <input ref={honeypot} id="contact-website" type="text" name="website" tabIndex={-1} autoComplete="off" defaultValue="" />
+          </div>
           <div className="flex flex-col gap-2">
             <label htmlFor="contact-name" className="sw-label">Your Name</label>
             <input
@@ -135,10 +152,10 @@ function ContactForm({ email }) {
                   transition={{ duration: 0.3 }}
                 >
                   {status.message}
-                  {status.state === "error" && email && (
+                  {status.state === "error" && (
                     <>
                       {" "}
-                      <a href={`mailto:${email}`} className="underline underline-offset-4">{email}</a>
+                      <ProtectedEmail link className="underline underline-offset-4" />
                     </>
                   )}
                 </motion.p>

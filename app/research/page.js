@@ -2,10 +2,22 @@ import LearnCta from "../components/helper/learn-cta";
 import PageHeader from "../components/helper/page-header";
 import ResearchList from "../components/research/research-list";
 import { getResearch } from "@/utils/content";
+import { absolute, breadcrumbs, graph, person } from "@/utils/seo";
+import JsonLd from "../components/helper/json-ld";
+
+const researchDescription =
+  "Papers and programs on sensor integrity: self-occlusion, validity gating, the CSIA trust layer, SSIL and a Shell Eco-marathon motor controller.";
 
 export const metadata = {
   title: "Research",
-  description: "Papers and programs on sensor integrity: self-occlusion in runtime diagnosis, validity gating, the CSIA trust layer, the System State Integrity Layer, and a Shell Eco-marathon motor controller.",
+  description: researchDescription,
+  alternates: { canonical: "/research" },
+  openGraph: {
+    url: "/research",
+    title: "Research | Andres Peña",
+    description: researchDescription,
+    images: [{ url: "/media/figures/c4_self_occlusion.png", width: 1800, height: 645, alt: "Figure from the self-occlusion systems paper" }],
+  },
 };
 
 export default function ResearchPage() {
@@ -15,6 +27,20 @@ export default function ResearchPage() {
 
   return (
     <>
+      <JsonLd
+        data={graph(
+          person,
+          {
+            "@type": "CollectionPage",
+            "@id": absolute("/research#page"),
+            url: absolute("/research"),
+            name: "Research",
+            description: researchDescription,
+            hasPart: entries.map((e) => ({ "@type": e.kind === "paper" ? "ScholarlyArticle" : "TechArticle", headline: e.title, url: absolute(`/research/${e.slug}`) })),
+          },
+          breadcrumbs([["Home", "/"], ["Research", "/research"]])
+        )}
+      />
       <PageHeader
         eyebrow="Research"
         title="Which sensors deserve to be believed."
