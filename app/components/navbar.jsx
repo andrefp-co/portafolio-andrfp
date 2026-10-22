@@ -182,7 +182,7 @@ function Navbar() {
                     onClick={() => setOpen(false)}
                     className="flex items-baseline gap-5 py-4"
                   >
-                    <span className="sw-cell-num">{String(i + 1).padStart(2, "0")}</span>
+                    <span className="sw-cell-num" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
                     <span className="font-[family-name:var(--sw-font-display)] text-[40px] leading-none tracking-[0.02em] text-white">
                       {link.label}
                     </span>

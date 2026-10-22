@@ -15,8 +15,10 @@ export default function SmoothScroll() {
       autoRaf: true,
       lerp: 0.09,
       wheelMultiplier: 0.9,
-      // In-page links (#contact, #books) glide too, and land below the navbar.
-      anchors: { offset: -80 },
+      // In-page links (#contact, #books) glide too. They land below the
+      // navbar through each target's scroll-margin-top (globals.scss), which
+      // Lenis honours, so no extra offset here.
+      anchors: true,
       // Scrollable panels (dialogs, the vault, menus) keep their own scrolling.
       allowNestedScroll: true,
     });

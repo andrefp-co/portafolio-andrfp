@@ -1,8 +1,8 @@
 // Press coverage of SWORT, one entry per outlet page. `image` is a clipping
-// of that page (masthead and headline). `url` is the article itself where it
-// is known; where it is null the link searches that outlet's site for the
-// headline instead, so it still lands on the piece. Paste the URLs in when
-// you have them.
+// of that page (masthead and headline). `url` is the article on the outlet's
+// own site. Where it is still null, the clipping opens the same story on an
+// outlet that has a URL (and says so), or isn't a link at all. Paste the
+// URLs in when you have them.
 //
 // The CSIA announcement is a press release distributed by AB Newswire and
 // carried by AP News, FinancialContent, openPR and Big News Network sites,
@@ -22,7 +22,7 @@ export const press = [
     text: CSIA_TEXT,
     kind: "Press release via AB Newswire",
     image: "/media/press/ap-news.jpg",
-    url: null,
+    url: "https://apnews.com/press-release/getnews/press-release-3e66bf5a8bf9d516cb206e68393fb0e7",
   },
   {
     id: "financialcontent",
@@ -70,16 +70,17 @@ export const press = [
     text: "A three-minute read from Growth Illustrated's staff on SWORT's sensor-trust work.",
     kind: "Article",
     image: "/media/press/growth-illustrated.jpg",
-    url: null,
+    url: "https://growthillustrated.com/swort-aerospace-is-betting-the-real-aircraft-problem-is-knowing-which-sensor-to-believe/",
   },
 ];
 
-// A copy of the CSIA release confirmed live on a Big News Network site.
-export const CSIA_RELEASE_URL =
-  "https://news.sacramentonews-online.com/story/791624/swort-aerospace-develops-csia-architecture-for-independent-assurance-of-autonomous-aircraft.html";
-
-export const pressHref = (item) =>
-  item.url ?? `https://www.google.com/search?q=${encodeURIComponent(`site:${item.domain} "${item.title}"`)}`;
+// Where a clipping links: its own article, else the same story on another
+// outlet that carried it (`via` names that outlet), else nowhere.
+export const pressLink = (item) => {
+  if (item.url) return { href: item.url, via: null };
+  const other = press.find((p) => p.story === item.story && p.url);
+  return other ? { href: other.url, via: other.outlet } : null;
+};
 
 // One entry per story (the first outlet that carried it), for the blog feed.
 export const pressStories = press.filter((item, i) => press.findIndex((p) => p.story === item.story) === i);

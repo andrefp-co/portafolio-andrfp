@@ -2,7 +2,7 @@
 // schema.org records reused across pages.
 import { books } from "./data/books";
 import { personalData } from "./data/personal-data";
-import { CSIA_RELEASE_URL, pressStories } from "./data/press";
+import { pressLink, pressStories } from "./data/press";
 
 export const SITE_URL = "https://andres.swort.net";
 export const OG_IMAGE = { url: "/og.jpg", width: 1200, height: 630, alt: "Andres Peña: embedded systems, avionics and electronics test" };
@@ -49,7 +49,7 @@ export const breadcrumbs = (items) => ({
 export const graph = (...nodes) => ({ "@context": "https://schema.org", "@graph": nodes });
 
 // SWORT Aerospace, with the press coverage it has received. Releases are
-// typed as such; only the CSIA release has a confirmed URL so far.
+// typed as such.
 export const organization = {
   "@type": "Organization",
   "@id": "https://swort.net/#organization",
@@ -61,7 +61,7 @@ export const organization = {
     "@type": "Article",
     headline: p.title,
     ...(p.date ? { datePublished: p.date } : {}),
-    ...(p.story === "csia-release" ? { url: CSIA_RELEASE_URL } : {}),
+    ...(pressLink(p) ? { url: pressLink(p).href } : {}),
     publisher: { "@type": "Organization", name: p.outlet },
     genre: p.kind,
   })),

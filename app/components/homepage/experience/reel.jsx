@@ -5,7 +5,7 @@ import PcbStack from "@/app/components/instruments/pcb-stack";
 import Telemetry from "@/app/components/instruments/telemetry";
 import { openMail } from "@/utils/obfuscate";
 import { scrollToY } from "@/utils/scroll";
-import { motion, useMotionValueEvent, useScroll, useSpring } from "motion/react";
+import { useMotionValueEvent, useScroll, useSpring } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -14,12 +14,23 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 const SCROLL_PER_PX = 0.85;
 
 // Card sizes: one height, a square tile and a wider text card. Phones get
-// taller, narrower tiles.
-const TALL = "h-[min(440px,52svh)] max-sm:h-[min(500px,60svh)]";
-const SQUARE = "w-[min(440px,52svh)] max-sm:w-[78vw]";
-const WIDE = "w-[min(600px,72svh)] max-sm:w-[86vw]";
+// taller, narrower tiles; tablets held upright get bigger ones.
+const TALL = "h-[min(440px,52svh)] max-sm:h-[min(500px,60svh)] sm:portrait:h-[min(600px,48svh)]";
+const SQUARE = "w-[min(440px,52svh)] max-sm:w-[78vw] sm:portrait:w-[min(600px,48svh)]";
+const WIDE = "w-[min(600px,72svh)] max-sm:w-[86vw] sm:portrait:w-[min(760px,88vw)]";
 
 const two = (n) => String(n).padStart(2, "0");
+
+// The same top-left label on every card: whose work it is, then what the
+// card shows.
+function Tag({ exp, children, light = false }) {
+  return (
+    <p className="flex items-baseline gap-2 text-[10.5px] uppercase tracking-[0.18em]">
+      <span className={light ? "text-[#111]" : "text-white"}>{exp.tab ?? exp.short}</span>
+      <span className={light ? "text-[#666]" : "text-white/55"}>{children}</span>
+    </p>
+  );
+}
 
 // The roles as one row of cards: for each, a title card on a photo, its
 // board stack-up, instrument or photos, a coin of the tools it runs on, what
@@ -71,17 +82,21 @@ function IntroCard({ exp, role, count, coverRef }) {
   );
 }
 
-function StackCard() {
+function StackCard({ exp }) {
   return (
-    <div className="h-full border border-[var(--sw-border)] bg-[radial-gradient(circle_at_40%_45%,#16181b,#0b0b0b_70%)]">
+    <div className="relative h-full border border-[var(--sw-border)] bg-[radial-gradient(circle_at_40%_45%,#16181b,#0b0b0b_70%)]">
       <PcbStack caption="Four-layer STM32H743 flight controller, pulled apart into its stack-up." />
+      <div className="pointer-events-none absolute left-5 top-5 sm:left-6 sm:top-6">
+        <Tag exp={exp}>Board stack-up</Tag>
+      </div>
     </div>
   );
 }
 
-function TelemetryCard() {
+function TelemetryCard({ exp }) {
   return (
     <div className="flex h-full flex-col justify-center gap-3 border border-[var(--sw-border)] bg-[#0b0b0b] p-4 sm:p-6">
+      <Tag exp={exp}>Ground station</Tag>
       <Telemetry />
       <p className="text-[11px] leading-relaxed text-[var(--sw-gray)]">Attitude telemetry as a ground station reads it. Simulated: tap the plot to throw a gust at it.</p>
     </div>
@@ -89,9 +104,11 @@ function TelemetryCard() {
 }
 
 // Photos behind a window: a strip of images slides inside the card as it
-// travels, so one picture wipes into the next.
-function PhotosCard({ exp, photos, stripRef }) {
+// travels, so one picture wipes into the next. The count and the caption
+// follow whichever photo is showing.
+function PhotosCard({ exp, photos, stripRef, countRef, captionRef }) {
   const n = photos.length;
+  const last = photos[n - 1];
   return (
     <div className="relative h-full overflow-hidden border border-[var(--sw-border)] bg-black">
       <div ref={stripRef} className="flex h-full will-change-transform" style={{ width: `${n * 100}%` }}>
@@ -101,9 +118,21 @@ function PhotosCard({ exp, photos, stripRef }) {
           </div>
         ))}
       </div>
-      <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-5 pb-4 pt-12 text-[11px] uppercase tracking-[0.16em] text-white/85">
-        {exp.short}
-      </span>
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 flex items-baseline justify-between bg-gradient-to-b from-black/70 to-transparent px-5 pb-10 pt-5 sm:px-6 sm:pt-6">
+        <Tag exp={exp}>In pictures</Tag>
+        {n > 1 && (
+          <span className="text-[10.5px] tabular-nums tracking-[0.18em] text-white/70">
+            <span ref={countRef}>{two(n)}</span> / {two(n)}
+          </span>
+        )}
+      </div>
+      <p
+        ref={captionRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-5 pb-4 pt-14 text-[12.5px] leading-snug text-white/90 sm:px-6 sm:pb-5"
+      >
+        {last.alt}
+      </p>
     </div>
   );
 }
@@ -112,7 +141,9 @@ function PhotosCard({ exp, photos, stripRef }) {
 function CoinCard({ exp, coinRef, labelRef }) {
   return (
     <div className="flex h-full flex-col justify-between overflow-hidden border border-black/10 bg-[linear-gradient(160deg,#f4f4f4,#cdcecf)] p-6 text-[#111] sm:p-8">
-      <span className="text-[11px] uppercase tracking-[0.18em] text-[#555]">Works in</span>
+      <Tag exp={exp} light>
+        Works in
+      </Tag>
       <div className="flex flex-1 items-center justify-center [perspective:900px]">
         <div ref={coinRef} className="relative aspect-square w-[62%] [transform-style:preserve-3d]">
           {/* Stacked rims give the coin an edge when it turns. */}
@@ -134,24 +165,32 @@ function CoinCard({ exp, coinRef, labelRef }) {
   );
 }
 
+// What the work was, two numbered lines to a card.
 function TextCard({ card }) {
   const { exp, lines, part, parts } = card;
   const last = part === parts - 1;
   return (
     <div className="flex h-full flex-col overflow-y-auto border border-[var(--sw-border)] bg-[var(--sw-cell)] p-6 sm:p-8">
-      <p className="sw-label">
-        {exp.company}
-        {parts > 1 ? ` · ${part + 1} of ${parts}` : ""}
-      </p>
-      <ul className="mt-5 flex flex-col gap-4">
-        {lines.map((line) => (
-          <li key={line} className="border-t border-[var(--sw-rule)] pt-4 text-[13.5px] leading-[1.75] text-[var(--sw-silver)]">
-            {line}
+      <div className="flex items-baseline justify-between gap-4">
+        <Tag exp={exp}>The work</Tag>
+        {parts > 1 && (
+          <span className="text-[10.5px] tabular-nums tracking-[0.18em] text-white/55">
+            {two(part + 1)} / {two(parts)}
+          </span>
+        )}
+      </div>
+      <ol className="mt-auto flex flex-col gap-5 pt-8">
+        {lines.map((line, j) => (
+          <li key={line} className="grid grid-cols-[2.4rem_1fr] gap-3 border-t border-[var(--sw-rule)] pt-5 sm:grid-cols-[3rem_1fr]">
+            <span aria-hidden="true" className="font-[family-name:var(--sw-font-display)] text-[24px] leading-none tracking-[0.02em] text-[var(--sw-white)] sm:text-[30px]">
+              {two(part * 2 + j + 1)}
+            </span>
+            <span className="text-[13.5px] leading-[1.75] text-[var(--sw-silver)] lg:text-[15px] lg:leading-[1.7]">{line}</span>
           </li>
         ))}
-      </ul>
+      </ol>
       {last && exp.link && (
-        <div className="mt-auto pt-6">
+        <div className="pt-6">
           <a href={exp.link} target="_blank" rel="noopener noreferrer" className="sw-link">
             Learn more <span className="sw-link-arrow" aria-hidden="true">↗</span>
           </a>
@@ -206,8 +245,13 @@ export default function ExperienceReel({ items }) {
   const coinRefs = useRef({});
   const labelRefs = useRef({});
   const coverRefs = useRef({});
-  const geo = useRef({ centers: [], travel: 1, vw: 1, blur: false });
+  const countRefs = useRef({});
+  const captionRefs = useRef({});
+  const liftRefs = useRef([]);
+  const segRefs = useRef([]);
+  const geo = useRef({ centers: [], travel: 1, vw: 1, blur: false, starts: [] });
   const [trackHeight, setTrackHeight] = useState(null);
+  const [spans, setSpans] = useState(() => items.map(() => 1));
   const [role, setRole] = useState(0);
 
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ["start start", "end end"] });
@@ -234,6 +278,8 @@ export default function ExperienceReel({ items }) {
         const scale = card.zoom ? 0.88 + 0.2 * e : 0.92 + 0.08 * e;
         face.style.transform = `scale(${scale.toFixed(4)})`;
         face.style.opacity = (0.42 + 0.58 * e).toFixed(3);
+        const lift = liftRefs.current[i];
+        if (lift) lift.style.opacity = e.toFixed(3);
         // Blur only cards on screen; a filter on an off-screen card still costs.
         if (g.blur) face.style.filter = Math.abs(d) < 0.75 ? `blur(${((1 - e) * 2).toFixed(2)}px)` : "none";
 
@@ -257,6 +303,11 @@ export default function ExperienceReel({ items }) {
             strip.style.transform = n > 1 ? `translate3d(${((-t * (n - 1) * 100) / n).toFixed(3)}%,0,0)` : `scale(${(1.1 - 0.1 * e).toFixed(4)})`;
             strip.style.filter = `grayscale(${(1 - e).toFixed(2)})`;
           }
+          const shown = n > 1 ? Math.round(t * (n - 1)) : 0;
+          const count = countRefs.current[card.key];
+          if (count && count.textContent !== two(shown + 1)) count.textContent = two(shown + 1);
+          const caption = captionRefs.current[card.key];
+          if (caption && caption.textContent !== card.photos[shown].alt) caption.textContent = card.photos[shown].alt;
         }
         if (card.type === "coin") {
           const coin = coinRefs.current[card.key];
@@ -273,6 +324,12 @@ export default function ExperienceReel({ items }) {
       });
       const r = cards[nearest]?.role ?? 0;
       setRole((prev) => (prev === r ? prev : r));
+      // Each role's stretch of the progress bar fills while its cards pass.
+      g.starts.forEach((start, k) => {
+        const seg = segRefs.current[k];
+        const end = g.starts[k + 1] ?? 1;
+        if (seg) seg.style.transform = `scaleX(${Math.min(1, Math.max(0, (p - start) / Math.max(end - start, 1e-4))).toFixed(4)})`;
+      });
     },
     [cards]
   );
@@ -286,7 +343,13 @@ export default function ExperienceReel({ items }) {
       const vw = window.innerWidth;
       const centers = cardRefs.current.map((el) => (el ? el.offsetLeft + el.offsetWidth / 2 : 0));
       const travel = Math.max(1, (centers[centers.length - 1] ?? 0) - vw / 2);
-      geo.current = { centers, travel, vw, blur: window.matchMedia("(min-width: 1024px) and (pointer: fine)").matches };
+      // Where in the scroll each role's first card reaches the centre.
+      const starts = items.map((_, r) => {
+        const i = cards.findIndex((c) => c.role === r);
+        return r === 0 ? 0 : Math.min(1, Math.max(0, (centers[i] - vw / 2) / travel));
+      });
+      geo.current = { centers, travel, vw, starts, blur: window.matchMedia("(min-width: 1024px) and (pointer: fine)").matches };
+      setSpans(starts.map((start, r) => Math.max(0.05, (starts[r + 1] ?? 1) - start)));
       setTrackHeight(Math.round(travel * SCROLL_PER_PX + window.innerHeight));
       paint(smooth.get());
     };
@@ -297,7 +360,7 @@ export default function ExperienceReel({ items }) {
       ro.disconnect();
       window.removeEventListener("resize", measure);
     };
-  }, [paint, smooth]);
+  }, [paint, smooth, items, cards]);
 
   // Scroll the page so card i sits at the centre of the reel.
   const centreOn = useCallback((i, behavior = "smooth") => {
@@ -340,7 +403,7 @@ export default function ExperienceReel({ items }) {
         <div
           ref={rowRef}
           // Starts with the first card centred, in focus.
-          className="relative mt-4 flex w-max items-center gap-4 pl-[11vw] will-change-transform sm:mt-6 sm:gap-5 sm:pl-[calc(50vw-min(220px,26svh))]"
+          className="relative mt-4 flex w-max items-center gap-4 pl-[11vw] will-change-transform sm:mt-6 sm:gap-5 sm:pl-[calc(50vw-min(220px,26svh))] sm:portrait:pl-[calc(50vw-min(300px,24svh))]"
         >
           {cards.map((card, i) => (
             <div
@@ -350,13 +413,21 @@ export default function ExperienceReel({ items }) {
               // Keyboard users tabbing into a card bring it to the centre.
               onFocusCapture={() => centreOn(i, "auto")}
             >
-              <div ref={(el) => { faceRefs.current[i] = el; }} className="h-full w-full origin-center will-change-transform">
+              <div ref={(el) => { faceRefs.current[i] = el; }} className="relative h-full w-full origin-center will-change-transform">
                 {card.type === "intro" && (
                   <IntroCard exp={card.exp} role={card.role} count={items.length} coverRef={(el) => { coverRefs.current[card.key] = el; }} />
                 )}
-                {card.type === "stack" && <StackCard />}
-                {card.type === "telemetry" && <TelemetryCard />}
-                {card.type === "photos" && <PhotosCard exp={card.exp} photos={card.photos} stripRef={(el) => { stripRefs.current[card.key] = el; }} />}
+                {card.type === "stack" && <StackCard exp={card.exp} />}
+                {card.type === "telemetry" && <TelemetryCard exp={card.exp} />}
+                {card.type === "photos" && (
+                  <PhotosCard
+                    exp={card.exp}
+                    photos={card.photos}
+                    stripRef={(el) => { stripRefs.current[card.key] = el; }}
+                    countRef={(el) => { countRefs.current[card.key] = el; }}
+                    captionRef={(el) => { captionRefs.current[card.key] = el; }}
+                  />
+                )}
                 {card.type === "coin" && (
                   <CoinCard
                     exp={card.exp}
@@ -366,19 +437,35 @@ export default function ExperienceReel({ items }) {
                 )}
                 {card.type === "text" && <TextCard card={card} />}
                 {card.type === "partner" && <PartnerCard />}
+                {/* Lifts the card at the centre off the page. */}
+                <span
+                  ref={(el) => { liftRefs.current[i] = el; }}
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 opacity-0 shadow-[0_0_0_1px_rgba(255,255,255,0.22),0_34px_80px_-24px_rgba(0,0,0,0.95)]"
+                />
               </div>
             </div>
           ))}
         </div>
 
         <div className="sw-container mt-5 w-full sm:mt-7">
-          <div className="flex items-center gap-4">
+          {/* Clear of the back-to-top button on phones. */}
+          <div className="flex items-center gap-4 max-sm:pr-14">
             <span className="text-[11px] tabular-nums text-[var(--sw-gray)]">
               {two(role + 1)} / {two(items.length)}
             </span>
-            <span className="relative h-px flex-1 bg-[var(--sw-rule)]">
-              <motion.span className="absolute inset-0 origin-left bg-[var(--sw-white)]" style={{ scaleX: smooth }} />
-            </span>
+            {/* One stretch per role, as long as its run of cards. */}
+            <div className="flex flex-1 items-center gap-1.5" aria-hidden="true">
+              {items.map((exp, r) => (
+                <span key={exp.id} className="relative h-[2px] min-w-0 bg-[var(--sw-rule)]" style={{ flexGrow: spans[r], flexBasis: 0 }}>
+                  <span
+                    ref={(el) => { segRefs.current[r] = el; }}
+                    className={`absolute inset-0 origin-left transition-colors ${role === r ? "bg-[var(--sw-white)]" : "bg-[var(--sw-silver)]"}`}
+                    style={{ transform: "scaleX(0)" }}
+                  />
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </div>

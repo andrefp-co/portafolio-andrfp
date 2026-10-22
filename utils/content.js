@@ -6,7 +6,7 @@ import { Marked } from "marked";
 import { articles } from "./data/articles";
 import { books } from "./data/books";
 import { moments } from "./data/moments";
-import { CSIA_RELEASE_URL, press, pressHref, pressStories } from "./data/press";
+import { press, pressLink, pressStories } from "./data/press";
 
 const ROOT = path.join(process.cwd(), "content");
 
@@ -205,11 +205,12 @@ export function getFeed() {
 
   const coverage = pressStories.map((p) => {
     const outlets = press.filter((o) => o.story === p.story).map((o) => o.outlet);
+    const link = pressLink(p);
     return {
       id: `press-${p.story}`,
       kind: "article",
-      href: p.story === "csia-release" ? CSIA_RELEASE_URL : pressHref(p),
-      external: true,
+      href: link?.href ?? null,
+      external: Boolean(link),
       author: { name: "SWORT Aerospace", handle: "swort.net", avatar: "/media/brand/swort-emblem-light.png" },
       sort: p.date ?? "2026-08-17",
       dateLabel: p.date ? shortDay(p.date) : p.outlet,

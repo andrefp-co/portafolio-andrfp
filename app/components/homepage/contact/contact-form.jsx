@@ -90,6 +90,8 @@ function ContactForm() {
               className="sw-field"
               type="text"
               autoComplete="name"
+              aria-invalid={(error.required && !userInput.name) || undefined}
+              aria-describedby={error.required && !userInput.name ? "contact-required-error" : undefined}
               value={userInput.name}
               onChange={update("name")}
               onBlur={checkRequired}
@@ -103,8 +105,8 @@ function ContactForm() {
               className="sw-field"
               type="email"
               autoComplete="email"
-              aria-invalid={error.email || undefined}
-              aria-describedby={error.email ? "contact-email-error" : undefined}
+              aria-invalid={error.email || (error.required && !userInput.email) || undefined}
+              aria-describedby={error.email ? "contact-email-error" : error.required && !userInput.email ? "contact-required-error" : undefined}
               value={userInput.email}
               onChange={update("email")}
               onBlur={() =>
@@ -127,6 +129,8 @@ function ContactForm() {
               id="contact-message"
               className="sw-field"
               rows="5"
+              aria-invalid={(error.required && !userInput.message) || undefined}
+              aria-describedby={error.required && !userInput.message ? "contact-required-error" : undefined}
               value={userInput.message}
               onChange={update("message")}
               onBlur={checkRequired}
@@ -134,7 +138,9 @@ function ContactForm() {
           </div>
 
           {error.required && (
-            <p className="sw-field-error">Fill in your name, email and message.</p>
+            <p id="contact-required-error" role="alert" className="sw-field-error">
+              Fill in your name, email and message.
+            </p>
           )}
 
           <div className="flex flex-wrap items-center gap-5">

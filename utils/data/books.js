@@ -34,7 +34,7 @@ export const books = [
     length: "430+ pages",
     series: "Volume I of two",
     cover: "",
-    price: "",
+    price: "$35",
     formats: ["Print"],
     buyUrl: "",
     stripePriceEnv: "STRIPE_PRICE_AVIONICS_RESEARCH_METHODS_1",

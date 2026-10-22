@@ -439,6 +439,10 @@
     border-color: var(--sw-white);
   }
 
+  .sw-field[aria-invalid="true"] {
+    border-color: var(--sw-danger-text);
+  }
+
   .sw-field-error {
     font-size: 12px;
     color: var(--sw-danger-text);
@@ -486,11 +490,13 @@
     position: relative;
   }
 
+  /* Covers the host exactly and wraps where it wraps, so a label that runs
+     to two lines on a phone never draws past the edge of the screen. */
   .sx-ghost {
     position: absolute;
-    left: 0;
-    top: 0;
-    white-space: pre;
+    inset: 0;
+    overflow: hidden;
+    white-space: pre-wrap;
     pointer-events: none;
     font: inherit;
     letter-spacing: inherit;
@@ -634,6 +640,10 @@
 
   .sw-paper .sw-field:focus {
     border-color: #181818;
+  }
+
+  .sw-paper .sw-field[aria-invalid="true"] {
+    border-color: var(--sw-danger-text);
   }
 
   /* ── Status badge (research) ──────────────────────────────────────────── */

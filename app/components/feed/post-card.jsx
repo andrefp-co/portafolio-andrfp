@@ -216,10 +216,9 @@ function Media({ item, onOpenMedia, onDoubleLike }) {
 
 function LinkPreview({ item }) {
   return (
-    <a
+    <Go
       href={item.href}
-      target="_blank"
-      rel="noopener noreferrer"
+      external
       className="mt-3 block overflow-hidden rounded-xl border border-[var(--sw-border)] transition-colors hover:border-[var(--sw-border-strong)]"
     >
       {item.video ? (
@@ -242,7 +241,7 @@ function LinkPreview({ item }) {
         <span className="block text-[11px] tracking-[0.04em] text-[var(--sw-gray)]">{item.source}</span>
         <span className="mt-1 block text-[14px] leading-snug text-[var(--sw-white)]">{item.title}</span>
       </span>
-    </a>
+    </Go>
   );
 }
 
