@@ -1,10 +1,10 @@
 export const personalData = {
   name: "Andres Peña",
   profile: "/andres-pena.jpg",
-  designation: "Electrical Engineering Student & Full-Stack Developer",
+  designation: "Embedded Systems, Avionics & Electronics Test",
   description:
-    "My name is Andres and I'm an electrical engineering student and independent full-stack developer focused on embedded systems, aerospace R&D, and applied software engineering. Founder of SWORT LLC, with hands-on experience spanning firmware, system design, hardware and scalable systems.",
-  email: "penaavilaandresfelipe@gmail.com",
+    "I'm an embedded systems technical lead with paid avionics development experience, and the founder of SWORT Aerospace, where I lead flight-controller programs from customer requirements to prototype acceptance. My work is hands-on: C/C++ and Python, PCB and schematic review, prototype assembly, soldering, hardware troubleshooting, and validation. I study electrical engineering at Montgomery College and work in English and Spanish.",
+  email: "andrfp@swort.net",
   phone: "+1 (301) 633-8696",
   address: "Washington, DC area",
   timeZone: "America/New_York",
@@ -18,5 +18,6 @@ export const personalData = {
   leetcode: "https://leetcode.com/u/andrefp-co/",
   stackOverflow: "https://stackoverflow.com/users/32070657/andres",
   devUsername: "andrfp",
-  resume: "https://drive.google.com/file/d/1Vo45tFeCH9X0pMTjxQVkgQbSuYalB7Vl/view"
+  // The engineering CV, served from /public.
+  resume: "/andres-pena-cv.pdf"
 };

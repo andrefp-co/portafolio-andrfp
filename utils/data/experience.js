@@ -1,32 +1,37 @@
+// From the engineering CV (latest). Most recent and most senior first.
 export const experiences = [
   {
     id: 1,
-    title: "Electrical Engineer",
-    company: "Purdue Space Program (PSP)",
-    duration: "2025 – Present",
-    link: "https://purdueseds.space/astra/",
+    title: "Founder & Technical Lead",
+    company: "SWORT Aerospace",
+    duration: "2023 – Present",
+    link: "https://www.swort.net",
     desc: [
-      "Worked with embedded firmware (2,500+ lines of C/C++) for avionics and flight control subsystems."
+      "Lead paid flight-controller programs, including 50 × 50 mm X8 avionics; own customer requirements, system architecture, schematic and PCB reviews, contractor coordination, and prototype acceptance planning.",
+      "Direct prototype troubleshooting, corrective actions, design revisions, and repeat testing before release.",
+      "Assemble, solder, and troubleshoot electronics with an oscilloscope, multimeter, and bench power supplies.",
+      "Support projects under nondisclosure agreements; protect proprietary files and control agreed disclosures.",
     ],
   },
   {
     id: 2,
-    title: "Electromechanical Engineer",
-    company: "American Society of Mechanical Engineers (ASME)",
+    title: "Electromechanical Lead",
+    company: "ASME / Shell Eco-marathon",
     duration: "2025 – Present",
     link: "https://asmepnw.com",
     desc: [
-      "Designed a hydraulic braking system in SolidWorks; MATLAB simulations reduced projected stopping distance by ~12%."
+      "Lead ongoing STM32 vehicle telemetry and motor-controller development: sensor data acquisition, offline logging, driver display, and CSIA shadow monitoring.",
+      "Designed and integrated the vehicle's hydraulic brake system; created SolidWorks CAD and MATLAB simulations projecting ~12% shorter stopping distance.",
     ],
   },
   {
     id: 3,
-    title: "Founder & Lead Systems Engineer",
-    company: "SWORT LLC",
-    duration: "2023 – 2025",
-    link: "https://www.swort.net",
+    title: "Avionics Engineer",
+    company: "Purdue Space Program / ASTRA",
+    duration: "2025",
+    link: "https://purdueseds.space/astra/",
     desc: [
-      "Led end-to-end product development, digital infrastructure and embedded and automation systems using Arduino, ESP32, Python/MicroPython, and Linux"
+      "Developed C/C++ flight-control firmware and avionics sensor interfaces for GNC testing; performed LTspice circuit analysis, PCB layout review, and board-level fault isolation.",
     ],
   },
 ];

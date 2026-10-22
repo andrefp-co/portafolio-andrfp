@@ -12,7 +12,7 @@ import { useRef } from "react";
 // built around the one number the project is judged by.
 function ProjectVisual({ project, parallax }) {
   const { metric } = project;
-  // Long readings like "200–500 Hz" step down a size so they stay on one line.
+  // Long readings (many digits or a unit suffix) step down a size so they stay on one line.
   const metricLength = metric ? `${metric.prefix ?? ""}${metric.value}${metric.suffix ?? ""}`.length : 0;
   const metricSize = metricLength > 7 ? "text-[clamp(48px,6.4vw,92px)]" : "text-[clamp(64px,9vw,128px)]";
 

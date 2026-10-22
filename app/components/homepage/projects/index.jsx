@@ -10,7 +10,7 @@ const Projects = () => {
         <SectionHeading eyebrow="Projects" title="Selected engineering work." />
 
         <div className="mt-6 border-t border-[var(--sw-rule)]">
-          {projectsData.slice(0, 4).map((project, index) => (
+          {projectsData.map((project, index) => (
             <ProjectCard key={project.id} project={project} index={index} />
           ))}
         </div>

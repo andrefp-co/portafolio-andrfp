@@ -3,18 +3,16 @@
 import { useInView, useReducedMotion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  SiAltiumdesigner, SiAmazonaws, SiAnsys, SiArduino, SiAutodesk, SiC, SiCplusplus, SiCss3,
-  SiDassaultsystemes, SiEspressif, SiFirebase, SiGit, SiGo, SiHtml5, SiJavascript, SiJulia,
-  SiLinux, SiLtspice, SiMicropython, SiMui, SiMysql, SiNextdotjs, SiPhp, SiPostgresql,
-  SiPython, SiReact, SiRuby,
+  SiAltiumdesigner, SiArduino, SiC, SiCplusplus, SiDassaultsystemes, SiDocker, SiEasyeda,
+  SiEspressif, SiGit, SiJavascript, SiKicad, SiLinux, SiLtspice, SiMicropython, SiNextdotjs,
+  SiPytest, SiPython, SiRaspberrypi, SiReact, SiStmicroelectronics,
 } from "react-icons/si";
 
 // Named imports only, so the bundle carries these icons and not the whole set.
 const ICONS = {
-  SiAltiumdesigner, SiAmazonaws, SiAnsys, SiArduino, SiAutodesk, SiC, SiCplusplus, SiCss3,
-  SiDassaultsystemes, SiEspressif, SiFirebase, SiGit, SiGo, SiHtml5, SiJavascript, SiJulia,
-  SiLinux, SiLtspice, SiMicropython, SiMui, SiMysql, SiNextdotjs, SiPhp, SiPostgresql,
-  SiPython, SiReact, SiRuby,
+  SiAltiumdesigner, SiArduino, SiC, SiCplusplus, SiDassaultsystemes, SiDocker, SiEasyeda,
+  SiEspressif, SiGit, SiJavascript, SiKicad, SiLinux, SiLtspice, SiMicropython, SiNextdotjs,
+  SiPytest, SiPython, SiRaspberrypi, SiReact, SiStmicroelectronics,
 };
 
 const AUTO_SPIN = 0.16; // rad/s

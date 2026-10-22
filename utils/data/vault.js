@@ -129,10 +129,10 @@ export const vault = {
       kicker: "Contact",
       title: "Direct line",
       rows: [
-        ["SWORT email", "andrfp@swort.net"],
-        ["Personal email", personalData.email],
+        ["SWORT email", personalData.email],
+        ["Personal email", "penaavilaandresfelipe@gmail.com"],
         ["Phone", personalData.phone],
-        ["Résumé", personalData.resume],
+        ["Résumé", `https://andres.swort.net${personalData.resume}`],
         ["LinkedIn", personalData.linkedIn],
       ],
     },

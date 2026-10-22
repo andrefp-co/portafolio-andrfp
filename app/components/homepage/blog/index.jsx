@@ -13,7 +13,9 @@ function Blog({ items = [], blogs = [] }) {
     <section id='blogs' className="sw-section sw-paper">
       <div className="sw-container">
         <div className="flex flex-wrap items-end justify-between gap-6">
-          <SectionHeading eyebrow="Writing" title="From the blog." />
+          <div>
+            <SectionHeading eyebrow="Writing" title="From the blog." />
+          </div>
           <Link className="sw-btn sw-btn-primary" href="/blog">
             All writing
           </Link>

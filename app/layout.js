@@ -20,12 +20,12 @@ const bebasNeue = Bebas_Neue({
 });
 
 const description =
-  "Andres Peña is an electrical engineering student and full-stack developer in the Washington, DC area, working on embedded firmware, avionics, and aerospace R&D.";
+  "Andres Peña is an embedded systems and avionics engineer in the Washington, DC area and the founder of SWORT Aerospace: flight-controller programs, embedded firmware, electronics test, and sensor-integrity research.";
 
 export const metadata = {
   metadataBase: new URL("https://andres.swort.net"),
   title: {
-    default: `${personalData.name} | Electrical Engineer`,
+    default: `${personalData.name} | Embedded Systems & Avionics`,
     template: `%s | ${personalData.name}`,
   },
   description,
