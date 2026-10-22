@@ -404,7 +404,7 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
   const echo = phase === "password" ? "" : value;
 
   return (
-    <div className="vt-screen vx-noprint fixed inset-0 z-[100] flex flex-col overflow-hidden">
+    <div data-lenis-prevent className="vt-screen vx-noprint fixed inset-0 z-[100] flex flex-col overflow-hidden">
       <header className="relative z-10 flex items-center justify-between gap-4 border-b border-white/10 px-4 py-2.5 text-[10px] uppercase tracking-[0.2em] text-[#8a8a8a] sm:px-6">
         <span className="truncate">SWORT/OS 1.0 · tty1</span>
         <span className="flex shrink-0 items-center gap-4">

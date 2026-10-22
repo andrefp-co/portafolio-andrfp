@@ -11,6 +11,9 @@ export const experiences = [
     // Shown beside the role instead of a photo: the attitude telemetry
     // instrument (app/components/instruments/telemetry.jsx).
     instrument: "telemetry",
+    // The reel opens this role on a photo, and shows the board's stack-up.
+    cover: { src: "/media/feed/swort-ssil-electronics.jpg", alt: "Avionics hardware installed in an open airframe bay" },
+    stack: true,
     // The flipping coin in the Experience reel: tools this role runs on.
     coin: ["STM32H7", "PCB", "C/C++", "X8"],
     // Shows the partner button that opens the restricted file at /vault.
@@ -27,6 +30,11 @@ export const experiences = [
     title: "Electromechanical Lead",
     company: "ASME / Shell Eco-marathon",
     short: "Shell Eco-marathon",
+    cover: { src: "/media/feed/shell-eco-marathon-320.jpg", alt: "The team's car, number 320, on the Shell Eco-marathon stage" },
+    // Photos for the reel's photo window (the cover is already the car).
+    reelImages: [
+      { src: "/media/feed/shell-eco-marathon-inspection.jpg", alt: "The team beside car 324 after passing technical inspection at the Shell Eco-marathon" },
+    ],
     tab: "Shell",
     duration: "2025 – Present",
     link: "https://asmepnw.com",
@@ -45,6 +53,12 @@ export const experiences = [
     title: "Avionics Engineer",
     company: "Purdue Space Program / ASTRA",
     short: "Purdue Space Program",
+    cover: { src: "/media/feed/psp-toad-render.jpg", alt: "A render of the Purdue Space Program's TOAD lander over campus" },
+    reelImages: [
+      { src: "/media/feed/psp-astra-testbed.jpg", alt: "ASTRA on the shop floor with its flight computer and wiring" },
+      { src: "/media/feed/psp-thrust-chamber.jpg", alt: "A thrust chamber assembly on a test stand" },
+      { src: "/media/feed/psp-toad-mass-properties.jpg", alt: "TOAD's mass properties in the design model" },
+    ],
     tab: "Purdue",
     duration: "2025",
     link: "https://purdueseds.space/astra/",

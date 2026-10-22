@@ -8,6 +8,7 @@ export default function sitemap() {
     { url: absolute("/"), lastModified: now, changeFrequency: "monthly", priority: 1 },
     { url: absolute("/blog"), lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: absolute("/research"), lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: absolute("/book"), lastModified: now, changeFrequency: "monthly", priority: 0.8 },
   ];
   const research = getResearch().map((e) => ({
     url: absolute(`/research/${e.slug}`),

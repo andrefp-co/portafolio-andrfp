@@ -7,6 +7,7 @@ import ScrollToTop from "./components/helper/scroll-to-top";
 import MotionProvider from "./components/motion/motion-provider";
 import Navbar from "./components/navbar";
 import Toaster from "./components/helper/toaster";
+import SmoothScroll from "./components/motion/smooth-scroll";
 import "./css/globals.scss";
 
 const dmMono = DM_Mono({
@@ -84,6 +85,7 @@ export default function RootLayout({ children }) {
             {children}
             <ScrollToTop />
             <Toaster />
+            <SmoothScroll />
           </main>
           <Footer />
         </MotionProvider>

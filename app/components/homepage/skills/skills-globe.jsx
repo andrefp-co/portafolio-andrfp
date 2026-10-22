@@ -2,6 +2,7 @@
 
 import SectionHeading from "@/app/components/helper/section-heading";
 import { LAND_ROWS } from "@/utils/data/land-dots";
+import { scrollToY } from "@/utils/scroll";
 import { motion, useMotionValueEvent, useReducedMotion, useScroll } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -143,8 +144,9 @@ export default function SkillsGlobe({ groups }) {
     io.observe(stage);
 
     const smoothstep = (x) => x * x * (3 - 2 * x);
+    const buckets = Array.from({ length: 16 }, () => []);
     // Per-tool highlight, eased toward its target every frame.
-    const glow = items.map(() => 1);
+    const highlight = items.map(() => 1);
     const DEG72 = (2 * Math.PI) / n;
 
     const frame = (now) => {
@@ -188,11 +190,11 @@ export default function SkillsGlobe({ groups }) {
       ctx.clearRect(0, 0, size, size);
 
       // Atmosphere and limb.
-      const glow = ctx.createRadialGradient(c, c, R * 0.6, c, c, R * 1.18);
-      glow.addColorStop(0, "rgba(255,255,255,0)");
-      glow.addColorStop(0.85, `rgba(255,255,255,${0.05 * ease})`);
-      glow.addColorStop(1, "rgba(255,255,255,0)");
-      ctx.fillStyle = glow;
+      const halo = ctx.createRadialGradient(c, c, R * 0.6, c, c, R * 1.18);
+      halo.addColorStop(0, "rgba(255,255,255,0)");
+      halo.addColorStop(0.85, `rgba(255,255,255,${0.05 * ease})`);
+      halo.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = halo;
       ctx.fillRect(0, 0, size, size);
       ctx.strokeStyle = `rgba(255,255,255,${0.2 * ease})`;
       ctx.lineWidth = 1;
@@ -201,15 +203,23 @@ export default function SkillsGlobe({ groups }) {
       ctx.stroke();
 
       // Land, as dots: brighter toward the viewer, faint on the far side.
+      // Drawn in 16 brightness batches rather than one fill per dot.
       const dotR = Math.max(0.8, size / 520);
+      for (const b of buckets) b.length = 0;
       for (let i = 0; i < dots.length; i++) {
         const [x, y, z] = rotate(dots[i], s.ay, s.ax);
         // Dots scatter in from further out while the globe gathers.
         const k = 1 + (1 - ease) * (0.6 + (i % 7) * 0.12);
         const a = z > 0 ? 0.18 + z * 0.62 : 0.05 + (1 + z) * 0.05;
-        ctx.fillStyle = `rgba(255,255,255,${(a * ease).toFixed(3)})`;
-        ctx.fillRect(c + x * R * k - dotR, c + y * R * k - dotR, dotR * 2, dotR * 2);
+        buckets[Math.min(15, Math.floor(a * 16))].push(c + x * R * k - dotR, c + y * R * k - dotR);
       }
+      buckets.forEach((b, level) => {
+        if (!b.length) return;
+        ctx.fillStyle = `rgba(255,255,255,${(((level + 0.5) / 16) * ease).toFixed(3)})`;
+        ctx.beginPath();
+        for (let j = 0; j < b.length; j += 2) ctx.rect(b[j], b[j + 1], dotR * 2, dotR * 2);
+        ctx.fill();
+      });
 
       // Tool marks on the surface.
       items.forEach((item, i) => {
@@ -219,10 +229,12 @@ export default function SkillsGlobe({ groups }) {
         const front = (z + 1) / 2;
         // 1 for the discipline in view, fading over the turn to the next.
         const want = f < 0 ? 1 : Math.max(0, 1 - Math.abs(f - item.group) * 1.6);
-        glow[i] += (want - glow[i]) * (1 - Math.exp(-dt * 8));
-        const g = glow[i];
-        const scale = (0.55 + front * 0.6) * (1 + 0.08 * g);
-        const opacity = (0.04 + front * 0.12 + g * (0.06 + front * 0.78)) * ease;
+        highlight[i] += (want - highlight[i]) * (1 - Math.exp(-dt * 8));
+        const g = highlight[i];
+        // Every logo stays readable on the near side; the discipline in view
+        // is brighter and a little larger.
+        const scale = (0.55 + front * 0.6) * (1 + 0.12 * g);
+        const opacity = (0.06 + front * (0.58 + 0.36 * g)) * ease;
         el.style.transform = `translate3d(${c + x * R}px, ${c + y * R}px, 0) translate(-50%, -50%) scale(${scale.toFixed(3)})`;
         el.style.opacity = opacity.toFixed(3);
         el.style.zIndex = String(Math.round(front * 100));
@@ -291,7 +303,7 @@ export default function SkillsGlobe({ groups }) {
     if (!track) return;
     const top = track.getBoundingClientRect().top + window.scrollY;
     const travel = track.offsetHeight - window.innerHeight;
-    window.scrollTo({ top: top + ((i + 0.5) / n) * travel, behavior: "smooth" });
+    scrollToY(top + ((i + 0.5) / n) * travel);
   };
 
   const current = step === null ? null : groups[step];

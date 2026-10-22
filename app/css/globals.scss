@@ -499,6 +499,48 @@
   }
 
   /* ── Hero ─────────────────────────────────────────────────────────────── */
+  /* Entrance animations in CSS, so they run from the first paint instead of
+     waiting for JavaScript. --d sets each element's delay. */
+  @keyframes sw-rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+  }
+
+  @keyframes sw-letter {
+    from {
+      transform: translateY(135%);
+    }
+  }
+
+  @keyframes sw-feed-in {
+    from {
+      opacity: 0;
+      transform: scale(1.06);
+    }
+  }
+
+  .sw-rise {
+    animation: sw-rise 0.8s var(--sw-ease-out) var(--d, 0s) both;
+  }
+
+  .sw-letter {
+    animation: sw-letter 0.9s var(--sw-ease-out) var(--d, 0s) both;
+  }
+
+  .sw-feed-in {
+    animation: sw-feed-in 1.6s var(--sw-ease-out) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sw-rise,
+    .sw-letter,
+    .sw-feed-in {
+      animation: none !important;
+    }
+  }
+
   /* A soft light falloff over the coordinate grid, brightest behind the
      instrument panel, so the hero has depth without introducing a hue. */
   .sw-hero-grid::after {

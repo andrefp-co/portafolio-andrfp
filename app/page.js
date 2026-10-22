@@ -1,6 +1,6 @@
 import { checkoutStatus } from "@/utils/checkout";
 import { getFeed, getResearch } from "@/utils/content";
-import { graph, person, website } from "@/utils/seo";
+import { bookRecord, graph, organization, person, website } from "@/utils/seo";
 import JsonLd from "./components/helper/json-ld";
 import { personalData } from "@/utils/data/personal-data";
 import BookShelf from "./components/books/book-shelf";
@@ -40,7 +40,7 @@ export default async function Home() {
 
   return (
     <div suppressHydrationWarning >
-      <JsonLd data={graph(person, website, { "@type": "ProfilePage", "@id": "https://andres.swort.net/#profile", url: "https://andres.swort.net", mainEntity: { "@id": person["@id"] }, isPartOf: { "@id": website["@id"] } })} />
+      <JsonLd data={graph(person, website, organization, bookRecord(), { "@type": "ProfilePage", "@id": "https://andres.swort.net/#profile", url: "https://andres.swort.net", mainEntity: { "@id": person["@id"] }, isPartOf: { "@id": website["@id"] } })} />
       {/* Who → what I've built → what I build with → what I've found and
           written → how to reach me. */}
       <HeroSection />

@@ -6,7 +6,7 @@ import { Marked } from "marked";
 import { articles } from "./data/articles";
 import { books } from "./data/books";
 import { moments } from "./data/moments";
-import { press, pressHref } from "./data/press";
+import { CSIA_RELEASE_URL, press, pressHref, pressStories } from "./data/press";
 
 const ROOT = path.join(process.cwd(), "content");
 
@@ -203,22 +203,25 @@ export function getFeed() {
     search: `${a.title} ${a.text} ${a.source} ${(a.tags ?? []).join(" ")}`.toLowerCase(),
   }));
 
-  const coverage = press.map((p) => ({
-    id: `press-${p.id}`,
-    kind: "article",
-    href: pressHref(p),
-    external: true,
-    author: { name: "SWORT Aerospace", handle: "swort.net", avatar: "/media/brand/swort-emblem-light.png" },
-    sort: p.date ?? "2026-08-17",
-    dateLabel: p.date ? shortDay(p.date) : p.outlets[0],
-    title: p.title,
-    text: p.text,
-    source: `${p.outlets.join(" · ")} · ${p.kind}`,
-    image: imageOf("/media/feed/swort-card.jpg", "The SWORT emblem"),
-    video: null,
-    tags: ["Press", "SWORT"],
-    search: `${p.title} ${p.text} ${p.outlets.join(" ")} press`.toLowerCase(),
-  }));
+  const coverage = pressStories.map((p) => {
+    const outlets = press.filter((o) => o.story === p.story).map((o) => o.outlet);
+    return {
+      id: `press-${p.story}`,
+      kind: "article",
+      href: p.story === "csia-release" ? CSIA_RELEASE_URL : pressHref(p),
+      external: true,
+      author: { name: "SWORT Aerospace", handle: "swort.net", avatar: "/media/brand/swort-emblem-light.png" },
+      sort: p.date ?? "2026-08-17",
+      dateLabel: p.date ? shortDay(p.date) : p.outlet,
+      title: p.title,
+      text: p.text,
+      source: `${outlets.join(" · ")} · ${p.kind}`,
+      image: imageOf(p.image, `${p.outlet} page carrying the story`),
+      video: null,
+      tags: ["Press", "SWORT"],
+      search: `${p.title} ${p.text} ${outlets.join(" ")} press`.toLowerCase(),
+    };
+  });
 
   const photos = moments.map((m) => ({
     id: `photo-${m.id}`,

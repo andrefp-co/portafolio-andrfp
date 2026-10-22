@@ -101,7 +101,7 @@ function Highlights({ stories, seen, onOpen }) {
                 onClick={() => onOpen(i)}
                 whileTap={{ scale: 0.92 }}
                 className="flex w-[72px] flex-col items-center gap-2"
-                aria-label={`Open ${story.label} highlights`}
+                aria-label={`${story.label} highlights`}
               >
                 <span className={`rounded-full p-[2px] ${isSeen ? "bg-[var(--sw-border-strong)]" : "bg-gradient-to-tr from-[#7fa6d8] via-white to-[#bfc2c5]"}`}>
                   <span className="block rounded-full border-2 border-[var(--sw-black)]">
@@ -109,7 +109,7 @@ function Highlights({ stories, seen, onOpen }) {
                       {story.cover ? (
                         <Image src={story.cover} alt="" fill sizes="64px" className={story.contain ? "object-contain p-3" : story.figure ? "object-cover object-top" : "object-cover"} />
                       ) : (
-                        <span className="sw-bg-grid flex h-full flex-col items-center justify-center bg-[#0d0d0d] font-[family-name:var(--sw-font-display)] leading-none text-white">
+                        <span aria-hidden="true" className="sw-bg-grid flex h-full flex-col items-center justify-center bg-[#0d0d0d] font-[family-name:var(--sw-font-display)] leading-none text-white">
                           <span className="text-[9px] tracking-[0.18em] text-[#8d9297]">VOL</span>
                           <span className="text-[22px]">I</span>
                         </span>
@@ -367,6 +367,8 @@ export default function BlogFeed({ profile, items, stories, topics, book }) {
             <MediaGrid items={media} onOpen={setLightbox} />
           ) : (
             <div aria-live="polite">
+              {/* Gives the post titles (h3) a parent heading for screen readers. */}
+              <h2 className="sr-only">Posts</h2>
               <AnimatePresence mode="popLayout" initial={false}>
                 {visible.map((item) => (
                   <PostCard

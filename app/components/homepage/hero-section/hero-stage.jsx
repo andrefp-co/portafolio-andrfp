@@ -2,8 +2,7 @@
 
 import { motion, useInView, useMotionValue, useMotionValueEvent, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
 import { useEffect, useRef } from "react";
-
-const EASE = [0.22, 1, 0.36, 1];
+import { preload } from "react-dom";
 
 // The first screen. The bench clip fills the whole hero as a camera feed
 // behind the introduction: corner brackets, a running timecode, and a
@@ -11,6 +10,8 @@ const EASE = [0.22, 1, 0.36, 1];
 // page scrolls on, the feed pushes in and fades into the page instead of
 // stopping at a hard edge.
 export default function HeroStage({ children }) {
+  // The poster is the first thing painted: fetch it before anything else.
+  preload("/media/hero-pcb.jpg", { as: "image", fetchPriority: "high" });
   const ref = useRef(null);
   const videoRef = useRef(null);
   const timeRef = useRef(null);
@@ -88,12 +89,7 @@ export default function HeroStage({ children }) {
     >
       {/* The feed, behind everything. */}
       <motion.div aria-hidden="true" className="absolute inset-0 -z-20" style={reduce ? undefined : { scale: feedScale, opacity: feedOpacity }}>
-        <motion.div
-          className="absolute inset-0"
-          initial={reduce ? false : { opacity: 0, scale: 1.06 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.6, ease: EASE }}
-        >
+        <div className="sw-feed-in absolute inset-0">
           {/* H.264 first (Safari, Chrome, Edge); VP9 for browsers without H.264. */}
           <video
             ref={videoRef}
@@ -107,7 +103,7 @@ export default function HeroStage({ children }) {
             <source src="/media/hero-loop.mp4" type="video/mp4" />
             <source src="/media/hero-loop.webm" type="video/webm" />
           </video>
-        </motion.div>
+        </div>
       </motion.div>
 
       {/* Scrims: the text side stays readable, and the bottom fades into the

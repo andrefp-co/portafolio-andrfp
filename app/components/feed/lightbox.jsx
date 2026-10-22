@@ -1,5 +1,6 @@
 "use client";
 
+import { lockScroll } from "@/utils/scroll";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,11 +14,10 @@ export default function Lightbox({ item, onClose }) {
   useEffect(() => {
     if (!item) return;
     const onKey = (e) => e.key === "Escape" && onClose();
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlock = lockScroll();
     window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = prev;
+      unlock();
       window.removeEventListener("keydown", onKey);
     };
   }, [item, onClose]);

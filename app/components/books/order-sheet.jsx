@@ -1,5 +1,6 @@
 "use client";
 
+import { lockScroll } from "@/utils/scroll";
 import { isValidEmail } from "@/utils/check-email";
 import { PREVIEW } from "@/utils/preview";
 import { AnimatePresence, motion } from "motion/react";
@@ -28,12 +29,11 @@ export default function OrderSheet({ book, open, onClose, checkout }) {
     if (!open) return;
     shownAt.current = Date.now();
     const onKey = (e) => e.key === "Escape" && onClose();
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlock = lockScroll();
     window.addEventListener("keydown", onKey);
     const t = setTimeout(() => firstField.current?.focus(), 250);
     return () => {
-      document.body.style.overflow = prev;
+      unlock();
       window.removeEventListener("keydown", onKey);
       clearTimeout(t);
     };

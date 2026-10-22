@@ -184,7 +184,7 @@ export default async function PostPage({ params }) {
         </section>
       )}
 
-      <BookShelf tone="paper" eyebrow="From the author" checkout={checkoutStatus()} />
+      <BookShelf tone="paper" variant="compact" eyebrow="From the author" checkout={checkoutStatus()} />
     </>
   );
 }

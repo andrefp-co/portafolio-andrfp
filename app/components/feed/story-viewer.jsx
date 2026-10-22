@@ -1,5 +1,6 @@
 "use client";
 
+import { lockScroll } from "@/utils/scroll";
 import { AnimatePresence, motion, useAnimationFrame, useMotionValue, useReducedMotion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -64,11 +65,10 @@ export default function StoryViewer({ story, onClose, onNextStory }) {
         setIndex((i) => Math.max(0, i - 1));
       }
     };
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlock = lockScroll();
     window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = prevOverflow;
+      unlock();
       window.removeEventListener("keydown", onKey);
     };
   }, [story, next, onClose, progress]);

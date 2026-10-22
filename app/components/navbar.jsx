@@ -1,5 +1,6 @@
 "use client";
 
+import { lockScroll } from "@/utils/scroll";
 import { personalData } from "@/utils/data/personal-data";
 import { notePath } from "@/utils/nav-history";
 import ProtectedEmail from "./helper/protected-email";
@@ -76,10 +77,10 @@ function Navbar() {
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => e.key === "Escape" && setOpen(false);
-    document.documentElement.style.overflow = "hidden";
+    const unlock = lockScroll(document.documentElement);
     window.addEventListener("keydown", onKey);
     return () => {
-      document.documentElement.style.overflow = "";
+      unlock();
       window.removeEventListener("keydown", onKey);
     };
   }, [open]);

@@ -7,13 +7,10 @@ import { motion } from "motion/react";
 import Link from "next/link";
 import SocialLinks from "@/app/components/helper/social-links";
 
-const EASE = [0.22, 1, 0.36, 1];
-
-const rise = (delay) => ({
-  initial: { opacity: 0, y: 18 },
-  animate: { opacity: 1, y: 0 },
-  transition: { delay, duration: 0.8, ease: EASE },
-});
+// Entrance timing for each block, in seconds. The animation itself is CSS
+// (.sw-rise in globals.scss), so it runs from the first paint instead of
+// waiting for JavaScript to load.
+const rise = (delay) => ({ "--d": `${delay}s` });
 
 // The page's one orchestrated moment: the name rises letter by letter out of
 // a mask, then the supporting lines settle in underneath it.
@@ -38,13 +35,7 @@ export default function HeroIntro() {
                   // Outer span: the one-time reveal. Inner span: a springy
                   // key that lifts under a pointer or finger, kept separate
                   // so letting go never replays the reveal's stagger delay.
-                  <motion.span
-                    key={`${char}-${i}`}
-                    className="inline-block"
-                    initial={{ y: "135%" }}
-                    animate={{ y: "0%" }}
-                    transition={{ delay: 0.15 + i * 0.04, duration: 0.9, ease: EASE }}
-                  >
+                  <span key={`${char}-${i}`} className="sw-letter inline-block" style={{ "--d": `${0.15 + i * 0.04}s` }}>
                     <motion.span
                       className="inline-block cursor-default"
                       whileHover={{ y: "-10%" }}
@@ -53,7 +44,7 @@ export default function HeroIntro() {
                     >
                       {char}
                     </motion.span>
-                  </motion.span>
+                  </span>
                 );
               })}
             </span>
@@ -61,11 +52,11 @@ export default function HeroIntro() {
         </span>
       </h1>
 
-      <motion.p className="sw-title mt-5 max-w-[560px]" {...rise(0.7)}>
+      <p className="sw-title sw-rise mt-5 max-w-[560px]" style={rise(0.7)}>
         {personalData.designation}.
-      </motion.p>
+      </p>
 
-      <motion.dl className="mt-8 grid max-w-md grid-cols-2 gap-6 border-t border-[var(--sw-rule)] pt-5" {...rise(0.85)}>
+      <dl className="sw-rise mt-8 grid max-w-md grid-cols-2 gap-6 border-t border-[var(--sw-rule)] pt-5" style={rise(0.85)}>
         <div>
           <dt className="sw-label">Based in</dt>
           <dd className="mt-1 text-sm text-[var(--sw-white)]">{personalData.address}</dd>
@@ -76,9 +67,9 @@ export default function HeroIntro() {
             <LocalTime timeZone={personalData.timeZone} />
           </dd>
         </div>
-      </motion.dl>
+      </dl>
 
-      <motion.div className="mt-9 flex flex-wrap gap-3" {...rise(1)}>
+      <div className="sw-rise mt-9 flex flex-wrap gap-3" style={rise(1)}>
         <Link href="#contact" className="sw-btn sw-btn-primary">
           Contact me
         </Link>
@@ -89,11 +80,11 @@ export default function HeroIntro() {
           </svg>
           Get resume
         </Link>
-      </motion.div>
+      </div>
 
-      <motion.div className="mt-8" {...rise(1.1)}>
+      <div className="sw-rise mt-8" style={rise(1.1)}>
         <SocialLinks />
-      </motion.div>
+      </div>
     </div>
   );
 }

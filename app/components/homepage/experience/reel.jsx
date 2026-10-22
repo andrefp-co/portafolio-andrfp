@@ -1,8 +1,10 @@
 "use client";
 
 import SectionHeading from "@/app/components/helper/section-heading";
+import PcbStack from "@/app/components/instruments/pcb-stack";
 import Telemetry from "@/app/components/instruments/telemetry";
 import { openMail } from "@/utils/obfuscate";
+import { scrollToY } from "@/utils/scroll";
 import { motion, useMotionValueEvent, useScroll, useSpring } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,15 +21,18 @@ const WIDE = "w-[min(600px,72svh)] max-sm:w-[86vw]";
 
 const two = (n) => String(n).padStart(2, "0");
 
-// The roles as one row of cards: for each, a title card, its instrument or
-// photos, a coin of the tools it runs on, what the work was (two lines per
-// card), and for SWORT the partner door to the restricted file.
+// The roles as one row of cards: for each, a title card on a photo, its
+// board stack-up, instrument or photos, a coin of the tools it runs on, what
+// the work was (two lines per card), and for SWORT the partner door to the
+// restricted file.
 function buildCards(items) {
   const cards = [];
   items.forEach((exp, role) => {
     cards.push({ key: `${exp.id}-intro`, type: "intro", role, exp });
+    if (exp.stack) cards.push({ key: `${exp.id}-stack`, type: "stack", role, exp });
     if (exp.instrument === "telemetry") cards.push({ key: `${exp.id}-telemetry`, type: "telemetry", role, exp, zoom: true });
-    if (exp.images?.length) cards.push({ key: `${exp.id}-photos`, type: "photos", role, exp });
+    const photos = exp.reelImages ?? exp.images;
+    if (photos?.length) cards.push({ key: `${exp.id}-photos`, type: "photos", role, exp, photos, wide: true });
     if (exp.coin?.length) cards.push({ key: `${exp.id}-coin`, type: "coin", role, exp });
     const parts = [];
     for (let i = 0; i < (exp.desc?.length ?? 0); i += 2) parts.push(exp.desc.slice(i, i + 2));
@@ -39,21 +44,37 @@ function buildCards(items) {
   return cards;
 }
 
-function IntroCard({ exp, role, count }) {
+function IntroCard({ exp, role, count, coverRef }) {
   return (
-    <div className="flex h-full flex-col justify-between border border-[var(--sw-border)] bg-[#0b0b0b] p-6 sm:p-8">
-      <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.18em] text-[var(--sw-gray)]">
+    <div className="relative flex h-full flex-col justify-between overflow-hidden border border-[var(--sw-border)] bg-[#0b0b0b] p-6 sm:p-8">
+      {exp.cover && (
+        <>
+          <div ref={coverRef} className="absolute inset-0 will-change-transform">
+            <Image src={exp.cover.src} alt={exp.cover.alt} fill sizes="(max-width: 640px) 80vw, 440px" className="object-cover" />
+          </div>
+          <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-black/30" />
+        </>
+      )}
+      <div className="relative flex items-center justify-between text-[11px] uppercase tracking-[0.18em] text-white/75">
         <span className="tabular-nums">
           {two(role + 1)} / {two(count)}
         </span>
         <span>{exp.duration}</span>
       </div>
-      <div>
+      <div className="relative">
         <h3 className="font-[family-name:var(--sw-font-display)] text-[clamp(38px,4.4vw,56px)] leading-[0.94] tracking-[0.02em] text-white [text-wrap:balance]">
           {exp.title}
         </h3>
-        <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-[var(--sw-silver)]">{exp.company}</p>
+        <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-white/80">{exp.company}</p>
       </div>
+    </div>
+  );
+}
+
+function StackCard() {
+  return (
+    <div className="h-full border border-[var(--sw-border)] bg-[radial-gradient(circle_at_40%_45%,#16181b,#0b0b0b_70%)]">
+      <PcbStack caption="Four-layer STM32H743 flight controller, pulled apart into its stack-up." />
     </div>
   );
 }
@@ -69,14 +90,14 @@ function TelemetryCard() {
 
 // Photos behind a window: a strip of images slides inside the card as it
 // travels, so one picture wipes into the next.
-function PhotosCard({ exp, stripRef }) {
-  const n = exp.images.length;
+function PhotosCard({ exp, photos, stripRef }) {
+  const n = photos.length;
   return (
     <div className="relative h-full overflow-hidden border border-[var(--sw-border)] bg-black">
       <div ref={stripRef} className="flex h-full will-change-transform" style={{ width: `${n * 100}%` }}>
-        {exp.images.map((img) => (
+        {photos.map((img) => (
           <div key={img.src} className="relative h-full" style={{ width: `${100 / n}%` }}>
-            <Image src={img.src} alt={img.alt} fill sizes="(max-width: 640px) 80vw, 440px" className="object-cover" />
+            <Image src={img.src} alt={img.alt} fill sizes="(max-width: 640px) 86vw, 600px" className="object-cover" />
           </div>
         ))}
       </div>
@@ -184,6 +205,7 @@ export default function ExperienceReel({ items }) {
   const stripRefs = useRef({});
   const coinRefs = useRef({});
   const labelRefs = useRef({});
+  const coverRefs = useRef({});
   const geo = useRef({ centers: [], travel: 1, vw: 1, blur: false });
   const [trackHeight, setTrackHeight] = useState(null);
   const [role, setRole] = useState(0);
@@ -212,16 +234,27 @@ export default function ExperienceReel({ items }) {
         const scale = card.zoom ? 0.88 + 0.2 * e : 0.92 + 0.08 * e;
         face.style.transform = `scale(${scale.toFixed(4)})`;
         face.style.opacity = (0.42 + 0.58 * e).toFixed(3);
-        if (g.blur) face.style.filter = `blur(${((1 - e) * 2).toFixed(2)}px)`;
+        // Blur only cards on screen; a filter on an off-screen card still costs.
+        if (g.blur) face.style.filter = Math.abs(d) < 0.75 ? `blur(${((1 - e) * 2).toFixed(2)}px)` : "none";
 
+        if (card.type === "intro") {
+          // The cover photo settles from a slight push-in and gains colour.
+          const cover = coverRefs.current[card.key];
+          if (cover) {
+            cover.style.transform = `scale(${(1.12 - 0.12 * e).toFixed(4)})`;
+            cover.style.filter = `grayscale(${(1 - e).toFixed(2)})`;
+          }
+        }
+        if (card.type === "stack") face.style.setProperty("--explode", e.toFixed(3));
         if (card.type === "photos") {
           const strip = stripRefs.current[card.key];
-          const n = card.exp.images.length;
+          const n = card.photos.length;
           // Coming in from the right it wipes through every photo, landing
           // on the last one as it reaches the centre.
           const t = Math.min(1, Math.max(0, (0.45 - d) / 0.45));
           if (strip) {
-            strip.style.transform = `translate3d(${((-t * (n - 1) * 100) / n).toFixed(3)}%,0,0)`;
+            // A single photo has nothing to wipe to: it pushes in instead.
+            strip.style.transform = n > 1 ? `translate3d(${((-t * (n - 1) * 100) / n).toFixed(3)}%,0,0)` : `scale(${(1.1 - 0.1 * e).toFixed(4)})`;
             strip.style.filter = `grayscale(${(1 - e).toFixed(2)})`;
           }
         }
@@ -273,7 +306,7 @@ export default function ExperienceReel({ items }) {
     if (!track) return;
     const p = Math.min(1, Math.max(0, (g.centers[i] - g.vw / 2) / g.travel));
     const top = track.getBoundingClientRect().top + window.scrollY;
-    window.scrollTo({ top: top + p * (track.offsetHeight - window.innerHeight), behavior });
+    scrollToY(top + p * (track.offsetHeight - window.innerHeight), { immediate: behavior === "auto" });
   }, []);
 
   const tabs = (
@@ -318,9 +351,12 @@ export default function ExperienceReel({ items }) {
               onFocusCapture={() => centreOn(i, "auto")}
             >
               <div ref={(el) => { faceRefs.current[i] = el; }} className="h-full w-full origin-center will-change-transform">
-                {card.type === "intro" && <IntroCard exp={card.exp} role={card.role} count={items.length} />}
+                {card.type === "intro" && (
+                  <IntroCard exp={card.exp} role={card.role} count={items.length} coverRef={(el) => { coverRefs.current[card.key] = el; }} />
+                )}
+                {card.type === "stack" && <StackCard />}
                 {card.type === "telemetry" && <TelemetryCard />}
-                {card.type === "photos" && <PhotosCard exp={card.exp} stripRef={(el) => { stripRefs.current[card.key] = el; }} />}
+                {card.type === "photos" && <PhotosCard exp={card.exp} photos={card.photos} stripRef={(el) => { stripRefs.current[card.key] = el; }} />}
                 {card.type === "coin" && (
                   <CoinCard
                     exp={card.exp}

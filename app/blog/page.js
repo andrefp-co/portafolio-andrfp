@@ -72,7 +72,7 @@ export default async function BlogPage() {
         <BlogFeed profile={profile} items={feed} stories={getStories(feed)} topics={getTopics(feed)} book={books[0]} />
       </section>
 
-      <BookShelf tone="paper" checkout={checkoutStatus()} />
+      <BookShelf tone="paper" variant="compact" checkout={checkoutStatus()} />
 
       {devTo.length > 0 && (
         <section className="sw-section">
