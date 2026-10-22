@@ -6,6 +6,8 @@ status: Host-verified, not yet hardware-frozen
 highlight: Portable C11 controller core, verified in host co-simulation
 order: 3
 repo: https://github.com/SWORT-Aerospace/sem-motor-controller
+cover: /media/feed/shell-eco-marathon-320.jpg
+coverAlt: The team's car, number 320, on the Shell Eco-marathon stage
 ---
 
 This project designs a motor controller for a Shell Eco-marathon battery-electric vehicle from the ground up: power-stage planning, the controller firmware core, a CAN contract, a supervisory energy strategy, and a CSIA vehicle consistency monitor running in shadow mode.

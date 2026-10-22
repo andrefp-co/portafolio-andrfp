@@ -796,17 +796,6 @@
     line-height: 1.6;
   }
 
-  /* CRT scanlines and a soft vignette, monochrome by construction. */
-  .vt-screen::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background:
-      repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 3px),
-      radial-gradient(120% 90% at 50% 50%, transparent 60%, rgba(0, 0, 0, 0.55) 100%);
-  }
-
   .vt-ok {
     color: var(--sw-ok-text);
   }
@@ -822,53 +811,6 @@
   /* Box-drawing glyphs need a system monospace; DM Mono does not carry them. */
   .vt-banner {
     font-family: ui-monospace, Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
-  }
-
-  /* Handling strip above and below the restricted terminal. */
-  .vx-strip {
-    position: relative;
-    z-index: 30;
-    margin: 0;
-    padding: 5px 16px;
-    background: #d9d9d9;
-    color: #050505;
-    font-size: 9.5px;
-    font-weight: 500;
-    letter-spacing: 0.28em;
-    text-align: center;
-    text-transform: uppercase;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  @media (max-width: 480px) {
-    .vx-strip {
-      padding: 5px 8px;
-      letter-spacing: 0.12em;
-    }
-  }
-
-  /* Redaction bars: the text's own colour painted behind it, cloned per line
-     fragment, then shrunk away to reveal the words left to right. */
-  .vx-redact {
-    background-image: linear-gradient(currentColor, currentColor);
-    background-repeat: no-repeat;
-    background-position: right center;
-    background-size: 100% 100%;
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
-    transition: background-size 0.9s cubic-bezier(0.76, 0, 0.24, 1);
-  }
-
-  .vx-redact.is-open {
-    background-size: 0% 100%;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .vx-redact {
-      transition: none;
-    }
   }
 
   @media print {

@@ -1,52 +1,52 @@
 ---
 title: Posterior Distortion from Hypothesis-Dependent Validity Gating in Runtime Diagnosis
 kind: paper
+published: 2026-09-24
 tags: [Runtime diagnosis, Probability, CSIA]
-authors: Andres Peña · SWORT Aerospace
-summary: The exact algebra of what happens to a diagnostic posterior when a runtime layer decides, tick by tick, which of its evidence is applicable, and a condition that can be checked before the system ever runs.
+authors: Andres Felipe Peña Avila · SWORT LLC
+summary: When a runtime monitor uses a validity gate only to pick which evidence to score, it throws away a diagnostic observation. This paper gives an exact account of what is discarded and when it changes the answer.
 area: Mathematical paper
-status: Working paper, in preparation
-highlight: An independent checker agrees on 378,000 of 378,000 comparisons and finds one hypothesis pair pinned to its prior for 200 ticks
+status: Preprint v2.2, September 2026
+highlight: A 45:1 gate moves nominal posterior mass from 0.860 to 0.257 while reversing one pairwise ranking by only 0.045 nats
 order: 2
+cover: /media/figures/gate-conditioning-page1.jpg
+coverAlt: First page of the paper
+pdf: /papers/gate-conditioning-v2.2.pdf
+pages: 12
 repo: https://github.com/SWORT-Aerospace/csia-trust-layer
 ---
 
 ## Abstract
 
-A runtime diagnostic layer decides, tick by tick, which of its evidence is *applicable*. That decision is a coarsening mechanism the system designed for itself, and whether it may be ignored is a property of the software rather than of the data. We give the exact algebra. Writing *q* for the posterior the system would have obtained from *all* the evidence it could in principle have scored and *p* for the posterior it actually produces,
+A runtime validity gate can be treated as a binary diagnostic observation: its predicate is evaluated on observables whose distribution may depend on the fault state, so its outcome induces a hypothesis-dependent likelihood ratio. Monitors that use the gate only to select which evidence channels to score, and then rank hypotheses over the survivors, discard that detector's output. We give an exact account of what is discarded.
+
+Writing *q*<sup>omit</sup> for the distribution such a monitor produces and *p* for the Bayesian posterior given the full observation, the two differ by an exponential tilt in the gate likelihood, and every pairwise log odds shifts by the gate's log-likelihood ratio for that pair. The correction vanishes for all pairs precisely when the gate likelihood is constant across hypotheses, which for a binary gate is conditional independence of gate and hypothesis given context. The identity does not assume the surviving evidence is independent of the gate.
+
+Let *R* be the range of the gate log-likelihood, the maximal pairwise log-likelihood ratio the gate outcome induces. Writing *A<sub>R</sub>* = *R* / (1 − e<sup>−R</sup>), the Kullback-Leibler divergence is bounded by *A<sub>R</sub>* − 1 − log *A<sub>R</sub>* and the total variation by tanh(*R*/4); both are attained, and both are the corresponding cases of a bounded-likelihood-ratio theorem for which we claim nothing. Distortion does not determine decision: the leader survives the omission exactly when the gate's pairwise log-likelihood ratio stays below the pre-gate decision margin, and we exhibit arbitrarily small divergence with a changed decision and arbitrarily large divergence without one. Separately, admitting the gate as a signature coordinate can only refine the declared identifiability partition; the probabilistic and structural analyses are parallel and neither implies the other.
+
+The component results are established and we claim priority for none of them individually. The contribution is a single connected account, organised by the observation that a gate outcome is itself a diagnostic observation, of what a diagnostic monitor gives up by treating it as context. Appendices extend the account to smoothed and tempered scoring, interval certificates under gate-model uncertainty, conditionally dependent gates, and source-attribution error. A worked eight-hypothesis configuration shows a 45:1 gate moving nominal posterior mass from 0.860 to 0.257 while reversing one pairwise ranking by only 0.045 nats.
+
+## The identity in one line
 
 ```
-p_h = q_h · w_h / E_q[w]
+p(h) = q_omit(h) · w_h / E_q_omit[w],   w_h = p(Z = z | h, C)
 ```
 
-so every pairwise log-posterior ratio acquires an additive, evidence-independent offset `log(w_a / w_b)` that further data of the same kind cannot argue with. For the additive gated scores runtime layers compute, *w_h* is exhibited in closed form and the offset is exactly the withheld distinguishing contribution. When no active term distinguishes two hypotheses their ratio is pinned to the prior ratio exactly, for as long as the gate stays shut, however concentrated the posterior becomes: a statement about the produced posterior alone, which does not depend on the choice of baseline.
-
-We give the condition under which the distortion vanishes, its multivalued caveat, a sufficient condition for the MAP to be unchanged, and exact divergence identities: `KL(q ‖ p)` is precisely the Jensen gap of `log w` under *q*, so the distortion is zero exactly when the validity factors do not vary across hypotheses.
-
-**We claim no new mathematics.** Each result is an instance of something known (self-normalised reweighting, argmax stability under bounded perturbation, Jensen's inequality) and the setting is the coarse-data one, so the paper concedes rather than claims at every step. What we offer is the runtime-diagnostic formulation, the observation that the condition is decidable *statically, from a signature table, before the system runs*, and a deployed layer that fails it: an independently written checker that imports none of the production analysis agrees with it on 378,000 of 378,000 tick-by-pair comparisons and finds one hypothesis pair pinned to its prior for 200 consecutive ticks.
-
-## The three identities
-
-| | |
-|---|---|
-| **Reweighting** | `p_h = q_h · w_h / E_q[w]` |
-| **Pairwise offset** | `log(p_a / p_b) = log(q_a / q_b) + log(w_a / w_b)` |
-| **Divergence** | `KL(q ‖ p)` = the Jensen gap of `log w` under *q* |
+Every pairwise log odds moves by `log(w_a / w_b)`, an offset that further evidence of the same kind cannot argue with.
 
 ## Contents
 
-1. The problem, and the setting.
-2. The reweighting identity.
-3. Pinning, and the condition that causes it.
-4. Ignorability, and a caveat that is easy to get wrong.
-5. Concentration is not discriminating support.
-6. MAP robustness.
-7. Exact divergences, and bounds.
-8. Verification, and an implemented instance.
-9. What is new, stated plainly; related work; limitations.
+1. Introduction and exact problem
+2. Closest prior theory
+3. Formal setup
+4. The exact gate tilt
+5. Divergence characterisation
+6. Structural consequence
+7. When the gate can change the reported diagnosis
+8. Reproducible numerical example
+9. Scope and limitations
+10. Conclusion. Appendices: smoothed and tempered scoring, interval certificates, dependent gates, source-attribution error, a recorded failed sharpening, claim status, reproducibility.
 
 ## Status
 
-In preparation. Not yet submitted or peer reviewed. It is the mathematical companion to the [self-occlusion systems paper](/research/paper-self-occlusion).
-
-Drafts are shared on request: [andrfp@swort.net](mailto:andrfp@swort.net).
+Preprint v2.2, 12 pages, September 2026. Single author. No empirical data were used: every number is generated from the stated model assumptions by the reproduction script supplied with the paper. It is the mathematical companion to the [self-occlusion systems paper](/research/paper-self-occlusion).

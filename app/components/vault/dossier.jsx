@@ -1,37 +1,23 @@
 "use client";
 
 import { motion, useInView, useReducedMotion } from "motion/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
-import ScrambleText from "../motion/scramble-text";
 
 const EASE = [0.22, 1, 0.36, 1];
-
-// Text arrives under redaction bars that wipe away line by line as it scrolls
-// into view. The bar is the text's own colour painted behind it, so covered
-// text is invisible without ever leaving the DOM.
-function Redact({ children, delay = 0, className = "" }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "0px 0px -6% 0px" });
-  const reduce = useReducedMotion();
-  return (
-    <span ref={ref} className={`vx-redact ${inView || reduce ? "is-open" : ""} ${className}`} style={{ transitionDelay: `${delay}s` }}>
-      {children}
-    </span>
-  );
-}
 
 function Value({ value }) {
   if (/^https?:\/\//.test(value)) {
     return (
-      <a href={value} target="_blank" rel="noopener noreferrer" className="break-all underline decoration-white/30 underline-offset-4 hover:decoration-white">
+      <a href={value} target="_blank" rel="noopener noreferrer" className="break-all underline decoration-black/30 underline-offset-4 hover:decoration-black">
         {value.replace(/^https?:\/\/(www\.)?/, "")}
       </a>
     );
   }
   if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
     return (
-      <a href={`mailto:${value}`} className="break-all underline decoration-white/30 underline-offset-4 hover:decoration-white">
+      <a href={`mailto:${value}`} className="break-all underline decoration-black/30 underline-offset-4 hover:decoration-black">
         {value}
       </a>
     );
@@ -50,179 +36,206 @@ function TrlScale({ trl }) {
   const label = `TRL ${trl.level}${trl.upper ? `–${trl.upper}` : ""}${trl.target ? ` → ${trl.target}` : ""}`;
 
   return (
-    <div ref={ref} className="mb-7">
-      <div className="flex items-baseline justify-between gap-4 text-[10px] uppercase tracking-[0.2em]">
-        <span className="text-[#7c7c7c]">Technology readiness</span>
-        <span className="tabular-nums text-white">{label}</span>
+    <div ref={ref} className="mb-6 border border-black/10 bg-[#f7f7f5] px-4 pb-3 pt-4">
+      <div className="flex items-baseline justify-between gap-4 text-[11px]">
+        <span className="uppercase tracking-[0.14em] text-[#6b6b6b]">Technology readiness</span>
+        <span className="tabular-nums text-black">{label}</span>
       </div>
-      <div className="relative mx-1 mt-4 h-5" role="img" aria-label={`${label} on a scale of 1 to 9`}>
-        <span className="absolute inset-x-0 top-1/2 h-px bg-white/15" />
+      <div className="relative mx-1 mt-4 h-4" role="img" aria-label={`${label} on a scale of 1 to 9`}>
+        <span className="absolute inset-x-0 top-1/2 h-px bg-black/15" />
         <motion.span
-          className="absolute left-0 top-1/2 h-px origin-left bg-white"
+          className="absolute left-0 top-1/2 h-[2px] -translate-y-1/2 origin-left bg-black"
           style={{ width: pos(trl.level) }}
-          initial={{ scaleX: 0 }}
+          initial={{ scaleX: reduce ? 1 : 0 }}
           animate={inView || reduce ? { scaleX: 1 } : {}}
-          transition={{ duration: 1.1, ease: EASE, delay: 0.2 }}
+          transition={{ duration: 1, ease: EASE, delay: 0.15 }}
         />
         {reach && (
-          <motion.span
-            className="absolute top-1/2 h-px border-t border-dashed border-white/70"
+          <span
+            className="absolute top-1/2 border-t border-dashed border-black/50"
             style={{ left: pos(trl.level), width: `calc(${pos(reach)} - ${pos(trl.level)})` }}
-            initial={{ opacity: 0 }}
-            animate={inView || reduce ? { opacity: 1 } : {}}
-            transition={{ delay: 1.2, duration: 0.5 }}
           />
         )}
         {Array.from({ length: 9 }, (_, i) => (
           <span
             key={i}
-            className="absolute top-1/2 h-3 w-px -translate-y-1/2"
-            style={{ left: pos(i + 1), background: i + 1 <= trl.level ? "#fff" : i + 1 <= (reach ?? 0) ? "rgba(255,255,255,0.6)" : "rgba(255,255,255,0.22)" }}
+            className="absolute top-1/2 h-2.5 w-px -translate-y-1/2"
+            style={{ left: pos(i + 1), background: i + 1 <= trl.level ? "#000" : "rgba(0,0,0,0.25)" }}
           />
         ))}
       </div>
-      <div className="relative mx-1 h-4 text-[10px] tabular-nums text-[#5f5f5f]">
+      <div className="relative mx-1 h-4 text-[10px] tabular-nums text-[#8a8a8a]">
         {Array.from({ length: 9 }, (_, i) => (
-          <span key={i} className={`absolute -translate-x-1/2 ${i + 1 === trl.level ? "text-white" : ""}`} style={{ left: pos(i + 1) }}>
+          <span key={i} className={`absolute -translate-x-1/2 ${i + 1 === trl.level ? "text-black" : ""}`} style={{ left: pos(i + 1) }}>
             {i + 1}
           </span>
         ))}
       </div>
-      {trl.note && <p className="mt-3 text-[11.5px] text-[#9a9a9a]">{trl.note}</p>}
+      {trl.note && <p className="mt-2 text-[12px] text-[#555]">{trl.note}</p>}
+    </div>
+  );
+}
+
+const escapeXml = (s) => s.replace(/[<>&'"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", "'": "&apos;", '"': "&quot;" })[c]);
+
+// The viewer's name tiled faintly across the page, so a screenshot carries
+// who the file was released to.
+function Watermark({ viewer, date }) {
+  const label = [viewer?.name, viewer?.org, date].filter(Boolean).join("  ·  ");
+  if (!label) return null;
+  const width = Math.max(380, label.length * 9 + 120);
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='140'><text x='20' y='76' fill='black' fill-opacity='0.045' font-family='ui-monospace, monospace' font-size='12' letter-spacing='1.5'>${escapeXml(label)}</text></svg>`;
+  return (
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+      <div
+        className="absolute -inset-1/2 -rotate-[24deg]"
+        style={{ backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`, backgroundSize: `${width}px 140px` }}
+      />
     </div>
   );
 }
 
 const fmtTime = (ms) => new Date(ms).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+const today = () => new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 
-// The restricted file. Content arrives from the server only after the terms
-// are accepted and the access code is right.
-export default function Dossier({ content, viewer, onLock }) {
-  const scrollTo = (id) => document.getElementById(`vx-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+// The restricted file, set as a controlled document. Content arrives from the
+// server only after the terms are signed and the access code is right.
+export default function Dossier({ content, viewer, onLock, termsVersion }) {
   if (!content) return null;
+  const scrollTo = (id) => document.getElementById(`vx-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const released = today();
+
+  const control = [
+    ["Released to", viewer?.name ? `${viewer.name}${viewer.org ? `, ${viewer.org}` : ""}` : "Session holder"],
+    ["Terms", termsVersion ? `v${termsVersion}, accepted` : "Accepted"],
+    ["Session", viewer?.expires ? `Read only, ends ${fmtTime(viewer.expires)}` : "Read only, 8 hours"],
+    ["Status as of", content.asOf],
+  ];
 
   return (
-    <div className="relative mx-auto max-w-6xl px-4 pb-24 pt-8 sm:px-6 sm:pt-10">
-      <motion.header
-        className="border border-white/15 p-5 sm:p-8"
-        initial={{ opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: EASE, delay: 0.3 }}
-      >
-        <div className="flex flex-wrap items-center justify-between gap-3 text-[10px] uppercase tracking-[0.24em]">
-          <span className="text-[#7c7c7c]">Restricted file · {content.entity}</span>
-          <span className="vt-ok">Access granted · status as of {content.asOf}</span>
-        </div>
-        <ScrambleText as="h1" className="mt-6 block font-[family-name:var(--sw-font-display)] text-[clamp(44px,9vw,104px)] leading-[0.95] tracking-[0.02em] text-white">
-          {content.subject}
-        </ScrambleText>
-        <dl className="mt-8 grid grid-cols-1 gap-5 border-t border-white/10 pt-6 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            ["Role", content.role],
-            ["Entity", content.entity],
-            ["Location", content.location],
-            ["Session", viewer?.expires ? `Read only · ends ${fmtTime(viewer.expires)}` : "Read only · 8 h"],
-          ].map(([k, v]) => (
-            <div key={k}>
-              <dt className="text-[10px] uppercase tracking-[0.2em] text-[#7c7c7c]">{k}</dt>
-              <dd className="mt-1 text-sm text-white">{v}</dd>
-            </div>
-          ))}
-        </dl>
-        {viewer?.name && (
-          <p className="mt-6 border-t border-white/10 pt-4 text-[11.5px] leading-relaxed text-[#9a9a9a]">
-            Released to <span className="text-white">{viewer.name}</span>
-            {viewer.org && <>, {viewer.org}</>}, under the signed terms of access. Share nothing from this file without written approval from Andres Peña.
-          </p>
-        )}
-      </motion.header>
-
-      <div className="mt-8 lg:grid lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-10">
-        <nav className="hidden lg:block" aria-label="File index">
-          <ol className="sticky top-6 flex flex-col border-l border-white/10 text-[10.5px] uppercase tracking-[0.14em]">
-            {content.sections.map((s) => (
-              <li key={s.id}>
-                <button
-                  type="button"
-                  onClick={() => scrollTo(s.id)}
-                  className="-ml-px block w-full border-l border-transparent py-1.5 pl-4 text-left text-[#7c7c7c] transition-colors hover:border-white hover:text-white"
-                >
-                  {s.title}
-                </button>
-              </li>
-            ))}
-          </ol>
+    <div className="min-h-full bg-[#141414] px-0 py-0 sm:px-6 sm:py-10">
+      <div className="mx-auto flex max-w-[1180px] gap-8">
+        <nav className="hidden w-[210px] shrink-0 lg:block" aria-label="Contents">
+          <div className="sticky top-6 text-[12px]">
+            <p className="mb-3 text-[10.5px] uppercase tracking-[0.18em] text-[#7c7c7c]">Contents</p>
+            <ol className="flex flex-col">
+              {content.sections.map((s, i) => (
+                <li key={s.id}>
+                  <button type="button" onClick={() => scrollTo(s.id)} className="flex w-full gap-3 py-1.5 text-left text-[#a8a8a8] transition-colors hover:text-white">
+                    <span className="w-5 shrink-0 tabular-nums text-[#6b6b6b]">{i + 1}</span>
+                    <span>{s.title}</span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </div>
         </nav>
 
-        <div className="flex min-w-0 flex-col gap-6">
-          {content.sections.map((section) => (
-            <motion.section
-              key={section.id}
-              id={`vx-${section.id}`}
-              className="scroll-mt-6 border border-white/15"
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "0px 0px -8% 0px" }}
-              transition={{ duration: 0.6, ease: EASE }}
-            >
-              <div className="flex items-center justify-between gap-4 border-b border-white/10 px-5 py-4 sm:px-8">
-                <ScrambleText as="h2" className="text-[11px] uppercase tracking-[0.22em] text-white">
-                  {section.title}
-                </ScrambleText>
-                <span className="shrink-0 text-[10px] uppercase tracking-[0.2em] text-[#5f5f5f]">{section.kicker}</span>
-              </div>
-              <div className="px-5 py-6 sm:px-8">
-                {section.trl && <TrlScale trl={section.trl} />}
-                {section.paragraphs?.map((p, i) => (
-                  <p key={i} className="max-w-[68ch] text-sm leading-[1.85] text-[#c9c9c9] [&+&]:mt-4">
-                    <Redact delay={0.1 + i * 0.15}>{p}</Redact>
-                  </p>
-                ))}
-                {section.rows && (
-                  <dl className={`divide-y divide-white/10 ${section.paragraphs ? "mt-6 border-t border-white/10" : ""}`}>
-                    {section.rows.map(([k, v], i) => (
-                      <div key={k} className="grid grid-cols-1 gap-1 py-3 sm:grid-cols-[190px_1fr] sm:gap-6">
-                        <dt className="text-[11px] uppercase tracking-[0.16em] text-[#7c7c7c]">{k}</dt>
-                        <dd className="text-sm leading-relaxed text-white">
-                          <Redact delay={0.1 + i * 0.08}>
-                            <Value value={v} />
-                          </Redact>
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-                )}
-                {section.list && (
-                  <ol className="flex flex-col gap-3">
-                    {section.list.map((entry, i) => (
-                      <li key={i} className="grid grid-cols-[36px_1fr] text-sm leading-relaxed text-[#c9c9c9]">
-                        <span className="text-[11px] tabular-nums text-[#7c7c7c]">{String(i + 1).padStart(2, "0")}</span>
-                        <span>
-                          <Redact delay={0.1 + i * 0.1}>{entry}</Redact>
-                        </span>
-                      </li>
-                    ))}
-                  </ol>
-                )}
-                {section.note && <p className="mt-5 border-t border-white/10 pt-4 text-[11.5px] leading-relaxed text-[#8a8a8a]">{section.note}</p>}
-              </div>
-            </motion.section>
-          ))}
+        <motion.article
+          className="relative min-w-0 flex-1 overflow-hidden bg-white text-[#1a1a1a] shadow-[0_30px_80px_rgba(0,0,0,0.5)]"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: EASE, delay: 0.2 }}
+        >
+          <Watermark viewer={viewer} date={released} />
 
-          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-            <motion.button
-              type="button"
-              onClick={onLock}
-              whileTap={{ scale: 0.97 }}
-              className="border border-white bg-white px-6 py-3.5 text-[11px] uppercase tracking-[0.14em] text-black transition-colors hover:bg-transparent hover:text-white"
-            >
-              Lock file
-            </motion.button>
-            <Link href="/" className="border border-white/40 px-6 py-3.5 text-center text-[11px] uppercase tracking-[0.14em] text-white transition-colors hover:border-white">
-              Back to site
-            </Link>
+          <div className="relative px-5 pb-12 pt-6 sm:px-12 sm:pt-10">
+            <div className="flex items-center justify-between gap-4 border-b border-black pb-3">
+              <span className="flex items-center gap-2.5">
+                <Image src="/media/brand/swort-emblem-dark.png" alt="" width={20} height={22} className="h-[22px] w-auto" />
+                <span className="text-[11px] uppercase tracking-[0.2em]">SWORT Aerospace</span>
+              </span>
+              <span className="text-[11px] uppercase tracking-[0.2em] text-[#6b6b6b]">Restricted</span>
+            </div>
+
+            <h1 className="mt-8 font-[family-name:var(--sw-font-display)] text-[clamp(44px,7vw,80px)] leading-[0.92] tracking-[0.01em] text-black">
+              {content.subject}
+            </h1>
+            <p className="mt-3 text-[14px] text-[#444]">
+              {content.role} · {content.location}
+            </p>
+
+            <dl className="mt-8 grid grid-cols-1 border-t border-black/15 text-[13px] sm:grid-cols-2">
+              {control.map(([k, v]) => (
+                <div key={k} className="grid grid-cols-[110px_1fr] gap-3 border-b border-black/15 py-2.5 sm:odd:pr-6 sm:even:border-l sm:even:pl-6">
+                  <dt className="text-[#6b6b6b]">{k}</dt>
+                  <dd className="text-black">{v}</dd>
+                </div>
+              ))}
+            </dl>
+            <p className="mt-4 text-[12px] leading-relaxed text-[#555]">
+              Released under the signed terms of access. Do not share, copy or quote any part of this file without written approval from Andres Peña.
+            </p>
+
+            {content.sections.map((section, n) => (
+              <motion.section
+                key={section.id}
+                id={`vx-${section.id}`}
+                className="mt-12 scroll-mt-6"
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "0px 0px -8% 0px" }}
+                transition={{ duration: 0.5, ease: EASE }}
+              >
+                <div className="flex items-baseline justify-between gap-4 border-b border-black pb-2">
+                  <h2 className="flex items-baseline gap-3 text-[15px] font-medium text-black">
+                    <span className="tabular-nums text-[#6b6b6b]">{n + 1}</span>
+                    {section.title}
+                  </h2>
+                  <span className="shrink-0 text-[10.5px] uppercase tracking-[0.16em] text-[#8a8a8a]">{section.kicker}</span>
+                </div>
+                <div className="pt-5">
+                  {section.trl && <TrlScale trl={section.trl} />}
+                  {section.paragraphs?.map((p, i) => (
+                    <p key={i} className="max-w-[70ch] text-[14px] leading-[1.8] text-[#2a2a2a] [&+&]:mt-4">
+                      {p}
+                    </p>
+                  ))}
+                  {section.rows && (
+                    <table className={`w-full border-collapse text-[13.5px] ${section.paragraphs ? "mt-5" : ""}`}>
+                      <tbody>
+                        {section.rows.map(([k, v]) => (
+                          <tr key={k} className="border-t border-black/12 align-top first:border-t-black/25 last:border-b last:border-b-black/12">
+                            <th scope="row" className="w-[34%] py-2.5 pr-4 text-left font-normal text-[#6b6b6b] sm:w-[30%]">{k}</th>
+                            <td className="py-2.5 text-black"><Value value={v} /></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                  {section.list && (
+                    <ol className="flex flex-col gap-2.5">
+                      {section.list.map((entry, i) => (
+                        <li key={i} className="grid grid-cols-[34px_1fr] text-[14px] leading-relaxed text-[#2a2a2a]">
+                          <span className="tabular-nums text-[#8a8a8a]">{n + 1}.{i + 1}</span>
+                          <span>{entry}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
+                  {section.note && <p className="mt-4 text-[12.5px] italic leading-relaxed text-[#555]">{section.note}</p>}
+                </div>
+              </motion.section>
+            ))}
+
+            <div className="mt-14 flex flex-col gap-4 border-t border-black pt-5 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-[#6b6b6b]">End of file</p>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <motion.button
+                  type="button"
+                  onClick={onLock}
+                  whileTap={{ scale: 0.97 }}
+                  className="border border-black bg-black px-6 py-3 text-[11px] uppercase tracking-[0.14em] text-white transition-colors hover:bg-white hover:text-black"
+                >
+                  Lock file
+                </motion.button>
+                <Link href="/" className="border border-black/30 px-6 py-3 text-center text-[11px] uppercase tracking-[0.14em] text-black transition-colors hover:border-black">
+                  Back to site
+                </Link>
+              </div>
+            </div>
           </div>
-        </div>
+        </motion.article>
       </div>
     </div>
   );

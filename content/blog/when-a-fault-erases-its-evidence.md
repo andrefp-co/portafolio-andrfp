@@ -3,6 +3,8 @@ title: When a fault erases its own evidence
 summary: Under GNSS denial a diagnostic layer can report healthy for the whole fault, not because it missed the fault but because the fault switched off the evidence that would have named it.
 date: 2026-09-22
 tags: [Sensor integrity, Runtime diagnosis, GNSS]
+cover: /media/figures/c7_glitch_mechanism.png
+coverAlt: Charts from the paper: the GPS trust coefficient stays high while the detector sits at its floor
 draft: true
 ---
 

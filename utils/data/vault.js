@@ -116,6 +116,19 @@ export const vault = {
       ],
     },
     {
+      id: "documents",
+      kicker: "Records",
+      title: "Source documents",
+      rows: [
+        ["Interceptor-seeker white paper (synthetic results)", "https://github.com/SWORT-Aerospace/csia-trust-layer/blob/main/deliverables/HANDOFF_WHITEPAPER.md"],
+        ["Engineering transition report", "https://github.com/SWORT-Aerospace/csia-trust-layer/blob/main/docs/TRANSITION_REPORT.md"],
+        ["Technology readiness assessment", "https://github.com/SWORT-Aerospace/csia-trust-layer/blob/main/docs/TRL_ASSESSMENT.md"],
+        ["Commercialization and SBIR readiness", "https://github.com/SWORT-Aerospace/csia-trust-layer/blob/main/docs/COMMERCIALIZATION.md"],
+        ["Evidence matrix", "https://github.com/SWORT-Aerospace/csia-trust-layer/blob/main/docs/evidence/evidence_matrix.md"],
+      ],
+      note: "Each document states its own baseline commit and scope. The seeker results are synthetic throughout.",
+    },
+    {
       id: "handling",
       kicker: "Handling",
       title: "What SWORT does not have",

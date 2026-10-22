@@ -171,10 +171,10 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
     grantStarted.current = true;
     const who = activeViewer?.name ? `${activeViewer.name}${activeViewer.org ? `, ${activeViewer.org}` : ""}` : "viewer";
     const steps = [
-      submitted.current ? "access code accepted" : "session restored",
-      `terms v${TERMS_VERSION} on record for ${who}`,
-      "session signed, expires in 8 h",
-      "decrypting file: PEÑA, ANDRES",
+      ["Access code", submitted.current ? "Accepted" : "Session restored"],
+      ["Terms", `v${TERMS_VERSION}, signed by ${who}`],
+      ["Session", "Signed, ends in 8 hours"],
+      ["File", "Decrypted"],
     ];
     later(() => {
       setGrantLog([]);
@@ -184,7 +184,7 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
       setPhase("granting");
     }, 0);
     later(() => setRadarMode("lock"), 1000);
-    steps.forEach((s, i) => later(() => setGrantLog((prev) => [...prev, s]), 650 + i * 420));
+    steps.forEach((step, i) => later(() => setGrantLog((prev) => [...prev, step]), 650 + i * 420));
     const start = 650 + steps.length * 420;
     for (let i = 1; i <= 20; i++) later(() => setProgress(i / 20), start + i * 50);
     later(() => setGranted(true), start + 20 * 50 + 250);
@@ -387,7 +387,6 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
 
   return (
     <div className="vt-screen vx-noprint fixed inset-0 z-[100] flex flex-col overflow-hidden">
-      <p className="vx-strip">Restricted · Proprietary · Not for distribution</p>
       <header className="relative z-10 flex items-center justify-between gap-4 border-b border-white/10 px-4 py-2.5 text-[10px] uppercase tracking-[0.2em] text-[#8a8a8a] sm:px-6">
         <span className="truncate">SWORT/OS 1.0 · tty1</span>
         <span className="flex shrink-0 items-center gap-4">
@@ -408,38 +407,39 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
             exit={{ clipPath: "inset(0 0 100% 0)", opacity: 0.4 }}
             transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
           >
-            <div className="mx-auto grid w-full max-w-5xl items-center gap-8 md:grid-cols-2 md:gap-14">
+            <div className="mx-auto grid w-full max-w-5xl items-center gap-10 md:grid-cols-2 md:gap-16">
               <motion.div
-                className="mx-auto w-full max-w-[min(440px,62vw)] md:max-w-[440px]"
-                initial={{ scale: 0.55, opacity: 0, rotate: -20 }}
-                animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                transition={{ duration: 1.1, ease: EASE }}
+                className="mx-auto w-full max-w-[min(400px,60vw)] md:max-w-[400px]"
+                initial={{ scale: 0.96, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.9, ease: EASE }}
               >
                 <Radar mode={radarMode} />
               </motion.div>
               <div className="min-w-0">
-                <p className="text-[10px] uppercase tracking-[0.26em] text-[#8a8a8a]">{granted ? "Access granted" : "Verifying"}</p>
-                <div className="mt-4 text-[12px] leading-[2]" aria-live="polite">
-                  {grantLog.map((entry) => (
-                    <motion.p key={entry} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="break-words">
-                      [<span className="vt-ok">  OK  </span>] {entry}
-                    </motion.p>
+                <p className="text-[11px] uppercase tracking-[0.2em] text-[#8a8a8a]">{granted ? "Access granted" : "Verifying"}</p>
+                <dl className="mt-5 border-t border-white/10 text-[13px]" aria-live="polite">
+                  {grantLog.map(([label, value]) => (
+                    <motion.div
+                      key={label}
+                      className="grid grid-cols-[112px_1fr] gap-4 border-b border-white/10 py-3"
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.35, ease: EASE }}
+                    >
+                      <dt className="text-[#8a8a8a]">{label}</dt>
+                      <dd className="break-words text-white">{value}</dd>
+                    </motion.div>
                   ))}
-                </div>
-                <div className="mt-4 h-px w-full max-w-sm bg-white/10">
+                </dl>
+                <div className="mt-6 h-px w-full bg-white/10">
                   <div className="h-px origin-left bg-white transition-transform duration-75" style={{ transform: `scaleX(${progress})` }} />
                 </div>
                 {granted && (
-                  <motion.p
-                    className="mt-6 font-[family-name:var(--sw-font-display)] text-[clamp(44px,8vw,92px)] leading-none tracking-[0.04em] text-white"
-                    initial={{ opacity: 0, letterSpacing: "0.4em", filter: "blur(8px)" }}
-                    animate={reduce
-                      ? { opacity: 1, letterSpacing: "0.04em", filter: "blur(0px)" }
-                      : { opacity: [0, 1, 0.3, 1, 0.6, 1], letterSpacing: "0.04em", filter: "blur(0px)" }}
-                    transition={{ duration: 0.9, ease: "easeOut" }}
-                  >
-                    Access granted
-                  </motion.p>
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
+                    <p className="mt-8 font-[family-name:var(--sw-font-display)] text-[clamp(40px,6vw,68px)] leading-none tracking-[0.02em] text-white">Peña, Andres</p>
+                    <p className="mt-2 text-[12px] text-[#8a8a8a]">Opening the file…</p>
+                  </motion.div>
                 )}
               </div>
             </div>
@@ -541,34 +541,11 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
             animate={{ clipPath: "inset(0% 0 0 0)" }}
             transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
           >
-            <Dossier content={dossier} viewer={activeViewer} onLock={lock} />
+            <Dossier content={dossier} viewer={activeViewer} onLock={lock} termsVersion={TERMS_VERSION} />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {phase === "open" && <Watermark viewer={activeViewer} />}
-      <p className="vx-strip">Restricted · Proprietary · Not for distribution</p>
-    </div>
-  );
-}
-
-const escapeXml = (s) => s.replace(/[<>&'"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", "'": "&apos;", '"': "&quot;" })[c]);
-
-// The viewer's name and organization tiled faintly across the open file, so
-// any screenshot carries who it was released to.
-function Watermark({ viewer }) {
-  const label = [viewer?.name, viewer?.org, new Date().toISOString().slice(0, 10), "Restricted"]
-    .filter(Boolean)
-    .join("  ·  ")
-    .toUpperCase();
-  const width = Math.max(420, label.length * 10 + 120);
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='150'><text x='20' y='80' fill='white' fill-opacity='0.055' font-family='ui-monospace, monospace' font-size='13' letter-spacing='2'>${escapeXml(label)}</text></svg>`;
-  return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 overflow-hidden">
-      <div
-        className="absolute -inset-1/2 -rotate-[24deg]"
-        style={{ backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`, backgroundSize: `${width}px 150px` }}
-      />
     </div>
   );
 }

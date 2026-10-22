@@ -8,9 +8,9 @@ import { useEffect, useRef } from "react";
 // them. Tap or click the scope to drop a ping with its bearing and range.
 //
 // mode: "scan" (default), "lock" (sweep speeds up and a reticle closes on
-// TRK 01) or "denied" (the scope flushes red for a moment).
+// the first contact) or "denied" (the scope flushes red for a moment).
 
-const PHOSPHOR = "125, 148, 126"; // --sw-ok-text
+const INK = "222, 225, 228"; // monochrome scope, close to --sw-silver
 const DANGER = "202, 120, 117"; // --sw-danger-text
 const TURN_S = 4;
 const TRAIL = 1.1; // radians of afterglow behind the sweep
@@ -61,7 +61,7 @@ export default function Radar({ mode = "scan", className = "" }) {
     const draw = (now) => {
       const { mode: m, since } = modeRef.current;
       const denied = m === "denied" && now - since < 900;
-      const tone = denied ? DANGER : PHOSPHOR;
+      const tone = denied ? DANGER : INK;
       if (size < 80) return;
       const c = size / 2;
       const small = size < 320;
@@ -73,14 +73,14 @@ export default function Radar({ mode = "scan", className = "" }) {
       // Scope face.
       ctx.beginPath();
       ctx.arc(c, c, R, 0, TAU);
-      ctx.fillStyle = `rgba(${tone}, ${denied ? 0.1 : 0.035})`;
+      ctx.fillStyle = `rgba(${tone}, ${denied ? 0.08 : 0.02})`;
       ctx.fill();
 
       ctx.lineWidth = 1;
       for (let i = 1; i <= 4; i++) {
         ctx.beginPath();
         ctx.arc(c, c, (R * i) / 4, 0, TAU);
-        ctx.strokeStyle = `rgba(${tone}, ${i === 4 ? 0.55 : 0.18})`;
+        ctx.strokeStyle = `rgba(${tone}, ${i === 4 ? 0.4 : 0.1})`;
         ctx.stroke();
       }
       ctx.beginPath();
@@ -88,7 +88,7 @@ export default function Radar({ mode = "scan", className = "" }) {
       ctx.lineTo(c + R, c);
       ctx.moveTo(c, c - R);
       ctx.lineTo(c, c + R);
-      ctx.strokeStyle = `rgba(${tone}, 0.14)`;
+      ctx.strokeStyle = `rgba(${tone}, 0.08)`;
       ctx.stroke();
 
       // Bearing ticks every 5 degrees, labels every 30 (every 90 when small).
@@ -103,11 +103,11 @@ export default function Radar({ mode = "scan", className = "" }) {
         ctx.beginPath();
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
-        ctx.strokeStyle = `rgba(${tone}, ${d % 30 === 0 ? 0.6 : 0.3})`;
+        ctx.strokeStyle = `rgba(${tone}, ${d % 30 === 0 ? 0.45 : 0.18})`;
         ctx.stroke();
         if (d % (small ? 90 : 30) === 0) {
           const [lx, ly] = at(R + (small ? 12 : 18), a);
-          ctx.fillStyle = `rgba(${tone}, 0.7)`;
+          ctx.fillStyle = `rgba(${tone}, 0.5)`;
           ctx.fillText(String(d).padStart(3, "0"), lx, ly);
         }
       }
@@ -121,15 +121,15 @@ export default function Radar({ mode = "scan", className = "" }) {
         ctx.moveTo(c, c);
         ctx.arc(c, c, R, a0 - Math.PI / 2, a1 - Math.PI / 2);
         ctx.closePath();
-        ctx.fillStyle = `rgba(${tone}, ${0.2 * (1 - i / slices) ** 2})`;
+        ctx.fillStyle = `rgba(${tone}, ${0.11 * (1 - i / slices) ** 2})`;
         ctx.fill();
       }
       const [bx, by] = at(R, sweep);
       ctx.beginPath();
       ctx.moveTo(c, c);
       ctx.lineTo(bx, by);
-      ctx.strokeStyle = `rgba(${tone}, 0.95)`;
-      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = `rgba(${tone}, 0.8)`;
+      ctx.lineWidth = 1;
       ctx.stroke();
       ctx.lineWidth = 1;
 
@@ -150,12 +150,6 @@ export default function Radar({ mode = "scan", className = "" }) {
           ctx.arc(x, y, (small ? 5 : 7) + (1 - glow) * 6, 0, TAU);
           ctx.strokeStyle = `rgba(${tone}, ${0.35 * glow})`;
           ctx.stroke();
-        }
-        if (!small || idx === 0) {
-          ctx.textAlign = "left";
-          ctx.fillStyle = `rgba(${tone}, ${0.25 + 0.6 * glow})`;
-          ctx.fillText(k.id, x + 9, y - 9);
-          ctx.textAlign = "center";
         }
 
         // Lock reticle: four corner brackets closing on the first track.

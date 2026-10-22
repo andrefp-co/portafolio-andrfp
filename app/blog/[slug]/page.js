@@ -54,6 +54,24 @@ export default async function PostPage({ params }) {
         </div>
       </PageHeader>
 
+      {post.cover && (
+        <section className="sw-paper pt-10 sm:pt-14">
+          <div className="sw-container">
+            <figure className={`relative m-0 overflow-hidden rounded-xl border border-[var(--sw-border)] lg:max-w-[calc(100%-304px)] ${/\/figures\//.test(post.cover) ? "bg-white p-3 sm:p-5" : "bg-black"}`}>
+              <Image
+                src={post.cover}
+                alt={post.coverAlt ?? ""}
+                width={1600}
+                height={900}
+                priority
+                sizes="(min-width: 1280px) 900px, 100vw"
+                className={`w-full ${/\/figures\//.test(post.cover) ? "max-h-[440px] object-contain" : "aspect-[16/9] object-cover"}`}
+              />
+            </figure>
+          </div>
+        </section>
+      )}
+
       <section className="sw-section sw-paper !border-t-0">
         <div className="sw-container">
           <PostReader html={post.html} toc={post.toc} minutes={minutes} title={post.title} path={path} />

@@ -6,6 +6,8 @@ status: Public architecture, in active development
 highlight: Independent of flight control and estimation by design
 order: 2
 link: https://www.swort.net
+cover: /media/feed/swort-ssil-electronics.jpg
+coverAlt: Avionics equipment inside an open aircraft bay
 ---
 
 The System State Integrity Layer (SSIL) is SWORT's public commercial architecture for sensor integrity. It starts from one conviction: an autonomous vehicle should know when its own sensors have stopped telling the truth.

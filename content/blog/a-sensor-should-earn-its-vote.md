@@ -3,6 +3,8 @@ title: A sensor should earn its vote
 summary: Why averaging every sensor equally hides the exact failures an integrity monitor exists to catch, and what a trust coefficient does instead.
 date: 2026-10-20
 tags: [Sensor integrity, Autonomy, CSIA]
+cover: /media/project-uav.jpg
+coverAlt: A quadcopter with its flight controller exposed
 draft: true
 ---
 

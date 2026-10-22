@@ -2,13 +2,18 @@
 title: Measured Self-Occlusion in a Deployed Cross-Sensor Diagnostic Layer
 subtitle: When a fault destroys the evidence that would name it
 kind: paper
+published: 2026-10-18
 tags: [Sensor integrity, Runtime diagnosis, GNSS, CSIA]
 authors: Andres Felipe Peña Avila · SWORT LLC
 summary: Measurements of false-healthy exposure on a deployed diagnostic layer for small uncrewed aircraft, the time it spends asserting health while holding no evidence it is entitled to assert it from.
 area: Systems paper
-status: Working paper, in preparation
+status: Submission package, October 2026
 highlight: Under sustained GNSS denial the diagnosis reports nominal for the entire fault window and never names the GPS fault
 order: 1
+cover: /media/figures/c4_self_occlusion.png
+coverAlt: Bar charts from the paper showing the diagnosis reporting nominal while the GPS fault is present
+pages: 32
+pinned: true
 repo: https://github.com/SWORT-Aerospace/csia-trust-layer
 ---
 
@@ -31,8 +36,18 @@ We make no observability claim. Receiver observables detect GNSS denial well; th
 7. A design rule that can be checked, a one-line repair and its measured cost.
 8. Limitations and a claim table, so every statement carries its evidence.
 
+## How the evidence was checked
+
+The October 2026 submission package is a 32-page manuscript with a 13-page supplement. The record that accompanies it states:
+
+- **120 controlled-injection trials** across three campaigns against a software-in-the-loop autopilot. The committed adjudicator reproduces **120 of 120** recorded verdicts, so the verdicts do not depend on the test harness as it stood when the trials ran.
+- **Frozen-core identity** rests on two independent checks: the per-trial empty diff against the tag, and a later comparison showing the frozen files byte-identical at all fifteen relevant recorded commits, with all twelve baseline digests matching.
+- **An independent verifier** re-derives the paper's numbers from the exported evidence: 154 checks, 0 failed.
+- **One timing defect is disclosed, not hidden.** In one current-stack GNSS-glitch campaign the fault was written about 2.2 s after the commanded onset. The paper scopes it to that campaign and shows which results it does not affect, because the analysis used the recorded write time throughout.
+- **Corrections are counted once.** The correction register carries fourteen entries, six in the main table and eight in the supplement, and no total is constructed across registers.
+
 ## Status
 
-In preparation. Not yet submitted or peer reviewed, and the title may still change. It is the systems companion to the [gate-conditioning paper](/research/paper-gate-conditioning), which gives the exact algebra behind the effect measured here.
+Submission package prepared in October 2026; not yet peer reviewed, and the title may still change. It is the systems companion to the [gate-conditioning paper](/research/paper-gate-conditioning), which gives the exact algebra behind the effect measured here.
 
 Drafts are shared on request: [andrfp@swort.net](mailto:andrfp@swort.net).

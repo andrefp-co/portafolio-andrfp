@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import LearnCta from "../../components/helper/learn-cta";
@@ -32,7 +33,12 @@ export default async function ResearchEntryPage({ params }) {
         {entry.authors && <p className="mt-5 text-sm tracking-[0.04em] text-[var(--sw-silver)]">{entry.authors}</p>}
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <span className="sw-status">{entry.status}</span>
-          {isPaper && (
+          {isPaper && entry.pdf && (
+            <a href={entry.pdf} target="_blank" rel="noopener noreferrer" className="sw-btn sw-btn-primary">
+              Read the PDF{entry.pages ? ` · ${entry.pages} pp.` : ""}
+            </a>
+          )}
+          {isPaper && !entry.pdf && (
             <a
               href={`mailto:andrfp@swort.net?subject=${encodeURIComponent(`Draft request: ${entry.title}`)}`}
               className="sw-btn sw-btn-primary"
@@ -52,6 +58,23 @@ export default async function ResearchEntryPage({ params }) {
           )}
         </div>
       </PageHeader>
+
+      {entry.cover && (
+        <section className="sw-paper border-b border-[var(--sw-rule)] pt-10 sm:pt-14">
+          <div className="sw-container">
+            <figure className={`relative m-0 overflow-hidden rounded-xl border border-[var(--sw-border)] ${/\/figures\//.test(entry.cover) ? "bg-white p-3 sm:p-6" : "bg-black"}`}>
+              <Image
+                src={entry.cover}
+                alt={entry.coverAlt ?? ""}
+                width={1800}
+                height={900}
+                sizes="(min-width: 1280px) 1200px, 100vw"
+                className={`w-full ${/\/figures\//.test(entry.cover) ? "max-h-[520px] object-contain" : "max-h-[560px] object-cover"}`}
+              />
+            </figure>
+          </div>
+        </section>
+      )}
 
       <section className="sw-section sw-paper !border-t-0">
         <div className="sw-container grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_260px]">

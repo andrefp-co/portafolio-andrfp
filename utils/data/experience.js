@@ -6,6 +6,8 @@ export const experiences = [
     company: "SWORT Aerospace",
     duration: "2023 – Present",
     link: "https://www.swort.net",
+    image: "/media/feed/swort-avionics-board.jpg",
+    imageAlt: "A SWORT avionics board",
     desc: [
       "Lead paid flight-controller programs, including 50 × 50 mm X8 avionics; own customer requirements, system architecture, schematic and PCB reviews, contractor coordination, and prototype acceptance planning.",
       "Direct prototype troubleshooting, corrective actions, design revisions, and repeat testing before release.",
@@ -19,6 +21,8 @@ export const experiences = [
     company: "ASME / Shell Eco-marathon",
     duration: "2025 – Present",
     link: "https://asmepnw.com",
+    image: "/media/feed/shell-eco-marathon-320.jpg",
+    imageAlt: "The team's car, number 320, on the Shell Eco-marathon stage",
     desc: [
       "Lead ongoing STM32 vehicle telemetry and motor-controller development: sensor data acquisition, offline logging, driver display, and CSIA shadow monitoring.",
       "Designed and integrated the vehicle's hydraulic brake system; created SolidWorks CAD and MATLAB simulations projecting ~12% shorter stopping distance.",

@@ -3,6 +3,8 @@ title: Status labels that don't overclaim
 summary: "Tests pass" and "it works" are different statements. Notes on writing project status so a reviewer can trust it.
 date: 2026-10-14
 tags: [Engineering practice, Embedded]
+cover: /media/project-toolkit.jpg
+coverAlt: An oscilloscope trace above two development boards on a bench
 draft: true
 ---
 

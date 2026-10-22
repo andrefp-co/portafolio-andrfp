@@ -3,6 +3,8 @@ title: A monitor that crashes is the worst monitor
 summary: Two bugs from the CSIA audit, and why a safety layer's first job is to keep running when the evidence runs out.
 date: 2026-10-06
 tags: [CSIA, Embedded, Engineering practice]
+cover: /media/project-avionics.jpg
+coverAlt: Stacked avionics boards inside an open airframe section
 draft: true
 ---
 

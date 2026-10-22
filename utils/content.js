@@ -3,6 +3,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { Marked } from "marked";
+import { articles } from "./data/articles";
+import { books, orderEmail } from "./data/books";
+import { moments } from "./data/moments";
 
 const ROOT = path.join(process.cwd(), "content");
 
@@ -121,37 +124,6 @@ const plain = (markdown) =>
     .replace(/\s+/g, " ")
     .toLowerCase();
 
-// Everything the blog index lists: essays (newest first), then papers. Each
-// item carries a lower-cased search string over its title, summary, tags and
-// body, so the index can filter on the client without fetching anything.
-export function getBlogIndex() {
-  const essays = getPosts().map((post) => ({
-    type: "essay",
-    href: `/blog/${post.slug}`,
-    title: post.title,
-    summary: post.summary ?? "",
-    dateLabel: formatDay(post.date),
-    minutes: readingTime(post.body),
-    tags: post.tags ?? [],
-    draft: Boolean(post.draft),
-    search: `${post.title} ${post.summary ?? ""} ${(post.tags ?? []).join(" ")} ${plain(post.body)}`.toLowerCase(),
-  }));
-  const papers = getResearch()
-    .filter((entry) => entry.kind === "paper")
-    .map((entry) => ({
-      type: "paper",
-      href: `/research/${entry.slug}`,
-      title: entry.title,
-      summary: entry.summary ?? "",
-      dateLabel: entry.status ?? "Working paper",
-      minutes: null,
-      tags: entry.tags ?? [],
-      draft: false,
-      search: `${entry.title} ${entry.summary ?? ""} ${entry.authors ?? ""} ${(entry.tags ?? []).join(" ")} ${plain(entry.body)}`.toLowerCase(),
-    }));
-  return [...essays, ...papers];
-}
-
 // Posts that share the most tags with this one, newest first on ties.
 export function getRelatedPosts(slug, limit = 3) {
   const posts = getPosts();
@@ -165,4 +137,135 @@ export function getRelatedPosts(slug, limit = 3) {
     .sort((a, b) => b.shared - a.shared || String(b.post.date).localeCompare(String(a.post.date)))
     .slice(0, limit)
     .map((r) => r.post);
+}
+
+const ANDRES = { name: "Andres Peña", handle: "andrfp", avatar: "/andres-pena.jpg" };
+const shortDay = (date) =>
+  new Date(`${date}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+const figureLike = (src) => /\/figures\/.*\.png$/.test(src ?? "");
+const imageOf = (src, alt) => (src ? { src, alt: alt ?? "", figure: figureLike(src) } : null);
+
+// Every post the blog feed shows, newest first with pinned posts on top:
+// essays, papers, SWORT articles, photo posts and the book. `sort` orders
+// undated posts; only `dateLabel` is shown.
+export function getFeed() {
+  const essays = getPosts().map((post) => ({
+    id: `essay-${post.slug}`,
+    kind: "essay",
+    href: `/blog/${post.slug}`,
+    author: ANDRES,
+    sort: String(post.date),
+    dateLabel: shortDay(post.date),
+    title: post.title,
+    text: post.summary ?? "",
+    image: imageOf(post.cover, post.coverAlt),
+    tags: post.tags ?? [],
+    minutes: readingTime(post.body),
+    draft: Boolean(post.draft),
+    search: `${post.title} ${post.summary ?? ""} ${(post.tags ?? []).join(" ")} ${plain(post.body)}`.toLowerCase(),
+  }));
+
+  const papers = getResearch()
+    .filter((entry) => entry.kind === "paper")
+    .map((entry) => ({
+      id: `paper-${entry.slug}`,
+      kind: "paper",
+      href: `/research/${entry.slug}`,
+      author: ANDRES,
+      sort: String(entry.published ?? "2026-01-01"),
+      dateLabel: entry.status,
+      title: entry.title,
+      authors: entry.authors,
+      text: entry.summary ?? "",
+      image: imageOf(entry.cover, entry.coverAlt),
+      tags: entry.tags ?? [],
+      pdf: entry.pdf ?? null,
+      pages: entry.pages ?? null,
+      pinned: Boolean(entry.pinned),
+      search: `${entry.title} ${entry.summary ?? ""} ${entry.authors ?? ""} ${(entry.tags ?? []).join(" ")} ${plain(entry.body)}`.toLowerCase(),
+    }));
+
+  const links = articles.map((a) => ({
+    id: `article-${a.id}`,
+    kind: "article",
+    href: a.url,
+    external: true,
+    author: a.author,
+    sort: a.date,
+    dateLabel: shortDay(a.date),
+    title: a.title,
+    text: a.text,
+    source: a.source,
+    image: imageOf(a.image, a.imageAlt),
+    video: a.video ?? null,
+    tags: a.tags ?? [],
+    search: `${a.title} ${a.text} ${a.source} ${(a.tags ?? []).join(" ")}`.toLowerCase(),
+  }));
+
+  const photos = moments.map((m) => ({
+    id: `photo-${m.id}`,
+    kind: "photo",
+    href: m.link ?? null,
+    author: m.author,
+    sort: m.date ?? "9999",
+    dateLabel: m.date ? shortDay(m.date) : m.event,
+    title: "",
+    text: m.text,
+    image: imageOf(m.image, m.imageAlt),
+    tags: m.tags ?? [],
+    search: `${m.text} ${m.event ?? ""} ${(m.tags ?? []).join(" ")}`.toLowerCase(),
+  }));
+
+  const bookPosts = books.map((b) => ({
+    id: `book-${b.id}`,
+    kind: "book",
+    href: "#books",
+    author: ANDRES,
+    sort: "2026-09-01",
+    dateLabel: "Book",
+    title: `${b.title}${b.volume ? `, ${b.volume}` : ""}`,
+    text: b.blurb || `${b.title}${b.volume ? `, ${b.volume}` : ""}, by ${b.author}.${b.formats?.length ? ` ${b.formats.join(" and ")} edition.` : ""}`,
+    book: b,
+    orderHref:
+      b.buyUrl ||
+      `mailto:${orderEmail}?subject=${encodeURIComponent(`Order: ${b.title}${b.volume ? `, ${b.volume}` : ""}`)}`,
+    tags: ["Book", "Avionics"],
+    search: `${b.title} ${b.volume ?? ""} ${b.subtitle ?? ""} ${b.blurb ?? ""} book`.toLowerCase(),
+  }));
+
+  return [...essays, ...papers, ...links, ...photos, ...bookPosts].sort(
+    (a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)) || String(b.sort).localeCompare(String(a.sort))
+  );
+}
+
+// Story highlights built from the feed: each is a run of posts that share a
+// topic, played as slides.
+export function getStories(feed) {
+  const pick = (test) => feed.filter(test).slice(0, 8);
+  const stories = [
+    { id: "shell", label: "Shell Eco", items: pick((i) => i.tags.includes("Shell Eco-marathon")) },
+    { id: "csia", label: "CSIA", items: pick((i) => i.tags.includes("CSIA")) },
+    { id: "papers", label: "Papers", items: pick((i) => i.kind === "paper") },
+    { id: "swort", label: "SWORT", items: pick((i) => i.author.name === "SWORT Aerospace" && !i.tags.includes("SWORT Learn")) },
+    { id: "learn", label: "Learn", items: pick((i) => i.tags.includes("SWORT Learn")) },
+    { id: "book", label: "Book", items: pick((i) => i.kind === "book") },
+  ].filter((s) => s.items.length > 0);
+  // Circle covers read best as photos, so a few highlights name theirs.
+  const covers = {
+    csia: "/media/project-uav.jpg",
+    papers: "/media/figures/gate-conditioning-page1.jpg",
+    swort: "/media/brand/swort-emblem-light.png",
+  };
+  return stories.map((s) => {
+    const first = s.items.find((i) => i.image || i.video);
+    const cover = covers[s.id] ?? first?.video?.poster ?? first?.image?.src ?? null;
+    return { ...s, cover, contain: s.id === "swort", figure: s.id === "papers" };
+  });
+}
+
+// Tag counts across the feed, most used first.
+export function getTopics(feed) {
+  const counts = new Map();
+  feed.forEach((i) => i.tags.forEach((t) => counts.set(t, (counts.get(t) ?? 0) + 1)));
+  return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 }

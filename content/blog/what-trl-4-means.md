@@ -3,6 +3,8 @@ title: What TRL 4 means, and what it doesn't
 summary: How I assessed the CSIA trust layer's technology readiness, axis by axis, and the one phrase I had to take back.
 date: 2026-09-29
 tags: [CSIA, Engineering practice, Readiness]
+cover: /media/feed/swort-avionics-board.jpg
+coverAlt: A SWORT avionics board
 draft: true
 ---
 

@@ -1,4 +1,4 @@
-import { getBlogIndex, getResearch } from "@/utils/content";
+import { getFeed, getResearch } from "@/utils/content";
 import { personalData } from "@/utils/data/personal-data";
 import BookShelf from "./components/books/book-shelf";
 import LearnCta from "./components/helper/learn-cta";
@@ -34,7 +34,7 @@ async function getData() {
 
 export default async function Home() {
   const blogs = await getData();
-  const writing = getBlogIndex();
+  const writing = getFeed();
   const research = getResearch();
 
   return (

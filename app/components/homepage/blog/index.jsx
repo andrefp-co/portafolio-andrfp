@@ -1,13 +1,52 @@
 // @flow strict
 import SectionHeading from "@/app/components/helper/section-heading";
-import RowLink from "@/app/components/helper/row-link";
+import Image from "next/image";
 import Link from 'next/link';
 import BlogCard from './blog-card';
 
-// Latest writing: essays and papers from the blog index, then dev.to
-// articles if there are any.
+const KIND = { essay: "Essay", paper: "Paper", article: "Article", photo: "Photo", book: "Book" };
+
+function FeedTile({ item }) {
+  const inner = (
+    <>
+      <span className={`relative block aspect-[4/3] overflow-hidden ${item.image?.figure ? "bg-white" : "bg-black"}`}>
+        <Image
+          src={item.video?.poster ?? item.image.src}
+          alt={item.image?.alt ?? ""}
+          fill
+          sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
+          className={`transition-transform duration-700 group-hover:scale-[1.04] ${item.image?.figure ? "object-contain p-3" : "object-cover"}`}
+        />
+      </span>
+      <span className="flex flex-1 flex-col gap-2 p-5">
+        <span className="flex items-center gap-2 text-[11px] text-[var(--sw-gray)]">
+          <span className="rounded-full bg-[var(--sw-graphite)] px-2 py-0.5 text-[9px] uppercase tracking-[0.14em] text-[var(--sw-silver)]">{KIND[item.kind]}</span>
+          {item.dateLabel}
+        </span>
+        <span className="text-[15px] font-medium leading-snug text-[var(--sw-white)]">{item.title || item.text}</span>
+        {item.title && <span className="line-clamp-2 text-[13px] leading-relaxed text-[var(--sw-silver)]">{item.text}</span>}
+      </span>
+    </>
+  );
+  const cls = "group flex h-full flex-col overflow-hidden rounded-2xl border border-[var(--sw-border)] bg-[var(--sw-cell)] transition-colors hover:border-[var(--sw-border-strong)]";
+  if (item.external) {
+    return (
+      <a href={item.href} target="_blank" rel="noopener noreferrer" className={cls}>
+        {inner}
+      </a>
+    );
+  }
+  return (
+    <Link href={item.href ?? "/blog"} className={cls}>
+      {inner}
+    </Link>
+  );
+}
+
+// Latest from the blog feed, as image cards, then dev.to articles if any.
 function Blog({ items = [], blogs = [] }) {
-  if (!items.length && !blogs.length) return null;
+  const tiles = items.filter((i) => i.image || i.video).slice(0, 3);
+  if (!tiles.length && !blogs.length) return null;
 
   return (
     <section id='blogs' className="sw-section sw-paper">
@@ -17,27 +56,15 @@ function Blog({ items = [], blogs = [] }) {
             <SectionHeading eyebrow="Writing" title="From the blog." />
           </div>
           <Link className="sw-btn sw-btn-primary" href="/blog">
-            All writing
+            Open the feed
           </Link>
         </div>
 
-        {items.length > 0 && (
-          <ul className="mt-8 border-t border-[var(--sw-rule)]">
-            {items.slice(0, 3).map((item) => (
-              <li key={item.href} className="border-b border-[var(--sw-rule)]">
-                <RowLink href={item.href} className="grid-cols-[1fr_auto] px-1 py-7 md:grid-cols-[minmax(0,180px)_1fr_auto] md:gap-8 md:px-4">
-                  <div className="col-span-2 flex flex-wrap items-center gap-3 md:col-span-1 md:flex-col md:items-start">
-                    <span className="sw-label text-[var(--sw-white)]">{item.type === "paper" ? "Paper" : "Essay"}</span>
-                    <span className="sw-label">{item.dateLabel}</span>
-                    {item.draft && <span className="sw-status">Draft</span>}
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="font-[family-name:var(--sw-font-display)] text-[clamp(26px,2.8vw,36px)] leading-[1.04] tracking-[0.02em] text-[var(--sw-white)]">
-                      {item.title}
-                    </h3>
-                    <p className="sw-cell-body mt-2 max-w-[64ch]">{item.summary}</p>
-                  </div>
-                </RowLink>
+        {tiles.length > 0 && (
+          <ul className="-mx-4 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3 [&::-webkit-scrollbar]:hidden">
+            {tiles.map((item) => (
+              <li key={item.id} className="w-[82%] shrink-0 snap-start sm:w-auto">
+                <FeedTile item={item} />
               </li>
             ))}
           </ul>

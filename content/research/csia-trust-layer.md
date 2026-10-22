@@ -6,6 +6,8 @@ status: Validated in simulation, flight logs and SITL
 highlight: Zero false alarms across a full autonomous ArduPilot SITL mission
 order: 1
 repo: https://github.com/SWORT-Aerospace/csia-trust-layer
+cover: /media/figures/c8_coverage_map.png
+coverAlt: Two-detector coverage map from the CSIA systems paper
 ---
 
 The Cross-Sensor Intelligence Architecture (CSIA) is a working demonstration built at SWORT. It replaces naive weighted-average sensor fusion with a **Dynamic Trust Graph**: each node is a sensor, each edge encodes a physical relationship between two sensors, and every sensor carries a **Trust Coefficient** that is updated continuously as the aircraft flies.

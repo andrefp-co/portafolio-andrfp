@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useInView, useScroll, useSpring } from "motion/react";
+import Image from "next/image";
 import { useRef } from "react";
 
 const EASE = [0.22, 1, 0.36, 1];
@@ -11,7 +12,12 @@ function TimelineItem({ exp }) {
   const reached = useInView(ref, { once: true, margin: "0px 0px -40% 0px" });
 
   return (
-    <li ref={ref} className="relative grid grid-cols-1 gap-3 border-b border-[var(--sw-rule)] py-8 pl-10 md:grid-cols-[minmax(0,200px)_1fr] md:gap-7 md:pl-12">
+    <li
+      ref={ref}
+      className={`relative grid grid-cols-1 gap-3 border-b border-[var(--sw-rule)] py-8 pl-10 md:grid-cols-[minmax(0,200px)_1fr] md:gap-7 md:pl-12 ${
+        exp.image ? "lg:grid-cols-[minmax(0,180px)_1fr_minmax(0,280px)]" : ""
+      }`}
+    >
       <motion.span
         aria-hidden="true"
         className="absolute left-[7px] top-[45px] h-px w-5 origin-left bg-[var(--sw-gray)]"
@@ -37,6 +43,17 @@ function TimelineItem({ exp }) {
           </div>
         )}
       </div>
+      {exp.image && (
+        <motion.figure
+          className="relative m-0 aspect-[4/3] max-w-[420px] overflow-hidden rounded-xl border border-[var(--sw-border)] md:col-start-2 lg:col-start-auto lg:mt-1"
+          initial={{ opacity: 0, y: 16, scale: 0.98 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, margin: "0px 0px -10% 0px" }}
+          transition={{ duration: 0.7, ease: EASE }}
+        >
+          <Image src={exp.image} alt={exp.imageAlt ?? ""} fill sizes="(min-width: 1024px) 280px, 420px" className="object-cover transition-transform duration-700 hover:scale-[1.04]" />
+        </motion.figure>
+      )}
     </li>
   );
 }

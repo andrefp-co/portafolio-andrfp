@@ -1,14 +1,14 @@
-import { getBlogIndex } from "@/utils/content";
+import { getFeed, getStories, getTopics } from "@/utils/content";
+import { books } from "@/utils/data/books";
 import { personalData } from "@/utils/data/personal-data";
 import BookShelf from "../components/books/book-shelf";
-import BlogExplorer from "../components/blog/blog-explorer";
+import BlogFeed from "../components/feed/blog-feed";
 import LearnCta from "../components/helper/learn-cta";
-import PageHeader from "../components/helper/page-header";
 import BlogCard from "../components/homepage/blog/blog-card";
 
 export const metadata = {
   title: "Blog",
-  description: "Essays and working papers on sensor integrity, runtime diagnosis, embedded firmware and engineering practice.",
+  description: "Essays, papers, photos and SWORT articles from Andres Peña: sensor integrity, runtime diagnosis, flight controllers and the Shell Eco-marathon.",
 };
 
 async function getDevToPosts() {
@@ -23,48 +23,28 @@ async function getDevToPosts() {
   }
 }
 
+const profile = {
+  author: { name: personalData.name, handle: "andrfp", avatar: personalData.profile },
+  cover: "/media/feed/swort-avionics-board.jpg",
+  bio: "Embedded systems and avionics. Founder and technical lead at SWORT Aerospace: flight controllers, sensor integrity and electronics test. Posts, papers and notes from the bench.",
+  location: personalData.address,
+  linkedIn: personalData.linkedIn,
+};
+
 export default async function BlogPage() {
-  const items = getBlogIndex();
+  const feed = getFeed();
   const devTo = await getDevToPosts();
-  const essays = items.filter((i) => i.type === "essay").length;
-  const papers = items.length - essays;
-  const topics = new Set(items.flatMap((i) => i.tags)).size;
 
   return (
     <>
-      <PageHeader
-        eyebrow="Writing"
-        title="Notes from the bench."
-        lede="Essays and working papers on sensor integrity, runtime diagnosis, embedded firmware, and how to write down what a test actually proved."
-      >
-        <dl className="mt-10 grid max-w-xl grid-cols-3 border-t border-[var(--sw-rule)] pt-6">
-          {[
-            ["Essays", essays],
-            ["Papers", papers],
-            ["Topics", topics],
-          ].map(([label, value]) => (
-            <div key={label}>
-              <dt className="sw-label">{label}</dt>
-              <dd className="mt-1 font-[family-name:var(--sw-font-display)] text-[40px] leading-none text-[var(--sw-white)]">{value}</dd>
-            </div>
-          ))}
-        </dl>
-      </PageHeader>
-
-      <section className="sw-section sw-paper !border-t-0">
-        <div className="sw-container">
-          {items.length > 0 ? (
-            <BlogExplorer items={items} />
-          ) : (
-            <p className="sw-lede">No posts yet. The first ones are being written.</p>
-          )}
-        </div>
+      <section className="pb-10 lg:pt-6">
+        <BlogFeed profile={profile} items={feed} stories={getStories(feed)} topics={getTopics(feed)} book={books[0]} />
       </section>
 
-      <BookShelf />
+      <BookShelf tone="paper" />
 
       {devTo.length > 0 && (
-        <section className="sw-section sw-paper">
+        <section className="sw-section">
           <div className="sw-container">
             <p className="sw-eyebrow">Also on dev.to</p>
             <div className="sw-grid mt-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
