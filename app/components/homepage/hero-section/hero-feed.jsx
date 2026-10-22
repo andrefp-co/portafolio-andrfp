@@ -5,9 +5,8 @@ import { useEffect, useRef } from "react";
 
 const EASE = [0.22, 1, 0.36, 1];
 
-// The Higgsfield clip as a bench-camera feed: corner brackets, a running
-// timecode, and a reticle that follows the pointer or finger. The clip is an
-// AI-generated illustration and is labelled as one.
+// The hero clip as a bench-camera feed: corner brackets, a running timecode,
+// and a reticle that follows the pointer or finger.
 export default function HeroFeed() {
   const wrapRef = useRef(null);
   const videoRef = useRef(null);
@@ -114,12 +113,8 @@ export default function HeroFeed() {
         <span className="absolute left-1/2 top-1/2 h-3 w-px -translate-y-1/2 bg-white/80" />
       </motion.span>
 
-      <div className="absolute inset-x-0 top-0 flex flex-wrap items-center justify-between gap-2 px-6 pt-5 text-[10px] uppercase tracking-[0.2em] text-white/85">
-        <span className="flex items-center gap-2">
-          <span className="sw-live-dot" aria-hidden="true" />
-          Feed 01 · <span ref={timeRef} className="tabular-nums">T+00:00.00</span>
-        </span>
-        <span className="text-white/70">AI-generated illustration</span>
+      <div className="absolute inset-x-0 top-0 px-6 pt-5 text-[10px] uppercase tracking-[0.2em] text-white/85">
+        Feed 01 · <span ref={timeRef} className="tabular-nums">T+00:00.00</span>
       </div>
       <span ref={coordRef} className="absolute bottom-5 right-6 text-[10px] uppercase tracking-[0.2em] tabular-nums text-white/70" aria-hidden="true">
         X 0.62  Y 0.48

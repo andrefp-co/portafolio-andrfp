@@ -8,7 +8,7 @@ import { motion, useScroll, useTransform } from "motion/react";
 import Link from "next/link";
 import { useRef } from "react";
 
-// The project's visual: its illustration when one is set, otherwise a panel
+// The project's visual: its image when one is set, otherwise a panel
 // built around the one number the project is judged by.
 function ProjectVisual({ project, parallax }) {
   const { metric } = project;
@@ -32,17 +32,14 @@ function ProjectVisual({ project, parallax }) {
             />
           </motion.div>
           {/* Over a photograph, so the caption is always white. */}
-          <figcaption className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-gradient-to-t from-black/85 to-transparent px-5 pb-4 pt-16 text-white">
-            {metric && (
-              <span>
-                <span className="block font-[family-name:var(--sw-font-display)] text-[40px] leading-none">
-                  <CountUp value={metric.value} from={metric.from} prefix={metric.prefix} suffix={metric.suffix} />
-                </span>
-                <span className="mt-1 block text-[10px] uppercase tracking-[0.2em] text-white/75">{metric.label}</span>
+          {metric && (
+            <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent px-5 pb-4 pt-16 text-white">
+              <span className="block font-[family-name:var(--sw-font-display)] text-[40px] leading-none">
+                <CountUp value={metric.value} from={metric.from} prefix={metric.prefix} suffix={metric.suffix} />
               </span>
-            )}
-            <span className="text-[10px] uppercase tracking-[0.2em] text-white/75">AI illustration</span>
-          </figcaption>
+              <span className="mt-1 block text-[10px] uppercase tracking-[0.2em] text-white/75">{metric.label}</span>
+            </figcaption>
+          )}
         </figure>
       </Tilt>
     );

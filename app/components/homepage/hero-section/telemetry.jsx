@@ -247,10 +247,7 @@ export default function Telemetry() {
     >
       <div className="sw-panel-bar">
         <span className="sw-label">Attitude telemetry</span>
-        <span className="sw-label flex items-center gap-2">
-          <span className="sw-live-dot" aria-hidden="true" />
-          SIM · 200 Hz
-        </span>
+        <span className="sw-label">SIM · 200 Hz</span>
       </div>
       <div
         ref={plotRef}

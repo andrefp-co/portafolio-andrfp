@@ -14,8 +14,8 @@ function TimelineItem({ exp }) {
     <li ref={ref} className="relative grid grid-cols-1 gap-3 border-b border-[var(--sw-rule)] py-8 pl-10 md:grid-cols-[minmax(0,200px)_1fr] md:gap-7 md:pl-12">
       <motion.span
         aria-hidden="true"
-        className="absolute left-0 top-[38px] h-[15px] w-[15px] border border-[var(--sw-gray)] bg-[var(--sw-black)]"
-        animate={reached ? { backgroundColor: "#ffffff", borderColor: "#ffffff" } : {}}
+        className="absolute left-[7px] top-[45px] h-px w-5 origin-left bg-[var(--sw-gray)]"
+        animate={reached ? { backgroundColor: "#ffffff", scaleX: 1.6 } : {}}
         transition={{ duration: 0.4, ease: EASE }}
       />
       <p className="sw-label pt-[3px]">{exp.duration}</p>

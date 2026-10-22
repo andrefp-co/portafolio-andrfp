@@ -16,7 +16,7 @@ function Footer() {
           </p>
           <div className="flex flex-wrap items-center gap-6 md:justify-end">
             <Link href="/vault" className="text-[11px] uppercase tracking-[0.14em] text-[var(--sw-gray)] transition-colors hover:text-white" aria-label="Restricted portfolio">
-              <span aria-hidden="true">▮ </span>Restricted
+              Restricted
             </Link>
             <Link target="_blank" href={personalData.github} className="sw-link">
               GitHub <span className="sw-link-arrow" aria-hidden="true">↗</span>
