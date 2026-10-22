@@ -1,18 +1,14 @@
 // @flow strict
 
-import SectionHeading from "@/app/components/helper/section-heading";
 import { skillGroups } from "@/utils/data/skills";
 import SkillsGlobe from "./skills-globe";
 
+// The heading lives inside the globe's pinned stage so it stays in view
+// while the globe turns through each discipline.
 function Skills() {
   return (
-    <section id="skills" className="sw-section sw-section-raised overflow-hidden">
-      <div className="sw-container">
-        <SectionHeading eyebrow="Skills" title="Tools I work with." />
-        <div className="mt-8">
-          <SkillsGlobe groups={skillGroups} />
-        </div>
-      </div>
+    <section id="skills" className="sw-section-raised relative border-t border-[var(--sw-rule)]">
+      <SkillsGlobe groups={skillGroups} />
     </section>
   );
 };

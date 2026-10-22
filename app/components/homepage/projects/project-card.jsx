@@ -1,16 +1,23 @@
 "use client";
 
+import BrakeSim from "@/app/components/instruments/brake-sim";
+import EmiScope from "@/app/components/instruments/emi-scope";
 import CountUp from "@/app/components/motion/count-up";
-import DitherImage from "@/app/components/motion/dither-image";
+import RevealImage from "@/app/components/motion/reveal-image";
 import ScrambleText from "@/app/components/motion/scramble-text";
-import Tilt from "@/app/components/motion/tilt";
 import { motion, useScroll, useTransform } from "motion/react";
 import Link from "next/link";
 import { useRef } from "react";
 
-// The project's visual: its image when one is set, otherwise a panel
+// Projects whose result is clearer as a working instrument than a picture.
+const INSTRUMENTS = { brake: BrakeSim, emi: EmiScope };
+
+// The project's visual: an instrument, its image, or failing both a panel
 // built around the one number the project is judged by.
 function ProjectVisual({ project, parallax }) {
+  const Instrument = INSTRUMENTS[project.instrument];
+  if (Instrument) return <Instrument className="w-full sm:aspect-[4/3]" />;
+
   const { metric } = project;
   // Long readings (many digits or a unit suffix) step down a size so they stay on one line.
   const metricLength = metric ? `${metric.prefix ?? ""}${metric.value}${metric.suffix ?? ""}`.length : 0;
@@ -18,30 +25,19 @@ function ProjectVisual({ project, parallax }) {
 
   if (project.image) {
     return (
-      <Tilt max={5}>
-        <figure className="group relative m-0 overflow-hidden border border-[var(--sw-border)]">
-          <motion.div style={{ y: parallax, scale: 1.12 }}>
-            <DitherImage
-              src={project.image}
-              width={1400}
-              height={1050}
-              sizes="(max-width: 1024px) 92vw, 560px"
-              alt={project.imageAlt || ""}
-              className="aspect-[4/3] w-full"
-              imgClassName="sw-mono-img h-full w-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06] group-active:scale-[1.06]"
-            />
-          </motion.div>
-          {/* Over a photograph, so the caption is always white. */}
-          {metric && (
-            <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent px-5 pb-4 pt-16 text-white">
-              <span className="block font-[family-name:var(--sw-font-display)] text-[40px] leading-none">
-                <CountUp value={metric.value} from={metric.from} prefix={metric.prefix} suffix={metric.suffix} />
-              </span>
-              <span className="mt-1 block text-[10px] uppercase tracking-[0.2em] text-white/75">{metric.label}</span>
-            </figcaption>
-          )}
-        </figure>
-      </Tilt>
+      <figure className="relative m-0 overflow-hidden border border-[var(--sw-border)]">
+        <motion.div style={{ y: parallax, scale: 1.1 }}>
+          <RevealImage
+            src={project.image}
+            width={1400}
+            height={1050}
+            sizes="(max-width: 1024px) 92vw, 560px"
+            alt={project.imageAlt || ""}
+            className="aspect-[4/3] w-full"
+            imgClassName="sw-mono-img h-full w-full object-cover"
+          />
+        </motion.div>
+      </figure>
     );
   }
 

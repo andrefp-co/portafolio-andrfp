@@ -2,21 +2,9 @@
 import SectionHeading from '@/app/components/helper/section-heading';
 import LocalTime from '@/app/components/motion/local-time';
 import { personalData } from '@/utils/data/personal-data';
-import Link from 'next/link';
-import { BiLogoLinkedin } from "react-icons/bi";
-import { FaFacebook, FaStackOverflow } from 'react-icons/fa';
-import { FaXTwitter } from "react-icons/fa6";
-import { IoLogoGithub } from "react-icons/io";
+import SocialLinks from '@/app/components/helper/social-links';
 import ContactForm from './contact-form';
 import CopyEmail from './copy-email';
-
-const socials = [
-  { label: "GitHub", href: personalData.github, Icon: IoLogoGithub },
-  { label: "LinkedIn", href: personalData.linkedIn, Icon: BiLogoLinkedin },
-  { label: "X / Twitter", href: personalData.twitter, Icon: FaXTwitter },
-  { label: "Stack Overflow", href: personalData.stackOverflow, Icon: FaStackOverflow },
-  { label: "Facebook", href: personalData.facebook, Icon: FaFacebook },
-];
 
 function ContactSection() {
   return (
@@ -42,13 +30,7 @@ function ContactSection() {
               </div>
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-2">
-              {socials.filter(({ href }) => href).map(({ label, href, Icon }) => (
-                <Link key={label} target="_blank" href={href} aria-label={label} className="sw-icon-btn">
-                  <Icon size={18} />
-                </Link>
-              ))}
-            </div>
+            <SocialLinks className="mt-8" />
           </div>
         </div>
       </div>

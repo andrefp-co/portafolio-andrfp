@@ -4,6 +4,7 @@ import { motion, useInView, useScroll, useSpring } from "motion/react";
 import Link from "next/link";
 import { useRef } from "react";
 import { openMail } from "@/utils/obfuscate";
+import Telemetry from "../../instruments/telemetry";
 import Carousel from "../../motion/carousel";
 
 const EASE = [0.22, 1, 0.36, 1];
@@ -17,13 +18,13 @@ function TimelineItem({ exp }) {
     <li
       ref={ref}
       className={`relative grid grid-cols-1 gap-3 border-b border-[var(--sw-rule)] py-8 pl-10 md:grid-cols-[minmax(0,200px)_1fr] md:gap-7 md:pl-12 ${
-        exp.images?.length ? "lg:grid-cols-[minmax(0,180px)_1fr_minmax(0,300px)]" : ""
+        exp.images?.length || exp.instrument ? "lg:grid-cols-[minmax(0,150px)_1fr_minmax(0,340px)]" : ""
       }`}
     >
       <motion.span
         aria-hidden="true"
         className="absolute left-[7px] top-[45px] h-px w-5 origin-left bg-[var(--sw-gray)]"
-        animate={reached ? { backgroundColor: "#ffffff", scaleX: 1.6 } : {}}
+        animate={reached ? { backgroundColor: "#ffffff", scaleX: 1.3 } : {}}
         transition={{ duration: 0.4, ease: EASE }}
       />
       <p className="sw-label pt-[3px]">{exp.duration}</p>
@@ -46,7 +47,7 @@ function TimelineItem({ exp }) {
         )}
         {exp.partnerAccess && (
           <motion.div
-            className="mt-6 max-w-[560px] rounded-xl border border-[var(--sw-border-strong)] bg-[var(--sw-cell)] p-5"
+            className="mt-6 max-w-[560px] border border-[var(--sw-border-strong)] bg-[var(--sw-cell)] p-5"
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -73,15 +74,19 @@ function TimelineItem({ exp }) {
           </motion.div>
         )}
       </div>
-      {exp.images?.length > 0 && (
+      {exp.instrument === "telemetry" ? (
+        <div className="mt-2 max-w-[480px] md:col-start-2 lg:col-start-auto lg:mt-1">
+          <Telemetry />
+        </div>
+      ) : exp.images?.length > 0 && (
         <motion.div
-          className="max-w-[420px] md:col-start-2 lg:col-start-auto lg:mt-1"
+          className="mt-2 max-w-[480px] md:col-start-2 lg:col-start-auto lg:mt-1"
           initial={{ opacity: 0, y: 16, scale: 0.98 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, margin: "0px 0px -10% 0px" }}
           transition={{ duration: 0.7, ease: EASE }}
         >
-          <Carousel images={exp.images} sizes="(min-width: 1024px) 300px, 420px" />
+          <Carousel images={exp.images} sizes="(min-width: 1024px) 340px, 480px" />
         </motion.div>
       )}
     </li>

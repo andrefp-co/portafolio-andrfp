@@ -498,18 +498,6 @@
     line-height: inherit;
   }
 
-  /* ── Motion: dither reveal canvas (dither-image.jsx) ──────────────────── */
-  .dither-layer {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    pointer-events: none;
-    background: var(--sw-black);
-    image-rendering: pixelated;
-  }
-
   /* ── Hero ─────────────────────────────────────────────────────────────── */
   /* A soft light falloff over the coordinate grid, brightest behind the
      instrument panel, so the hero has depth without introducing a hue. */
@@ -532,8 +520,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .sx-ghost,
-    .dither-layer {
+    .sx-ghost {
       display: none;
     }
   }

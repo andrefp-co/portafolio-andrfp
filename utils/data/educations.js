@@ -17,10 +17,4 @@ export const educations = [
     duration: "2022 – 2025",
     institution: "Floral Park Memorial High School",
   },
-  {
-    id: 4,
-    title: "Secondary school",
-    duration: "2020 – 2022",
-    institution: "Military Academy Aquileo Parra",
-  },
 ];

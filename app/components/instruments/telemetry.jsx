@@ -242,8 +242,9 @@ export default function Telemetry() {
       ref={wrapRef}
       className="sw-panel m-0"
       initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.55, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "0px 0px -10% 0px" }}
+      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
     >
       <div className="sw-panel-bar">
         <span className="sw-label">Attitude telemetry</span>
@@ -270,14 +271,14 @@ export default function Telemetry() {
       </div>
       <figcaption className="grid grid-cols-3 border-t border-[var(--sw-border)]">
         {CHANNELS.map((ch) => (
-          <div key={ch.key} className="border-r border-[var(--sw-border)] px-4 py-3 last:border-r-0">
-            <span className="sw-label flex items-center gap-2">
-              <svg width="16" height="2" aria-hidden="true">
-                <line x1="0" y1="1" x2="16" y2="1" stroke={ch.stroke} strokeWidth="2" strokeDasharray={ch.dash.join(" ")} />
+          <div key={ch.key} className="min-w-0 border-r border-[var(--sw-border)] px-3 py-3 last:border-r-0 sm:px-4">
+            <span className="sw-label flex items-center gap-1.5 whitespace-nowrap">
+              <svg width="12" height="2" aria-hidden="true" className="shrink-0">
+                <line x1="0" y1="1" x2="12" y2="1" stroke={ch.stroke} strokeWidth="2" strokeDasharray={ch.dash.join(" ")} />
               </svg>
               {ch.label}
             </span>
-            <p className="mt-1 text-sm tabular-nums text-white">
+            <p className="mt-1 whitespace-nowrap text-[13px] tabular-nums text-white sm:text-sm">
               <span ref={(el) => { readoutRefs.current[ch.key] = el; }}>{fmt(0)}</span>
               <span className="text-[var(--sw-gray)]"> {ch.unit}</span>
             </p>

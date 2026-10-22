@@ -25,22 +25,6 @@ function Value({ value }) {
   return value;
 }
 
-// Site pages open in place; PDFs open in a new tab.
-function DocLink({ href, className, children }) {
-  if (/\.pdf$/.test(href)) {
-    return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
-        {children}
-      </a>
-    );
-  }
-  return (
-    <Link href={href} className={className}>
-      {children}
-    </Link>
-  );
-}
-
 // A 1–9 readiness scale: solid to the level reached, dashed to the next
 // target or the upper bound of a range.
 function TrlScale({ trl }) {
@@ -116,7 +100,7 @@ const today = () => new Date().toLocaleDateString("en-US", { year: "numeric", mo
 
 // The restricted file, set as a controlled document. Content arrives from the
 // server only after the terms are signed and the access code is right.
-export default function Dossier({ content, viewer, onLock, termsVersion, focus = null }) {
+export default function Dossier({ content, viewer, onLock, onLeave, termsVersion, focus = null }) {
   // Arriving from "Get resume": bring the résumé into view once the file has
   // drawn in.
   useEffect(() => {
@@ -270,21 +254,6 @@ export default function Dossier({ content, viewer, onLock, termsVersion, focus =
                       </tbody>
                     </table>
                   )}
-                  {section.links && (
-                    <ul className="border-t border-black/25">
-                      {section.links.map((l) => (
-                        <li key={l.href} className="border-b border-black/12">
-                          <DocLink href={l.href} className="group flex items-start justify-between gap-6 py-3.5">
-                            <span className="min-w-0">
-                              <span className="block text-[14px] leading-snug text-black group-hover:underline group-hover:underline-offset-4">{l.title}</span>
-                              <span className="mt-1 block text-[12px] text-[#6b6b6b]">{l.note}</span>
-                            </span>
-                            <span className="shrink-0 pt-0.5 text-[11px] uppercase tracking-[0.14em] text-black">{/\.pdf$/.test(l.href) ? "PDF ↗" : "Open →"}</span>
-                          </DocLink>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
                   {section.list && (
                     <ol className="flex flex-col gap-2.5">
                       {section.list.map((entry, i) => (
@@ -311,7 +280,7 @@ export default function Dossier({ content, viewer, onLock, termsVersion, focus =
                 >
                   Lock file
                 </motion.button>
-                <Link href="/" className="border border-black/30 px-6 py-3 text-center text-[11px] uppercase tracking-[0.14em] text-black transition-colors hover:border-black">
+                <Link href="/" onClick={onLeave} className="border border-black/30 px-6 py-3 text-center text-[11px] uppercase tracking-[0.14em] text-black transition-colors hover:border-black">
                   Back to site
                 </Link>
               </div>

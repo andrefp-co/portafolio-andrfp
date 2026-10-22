@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 // A swipeable row of photos: native scroll-snap for touch, arrow buttons for
 // mouse, dots and a counter for position. `onTap(index)` fires on a tap or
 // click; double taps are left to the parent (see post-card).
-export default function Carousel({ images, className = "", aspect = "aspect-[4/3]", sizes = "100vw", onTap, rounded = "rounded-xl" }) {
+export default function Carousel({ images, className = "", aspect = "aspect-[4/3]", sizes = "100vw", onTap, rounded = "" }) {
   const ref = useRef(null);
   const [index, setIndex] = useState(0);
   const many = images.length > 1;

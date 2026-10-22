@@ -6,6 +6,10 @@
 // Every statement below comes from the CSIA repository's TRL assessment,
 // transition report and commercialization notes, or from swort.net. Keep it
 // that way: state gaps plainly and never round a status up.
+//
+// Only material that is NOT on the public site belongs here. The papers, the
+// research pages, SSIL, the SEM controller and the role descriptions are all
+// public already; repeating them here would make the code protect nothing.
 import { personalData } from "./personal-data";
 
 export const vault = {
@@ -46,10 +50,13 @@ export const vault = {
         src: "/api/vault/media/x8-board-review.mp4",
         webm: "/api/vault/media/x8-board-review.webm",
         poster: "/api/vault/media/x8-board-review.jpg",
-        caption: "3D layout review: eight ESC outputs, GPS, compass, RC and auxiliary ports and USB-C, on a four-layer stack (top, ground, power, bottom).",
+        caption: "3D layout review of the current board.",
       },
-      paragraphs: [
-        "A paid flight-controller program Andres leads at SWORT: customer requirements, system architecture, schematic and PCB reviews, contractor coordination and prototype acceptance planning.",
+      rows: [
+        ["Form factor", "50 × 50 mm, four-layer stack (top, ground, power, bottom)"],
+        ["Outputs", "Eight ESC outputs"],
+        ["Ports", "GPS, compass, RC, auxiliary and USB-C"],
+        ["Program", "Paid customer program"],
       ],
     },
     {
@@ -58,13 +65,11 @@ export const vault = {
       title: "CSIA trust layer: UAV core",
       trl: { level: 4, target: 5, note: "Self-assessed on the DoDI 5000.88 scale. Entering TRL 5." },
       paragraphs: [
-        "A companion-computer runtime that scores how far each sensor on an autonomous vehicle can be trusted, attributes a fault to the unit that caused it, and tells the operator. Advisory by default: it monitors and logs, it does not command.",
+        "Where the UAV core stands, with the numbers the public research page leaves out.",
       ],
       rows: [
         ["Evidence", "Frozen-config Monte Carlo (150 runs, Wilson and Poisson intervals); 26 public PX4 logs (0.518 monitored flight-hours, unannotated); live ArduCopter SITL with fault injection."],
         ["Detection, simulated", "GPS spoof attributed at 89% confidence, 4.4 s to the operator alert. IMU drift isolated to the correct unit."],
-        ["Software", "CI-gated behavioral contracts. C core matches the Python reference to 1e-12. Zero-allocation and bounds-checked, designed for STM32H7 and Pi 5."],
-        ["Status", "Not flown in the loop. Not certified. Not DO-178C qualified."],
         ["Transition", "TRL assessment and engineering transition report written for an Army xTech or SBIR review."],
       ],
     },
@@ -80,15 +85,17 @@ export const vault = {
       ],
     },
     {
-      id: "csia-trl5",
+      id: "flight",
       kicker: "Program 01",
-      title: "What closes TRL 5",
+      title: "Path to flight",
       list: [
-        "Runtime on a Pi 5 consuming live MAVLink, p99 tick latency under the 40 ms budget, overnight thermal and endurance soak.",
-        "Advisory run on an actual airframe, SITL first and then flight, telemetry live, state log captured.",
-        "Held-out validation: fix or scope out slow IMU-bias detection, then a false-alarm number on fresh logs with a tight interval.",
+        "Re-run SITL on current code, including the GPS-glitch injection, before any new claim.",
+        "Commissioning calibration on the actual airframe (mandatory sigma calibration).",
+        "Overnight soak on the Pi 5 companion computer itself.",
+        "Advisory-only supervised flights: live MAVLink in, state logged, nothing commanded.",
+        "Held-out real-log campaign for a false-alarm rate an evaluator can't dismiss.",
+        "Only then: consider enabling commands, SITL-validated first, under range-safety rules.",
       ],
-      note: "None of the three touches the validated algorithm.",
     },
     {
       id: "seeker",
@@ -112,71 +119,11 @@ export const vault = {
       ],
     },
     {
-      id: "ssil",
-      kicker: "Program 03",
-      title: "System State Integrity Layer",
-      paragraphs: [
-        "SWORT's public commercial architecture for sensor integrity. Runs beside the flight controller, compares every sensor channel against the others and against the vehicle's own motion, and reports source health, trust and fault state. Independent of flight control and estimation by design. In active development.",
-      ],
-    },
-    {
-      id: "sem",
-      kicker: "Program 04",
-      title: "SEM motor controller",
-      paragraphs: [
-        "C11 control core, host-verified against a synthetic plant. Vehicle interface open, hardware not frozen, nothing energized.",
-      ],
-    },
-    {
-      id: "flight",
-      kicker: "Program 01",
-      title: "Path to flight",
-      list: [
-        "Re-run SITL on current code, including the GPS-glitch injection, before any new claim.",
-        "Commissioning calibration on the actual airframe (mandatory sigma calibration).",
-        "Overnight soak on the Pi 5 companion computer itself.",
-        "Advisory-only supervised flights: live MAVLink in, state logged, nothing commanded.",
-        "Held-out real-log campaign for a false-alarm rate an evaluator can't dismiss.",
-        "Only then: consider enabling commands, SITL-validated first, under range-safety rules.",
-      ],
-    },
-    {
-      id: "papers",
-      kicker: "Research",
-      title: "Papers",
-      links: [
-        {
-          title: "Measured Self-Occlusion in a Deployed Cross-Sensor Diagnostic Layer",
-          note: "Systems paper · submission package, October 2026 · 32 pp. with a 13-page supplement · full draft on request",
-          href: "/research/paper-self-occlusion",
-        },
-        {
-          title: "Posterior Distortion from Hypothesis-Dependent Validity Gating in Runtime Diagnosis",
-          note: "Mathematical paper · preprint v2.2, September 2026 · 12 pp.",
-          href: "/papers/gate-conditioning-v2.2.pdf",
-        },
-      ],
-    },
-    {
-      id: "documents",
-      kicker: "Records",
-      title: "Source documents",
-      rows: [
-        ["Interceptor-seeker white paper (synthetic results)", "https://github.com/SWORT-Aerospace/csia-trust-layer/blob/main/deliverables/HANDOFF_WHITEPAPER.md"],
-        ["Engineering transition report", "https://github.com/SWORT-Aerospace/csia-trust-layer/blob/main/docs/TRANSITION_REPORT.md"],
-        ["Technology readiness assessment", "https://github.com/SWORT-Aerospace/csia-trust-layer/blob/main/docs/TRL_ASSESSMENT.md"],
-        ["Commercialization and SBIR readiness", "https://github.com/SWORT-Aerospace/csia-trust-layer/blob/main/docs/COMMERCIALIZATION.md"],
-        ["Evidence matrix", "https://github.com/SWORT-Aerospace/csia-trust-layer/blob/main/docs/evidence/evidence_matrix.md"],
-      ],
-      note: "Each document states its own baseline commit and scope. The seeker results are synthetic throughout.",
-    },
-    {
       id: "handling",
       kicker: "Handling",
       title: "What SWORT does not have",
       paragraphs: [
         "No federal contract award, no past performance on a federal contract, no facility or personnel security clearance, no product qualification and no certification or accreditation of any kind.",
-        "Nothing in this file is classified, Controlled Unclassified Information or export-controlled technical data. If your work may involve restricted information, send nothing further until SWORT confirms an appropriate method.",
       ],
     },
     {
@@ -189,8 +136,7 @@ export const vault = {
         ["SWORT email", process.env.VAULT_CONTACT_EMAIL],
         ["Personal email", process.env.VAULT_CONTACT_PERSONAL_EMAIL],
         ["Phone", process.env.VAULT_CONTACT_PHONE],
-        ["LinkedIn", personalData.linkedIn],
       ].filter(([, v]) => v),
     },
-  ],
+  ].filter((section) => !section.rows || section.rows.length > 0),
 };

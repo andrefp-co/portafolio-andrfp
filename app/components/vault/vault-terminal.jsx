@@ -1,8 +1,10 @@
 "use client";
 
 import { TERMS_VERSION, terms } from "@/utils/data/vault-terms";
+import { cameFromSite } from "@/utils/nav-history";
 import { decodeEmail } from "@/utils/obfuscate";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Dossier from "./dossier";
@@ -125,6 +127,7 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
   const screenRef = useRef(null);
   const timers = useRef([]);
   const grantStarted = useRef(false);
+  const exitRef = useRef(null);
   const submitted = useRef(false);
 
   const activeViewer = viewer || demoViewer;
@@ -256,7 +259,7 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
       case "exit":
       case "logout":
         print(line("logout", "dim"));
-        return later(() => router.push("/"), 400);
+        return later(() => exitRef.current?.click(), 400);
       case "unlock":
       case "login":
         return startUnlock();
@@ -385,6 +388,16 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
     if (demoCode === undefined) router.refresh();
   };
 
+  // Back to the page the visitor came from, at the same scroll position, when
+  // it is on this site; otherwise the link itself goes to the home page. A
+  // real link (not router.push) so it also works in the static preview.
+  const leave = (e) => {
+    if (cameFromSite() && window.history.length > 1) {
+      e.preventDefault();
+      window.history.back();
+    }
+  };
+
   const echo = phase === "password" ? "" : value;
 
   return (
@@ -393,9 +406,9 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
         <span className="truncate">SWORT/OS 1.0 · tty1</span>
         <span className="flex shrink-0 items-center gap-4">
           <ZuluClock />
-          <button type="button" onClick={() => router.push("/")} className="-my-2 py-2 uppercase tracking-[0.2em] hover:text-white">
+          <Link ref={exitRef} href="/" onClick={leave} className="-my-2 py-2 uppercase tracking-[0.2em] hover:text-white">
             Exit to site
-          </button>
+          </Link>
         </span>
       </header>
 
@@ -543,7 +556,7 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
             animate={{ clipPath: "inset(0% 0 0 0)" }}
             transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
           >
-            <Dossier content={dossier} viewer={activeViewer} onLock={lock} termsVersion={TERMS_VERSION} focus={next} />
+            <Dossier content={dossier} viewer={activeViewer} onLock={lock} onLeave={leave} termsVersion={TERMS_VERSION} focus={next} />
           </motion.div>
         )}
       </AnimatePresence>

@@ -6,7 +6,6 @@ import { books } from "@/utils/data/books";
 import { personalData } from "@/utils/data/personal-data";
 import BookShelf from "../components/books/book-shelf";
 import BlogFeed from "../components/feed/blog-feed";
-import LearnCta from "../components/helper/learn-cta";
 import BlogCard from "../components/homepage/blog/blog-card";
 
 const blogDescription =
@@ -88,7 +87,6 @@ export default async function BlogPage() {
         </section>
       )}
 
-      <LearnCta />
     </>
   );
 }

@@ -31,7 +31,7 @@ export default function ResearchList({ entries }) {
             </div>
             {entry.cover && (
               <div
-                className={`relative col-span-2 mt-2 aspect-[16/9] w-full max-w-[360px] overflow-hidden rounded-xl border border-[var(--sw-border)] md:col-span-1 md:mt-0 md:aspect-[4/3] md:self-center ${
+                className={`relative col-span-2 mt-2 aspect-[16/9] w-full max-w-[360px] overflow-hidden border border-[var(--sw-border)] md:col-span-1 md:mt-0 md:aspect-[4/3] md:self-center ${
                   /\/figures\//.test(entry.cover) ? "bg-white" : "bg-black"
                 }`}
               >

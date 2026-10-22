@@ -4,7 +4,7 @@ import { highlights } from "@/utils/data/highlights";
 
 function Highlights() {
   return (
-    <section aria-label="Highlights" className="bg-[var(--sw-black-raised)] py-10">
+    <section aria-label="Highlights" className="bg-[var(--sw-black)] pb-16 pt-2">
       <div className="sw-container">
         <div className="sw-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {highlights.map((item) => (

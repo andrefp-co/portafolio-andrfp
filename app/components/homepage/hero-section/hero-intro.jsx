@@ -5,17 +5,7 @@ import LocalTime from "@/app/components/motion/local-time";
 import { personalData } from "@/utils/data/personal-data";
 import { motion } from "motion/react";
 import Link from "next/link";
-import { BsGithub, BsLinkedin } from "react-icons/bs";
-import { FaFacebook, FaTwitterSquare } from "react-icons/fa";
-import { SiLeetcode } from "react-icons/si";
-
-const socials = [
-  { label: "GitHub", href: personalData.github, Icon: BsGithub },
-  { label: "LinkedIn", href: personalData.linkedIn, Icon: BsLinkedin },
-  { label: "Facebook", href: personalData.facebook, Icon: FaFacebook },
-  { label: "LeetCode", href: personalData.leetcode, Icon: SiLeetcode },
-  { label: "X / Twitter", href: personalData.twitter, Icon: FaTwitterSquare },
-];
+import SocialLinks from "@/app/components/helper/social-links";
 
 const EASE = [0.22, 1, 0.36, 1];
 
@@ -32,7 +22,7 @@ export default function HeroIntro() {
   let letterIndex = 0;
 
   return (
-    <div className="min-w-0">
+    <div className="min-w-0 max-w-[680px]">
       <ScrambleText as="p" className="sw-eyebrow">Engineering portfolio</ScrambleText>
 
       <h1 className="sw-display">
@@ -101,12 +91,8 @@ export default function HeroIntro() {
         </Link>
       </motion.div>
 
-      <motion.div className="mt-8 flex flex-wrap gap-2" {...rise(1.1)}>
-        {socials.filter(({ href }) => href).map(({ label, href, Icon }) => (
-          <Link key={label} href={href} target="_blank" aria-label={label} className="sw-icon-btn">
-            <Icon size={18} />
-          </Link>
-        ))}
+      <motion.div className="mt-8" {...rise(1.1)}>
+        <SocialLinks />
       </motion.div>
     </div>
   );

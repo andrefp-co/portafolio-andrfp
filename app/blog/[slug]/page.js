@@ -6,7 +6,6 @@ import BookShelf from "../../components/books/book-shelf";
 import { formatDate } from "../../components/blog/format-date";
 import PostReader from "../../components/blog/post-reader";
 import ShareBar from "../../components/blog/share-bar";
-import LearnCta from "../../components/helper/learn-cta";
 import PageHeader from "../../components/helper/page-header";
 import { personalData } from "@/utils/data/personal-data";
 import { getPost, getPosts, getRelatedPosts, readingTime } from "@/utils/content";
@@ -185,7 +184,6 @@ export default async function PostPage({ params }) {
         </section>
       )}
 
-      <LearnCta />
       <BookShelf tone="paper" eyebrow="From the author" checkout={checkoutStatus()} />
     </>
   );

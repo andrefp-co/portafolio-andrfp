@@ -6,7 +6,9 @@ export const experiences = [
     company: "SWORT Aerospace",
     duration: "2023 – Present",
     link: "https://www.swort.net",
-    images: [{ src: "/media/feed/swort-avionics-board.jpg", alt: "A SWORT avionics board" }],
+    // Shown beside the role instead of a photo: the attitude telemetry
+    // instrument (app/components/instruments/telemetry.jsx).
+    instrument: "telemetry",
     // Shows the partner button that opens the restricted file at /vault.
     partnerAccess: true,
     desc: [

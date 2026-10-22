@@ -33,8 +33,8 @@ export const projectsData = [
         description: "Designed and integrated the hydraulic brake system for a Shell Eco-marathon vehicle. Created the SolidWorks CAD and MATLAB simulations projecting a ~12% shorter stopping distance.",
         tools: ['SolidWorks', 'MATLAB', 'Hydraulic Brakes', 'Vehicle Integration'],
         role: 'Electromechanical Lead, ASME / Shell Eco-marathon',
-        image: '/media/feed/shell-eco-marathon-320.jpg',
-        imageAlt: "The team's car, number 320, on the Shell Eco-marathon stage",
+        // Shown as a stopping-distance instrument (instruments/brake-sim.jsx).
+        instrument: 'brake',
         code: '',
         demo: '',
     },
@@ -53,7 +53,8 @@ export const projectsData = [
     {
         id: 5,
         name: 'Hybrid EMI Filter Research',
-        metric: { value: 1088, label: 'Cases in a synthetic sensitivity screen' },
+        // Shown as a conducted-emissions concept (instruments/emi-scope.jsx).
+        instrument: 'emi',
         description: "Developing an active/passive EMI filter concept for electric-aircraft inverters, supported by Python stability models, a 1,088-case synthetic sensitivity screen, fault analysis, and a staged bench-verification plan. Hardware validation pending.",
         tools: ['Python', 'Power Electronics', 'Stability Modeling', 'Fault Analysis'],
         role: 'Researcher',
@@ -64,7 +65,8 @@ export const projectsData = [
 
 // Template for future entries. `metric` is the one number the project is
 // judged by (taken from its description). `image` is optional; when set it
-// replaces the metric panel as the project's visual.
+// replaces the metric panel as the project's visual. `instrument` (brake,
+// emi) shows an animated instrument instead of either.
 // {
 //     id: 1,
 //     name: '',

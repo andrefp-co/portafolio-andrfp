@@ -19,8 +19,8 @@ export const highlights = [
     source: "Shell Eco-marathon brakes",
   },
   {
-    value: 1088,
-    label: "Cases in a synthetic sensitivity screen",
-    source: "Hybrid EMI filter research",
+    value: 8,
+    label: "Motor channels with per-motor current and temperature telemetry",
+    source: "Custom ESC architecture",
   },
 ];

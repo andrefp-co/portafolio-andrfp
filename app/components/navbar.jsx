@@ -1,6 +1,7 @@
 "use client";
 
 import { personalData } from "@/utils/data/personal-data";
+import { notePath } from "@/utils/nav-history";
 import ProtectedEmail from "./helper/protected-email";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll, useSpring } from "motion/react";
 import Link from "next/link";
@@ -8,18 +9,20 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import ScrambleText from "./motion/scramble-text";
 
+// Same order as the sections on the home page.
 const links = [
   { label: "About", href: "/#about" },
   { label: "Experience", href: "/#experience" },
   { label: "Projects", href: "/#projects" },
-  { label: "Research", href: "/research" },
   { label: "Skills", href: "/#skills" },
+  { label: "Research", href: "/research" },
+  { label: "Book", href: "/#books" },
   { label: "Blog", href: "/blog" },
 ];
 
 // Home-page sections whose links point at their own pages.
 const SECTION_PAGES = { "/#research": "/research", "/#blogs": "/blog" };
-const OBSERVED = ["about", "experience", "projects", "research", "skills", "education", "blogs", "contact"];
+const OBSERVED = ["about", "experience", "projects", "skills", "research", "books", "blogs", "contact"];
 
 const EASE = [0.22, 1, 0.36, 1];
 
@@ -43,6 +46,9 @@ function Navbar() {
     pathname === "/"
       ? SECTION_PAGES[sectionInView] ?? sectionInView
       : ["/research", "/blog"].find((page) => pathname.startsWith(page)) ?? null;
+
+  // Lets the vault's "Exit" step back to the page the visitor came from.
+  useEffect(() => notePath(pathname), [pathname]);
 
   // Slide away while reading down the page; come back on any scroll up.
   useMotionValueEvent(scrollY, "change", (y) => {

@@ -176,7 +176,7 @@ function Media({ item, onOpenMedia, onDoubleLike }) {
   if (item.images?.length > 1) {
     return (
       <div className="relative mt-3">
-        <Carousel images={item.images} aspect={item.kind === "photo" ? "aspect-[4/3]" : "aspect-video"} sizes="(min-width: 1024px) 640px, 100vw" onTap={tap} />
+        <Carousel images={item.images} aspect={item.kind === "photo" ? "aspect-[4/3]" : "aspect-video"} sizes="(min-width: 1024px) 640px, 100vw" onTap={tap} rounded="rounded-xl" />
         {heartPop}
       </div>
     );

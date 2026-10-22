@@ -1,20 +1,30 @@
 "use client";
 
+import SectionHeading from "@/app/components/helper/section-heading";
+import LearnCta from "@/app/components/helper/learn-cta";
 import { books } from "@/utils/data/books";
-import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "motion/react";
+import { openMail } from "@/utils/obfuscate";
+import { motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
 import Image from "next/image";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import OrderSheet from "./order-sheet";
 
 const EASE = [0.22, 1, 0.36, 1];
 
-// A book as an object: front cover, spine and page block in 3D, turning
-// toward the pointer or finger and opening slightly on hover.
-function Book3D({ book }) {
+// The book as an object under a spotlight: front cover, spine and page block
+// in 3D. Scrolling in turns it from spine-on to a three-quarter view; the
+// pointer or a finger then turns it a little further either way.
+function BookStage({ book }) {
+  const ref = useRef(null);
   const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "center 55%"] });
+  const turn = useTransform(scrollYProgress, [0, 1], [72, 24]);
+  const lift = useTransform(scrollYProgress, [0, 1], [70, 0]);
   const px = useMotionValue(0);
-  const spring = { stiffness: 160, damping: 20, mass: 0.7 };
-  const rotateY = useSpring(useTransform(px, [-0.5, 0.5], [38, 10]), spring);
+  const lean = useSpring(px, { stiffness: 160, damping: 20, mass: 0.7 });
+  const rotateY = useTransform([turn, lean], ([t, l]) => t + l * 26);
+  // The light on the cover slides as the book turns.
+  const sheen = useTransform(rotateY, [0, 72], ["-30%", "60%"]);
 
   const track = (e) => {
     if (reduce) return;
@@ -24,18 +34,20 @@ function Book3D({ book }) {
 
   return (
     <div
-      className="flex justify-center py-6 [perspective:1400px]"
+      ref={ref}
+      className="relative flex aspect-[5/4] items-center justify-center overflow-hidden border border-[var(--sw-border)] bg-[var(--sw-cell)] [perspective:1400px]"
       onPointerMove={track}
       onPointerLeave={() => px.set(0)}
       style={{ touchAction: "pan-y" }}
     >
+      {/* Spotlight and the floor it lands on. */}
+      <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(55%_60%_at_50%_38%,rgba(255,255,255,0.09),transparent_70%)]" />
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[22%] border-t border-[var(--sw-border)] bg-gradient-to-b from-white/[0.03] to-transparent" />
+      <div aria-hidden="true" className="absolute bottom-[16%] left-1/2 h-6 w-[46%] -translate-x-1/2 rounded-[50%] bg-black/70 blur-xl" />
+
       <motion.div
-        className="relative h-[300px] w-[210px] [transform-style:preserve-3d] sm:h-[340px] sm:w-[238px]"
-        style={{ rotateY: reduce ? 24 : rotateY, rotateX: 4 }}
-        initial={reduce ? false : { opacity: 0, y: 40, rotateZ: -4 }}
-        whileInView={{ opacity: 1, y: 0, rotateZ: 0 }}
-        viewport={{ once: true, margin: "0px 0px -10% 0px" }}
-        transition={{ duration: 1, ease: EASE }}
+        className="relative h-[250px] w-[176px] [transform-style:preserve-3d] sm:h-[320px] sm:w-[224px]"
+        style={reduce ? { rotateY: 24, rotateX: 4 } : { rotateY, rotateX: 4, y: lift }}
       >
         {/* Page block along the fore-edge; the book is 34px thick. */}
         <div
@@ -52,14 +64,14 @@ function Book3D({ book }) {
           </span>
         </div>
         {/* Front cover. */}
-        <div className="absolute inset-0 overflow-hidden border border-white/10 bg-[#0d0d0d] shadow-[-24px_30px_60px_rgba(0,0,0,0.45)] [transform:translateZ(17px)]">
+        <div className="absolute inset-0 overflow-hidden border border-white/10 bg-[#0d0d0d] shadow-[-24px_30px_60px_rgba(0,0,0,0.5)] [transform:translateZ(17px)]">
           {book.cover ? (
             <Image src={book.cover} alt={`Cover of ${book.title}`} fill sizes="240px" className="object-cover" />
           ) : (
             <div className="sw-bg-grid flex h-full flex-col justify-between p-5 text-white">
               <span className="text-[10px] uppercase tracking-[0.3em] text-[#8d9297]">{book.volume}</span>
               <div>
-                <span className="block font-[family-name:var(--sw-font-display)] text-[40px] leading-[0.92] tracking-[0.02em] sm:text-[46px]">
+                <span className="block font-[family-name:var(--sw-font-display)] text-[36px] leading-[0.92] tracking-[0.02em] sm:text-[44px]">
                   {book.title}
                 </span>
                 <svg viewBox="0 0 200 40" className="mt-5 h-8 w-full text-[#8d9297]" aria-hidden="true">
@@ -69,19 +81,22 @@ function Book3D({ book }) {
               <span className="text-[10px] uppercase tracking-[0.24em] text-[#bfc2c5]">{book.author}</span>
             </div>
           )}
-          {/* Light catching the cover as it turns. */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.05] to-transparent" />
+          <motion.div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 w-[60%] bg-gradient-to-r from-transparent via-white/[0.08] to-transparent"
+            style={{ left: sheen }}
+          />
         </div>
       </motion.div>
     </div>
   );
 }
 
-// The book shelf: a 3D cover beside the title, details and an order button.
-// `tone="paper"` sits on the light sections.
-// `checkout` maps book ids to whether Stripe checkout is configured (computed
-// on the server, see utils/checkout.js).
-export default function BookShelf({ tone = "dark", eyebrow = "Books", checkout = {} }) {
+// The book shelf: the book under a spotlight beside its details and an order
+// button, then SWORT Learn for readers who want to practise. `tone="paper"`
+// sits on the light sections. `checkout` maps book ids to whether Stripe
+// checkout is configured (computed on the server, see utils/checkout.js).
+export default function BookShelf({ tone = "dark", eyebrow = "Book", checkout = {}, learn = true }) {
   const [ordering, setOrdering] = useState(null);
   const close = useCallback(() => setOrdering(null), []);
   if (!books.length) return null;
@@ -89,59 +104,69 @@ export default function BookShelf({ tone = "dark", eyebrow = "Books", checkout =
   return (
     <section id="books" className={`${tone === "paper" ? "sw-paper" : ""} sw-section scroll-mt-20`} aria-labelledby="books-title">
       <div className="sw-container">
-        <p className="sw-eyebrow">{eyebrow}</p>
-        <h2 id="books-title" className="sw-title">
-          {books.length > 1 ? "Books I've written." : "The book."}
-        </h2>
-        <div className="mt-10 flex flex-col gap-12">
-          {books.map((book) => (
-            <article
-              key={book.id}
-              className="grid items-center gap-8 border border-[var(--sw-border)] bg-[var(--sw-cell)] p-6 sm:p-10 md:grid-cols-[minmax(0,300px)_1fr] lg:gap-16"
-            >
-              <Book3D book={book} />
-              <div className="min-w-0">
-                {book.volume && <p className="sw-label">{book.volume}</p>}
-                <h3 className="mt-2 font-[family-name:var(--sw-font-display)] text-[clamp(40px,5vw,64px)] leading-[0.95] tracking-[0.02em] text-[var(--sw-white)]">
-                  {book.title}
-                </h3>
-                {book.subtitle && <p className="mt-3 text-[15px] text-[var(--sw-silver)]">{book.subtitle}</p>}
-                <p className="mt-2 text-sm text-[var(--sw-gray)]">by {book.author}</p>
-                {book.blurb && <p className="sw-cell-body mt-5 max-w-[56ch]">{book.blurb}</p>}
+        <SectionHeading eyebrow={eyebrow} title={books.length > 1 ? "Books I've written." : "The book."} id="books-title" />
 
-                <dl className="mt-6 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--sw-rule)] pt-5">
-                  {book.formats?.length > 0 && (
-                    <div>
-                      <dt className="sw-label">Format</dt>
-                      <dd className="mt-1 text-sm text-[var(--sw-white)]">{book.formats.join(" · ")}</dd>
-                    </div>
-                  )}
-                  {book.price && (
-                    <div>
-                      <dt className="sw-label">Price</dt>
-                      <dd className="mt-1 text-sm text-[var(--sw-white)]">{book.price}</dd>
-                    </div>
-                  )}
-                </dl>
+        <div className="mt-10 flex flex-col gap-16">
+          {books.map((book) => {
+            const facts = [
+              ["Format", book.formats?.join(" · ")],
+              ["Edition", book.volume],
+              ["Price", book.price || (checkout[book.id] ? "At checkout" : "On request")],
+            ].filter(([, v]) => v);
+            return (
+              <article key={book.id} className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+                <BookStage book={book} />
+                <motion.div
+                  className="min-w-0"
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "0px 0px -10% 0px" }}
+                  transition={{ duration: 0.8, ease: EASE }}
+                >
+                  <p className="sw-label">Written by {book.author}</p>
+                  <h3 className="mt-3 font-[family-name:var(--sw-font-display)] text-[clamp(44px,5.6vw,80px)] leading-[0.92] tracking-[0.02em] text-[var(--sw-white)]">
+                    {book.title}
+                  </h3>
+                  {book.subtitle && <p className="mt-3 text-[15px] text-[var(--sw-silver)]">{book.subtitle}</p>}
+                  {book.blurb && <p className="sw-cell-body mt-5 max-w-[56ch]">{book.blurb}</p>}
 
-                <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
-                  {book.buyUrl ? (
-                    <motion.a href={book.buyUrl} target="_blank" rel="noopener noreferrer" whileTap={{ scale: 0.97 }} className="sw-btn sw-btn-primary">
-                      Buy the book
-                    </motion.a>
-                  ) : (
-                    <motion.button type="button" onClick={() => setOrdering(book)} whileTap={{ scale: 0.97 }} className="sw-btn sw-btn-primary">
-                      Order a copy
-                    </motion.button>
-                  )}
-                  <span className="text-[11px] text-[var(--sw-gray)]">
-                    {checkout[book.id] ? "Secure checkout by Stripe" : "Order by request · nothing is charged until you confirm"}
-                  </span>
-                </div>
-              </div>
-            </article>
-          ))}
+                  <dl className="mt-8 grid grid-cols-3 border-y border-[var(--sw-rule)]">
+                    {facts.map(([k, v]) => (
+                      <div key={k} className="min-w-0 border-r border-[var(--sw-rule)] py-4 pr-3 last:border-r-0 [&:not(:first-child)]:pl-4">
+                        <dt className="sw-label">{k}</dt>
+                        <dd className="mt-1.5 truncate text-sm text-[var(--sw-white)]">{v}</dd>
+                      </div>
+                    ))}
+                  </dl>
+
+                  <div className="mt-8 flex flex-wrap items-center gap-3">
+                    {book.buyUrl ? (
+                      <motion.a href={book.buyUrl} target="_blank" rel="noopener noreferrer" whileTap={{ scale: 0.97 }} className="sw-btn sw-btn-primary">
+                        Buy the book
+                      </motion.a>
+                    ) : (
+                      <motion.button type="button" onClick={() => setOrdering(book)} whileTap={{ scale: 0.97 }} className="sw-btn sw-btn-primary">
+                        Order a copy
+                      </motion.button>
+                    )}
+                    <button type="button" onClick={() => openMail(`${book.title}, ${book.volume}`)} className="sw-btn sw-btn-ghost">
+                      Ask about the book
+                    </button>
+                  </div>
+                  <p className="mt-4 text-[11px] text-[var(--sw-gray)]">
+                    {checkout[book.id] ? "Secure checkout by Stripe. Card details never reach this site." : "Order by request. Nothing is charged until you confirm."}
+                  </p>
+                </motion.div>
+              </article>
+            );
+          })}
         </div>
+
+        {learn && (
+          <div className="mt-16">
+            <LearnCta embedded />
+          </div>
+        )}
       </div>
       {ordering && <OrderSheet key={ordering.id} book={ordering} open onClose={close} checkout={Boolean(checkout[ordering.id])} />}
     </section>

@@ -9,15 +9,16 @@ function ResearchTeaser({ entries }) {
   return (
     <section id="research" className="sw-section sw-paper">
       <div className="sw-container">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <div>
-            <SectionHeading eyebrow="Research" title="Sensor integrity, in the open." />
-            <p className="sw-lede -mt-2">How much should an autonomous system trust each of its own inputs? Each entry opens into its own page.</p>
-          </div>
-          <Link href="/research" className="sw-btn sw-btn-primary">
-            All research
-          </Link>
-        </div>
+        <SectionHeading
+          eyebrow="Research"
+          title="Sensor integrity, in the open."
+          lede="How much should an autonomous system trust each of its own inputs? Each entry opens into its own page."
+          action={
+            <Link href="/research" className="sw-btn sw-btn-ghost">
+              All research <span aria-hidden="true">→</span>
+            </Link>
+          }
+        />
         <div className="mt-10">
           <ResearchList entries={entries} />
         </div>

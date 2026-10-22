@@ -72,10 +72,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${dmMono.variable} ${bebasNeue.variable}`}>
       <body>
-        {/* Without JavaScript the dither reveal never runs; never let its
-            canvas cover an image in that case. */}
+        {/* Without JavaScript the image reveals never run; show the images
+            as they are instead of leaving them clipped. */}
         <noscript>
-          <style>{".dither-layer{display:none}"}</style>
+          <style>{"[data-reveal]{clip-path:none!important;transform:none!important}"}</style>
         </noscript>
         <MotionProvider>
           <Navbar />
