@@ -2,18 +2,22 @@
 // @flow strict
 import { isValidEmail } from "@/utils/check-email";
 import axios from "axios";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { TbMailForward } from "react-icons/tb";
-import { toast } from "react-toastify";
 
-function ContactForm() {
+const EMPTY = { name: "", email: "", message: "" };
+
+function ContactForm({ email }) {
   const [error, setError] = useState({ email: false, required: false });
-  const [isLoading, setIsLoading] = useState(false);
-  const [userInput, setUserInput] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
+  const [status, setStatus] = useState({ state: "idle", message: "" });
+  const [userInput, setUserInput] = useState(EMPTY);
+  const isSending = status.state === "sending";
+
+  const update = (field) => (e) => {
+    setUserInput((prev) => ({ ...prev, [field]: e.target.value }));
+    if (status.state !== "idle" && status.state !== "sending") setStatus({ state: "idle", message: "" });
+  };
 
   const checkRequired = () => {
     if (userInput.name && userInput.email && userInput.message) {
@@ -35,40 +39,36 @@ function ContactForm() {
     }
 
     try {
-      setIsLoading(true);
-
+      setStatus({ state: "sending", message: "" });
       await axios.post("/api/contact", userInput);
-
-      toast.success("Message sent successfully!");
-      setUserInput({ name: "", email: "", message: "" });
+      setStatus({ state: "sent", message: "Message sent. I'll reply to the address you gave." });
+      setUserInput(EMPTY);
     } catch (err) {
-      toast.error(
-        err?.response?.data?.message || "Something went wrong"
-      );
-    } finally {
-      setIsLoading(false);
+      setStatus({
+        state: "error",
+        message: err?.response?.data?.message || "Your message didn't go through. Email me directly instead.",
+      });
     }
   };
 
   return (
-    <div>
+    <div className="min-w-0">
       <div className="max-w-3xl border border-[var(--sw-border)] bg-[var(--sw-black-raised)] p-6 lg:p-8">
         <p className="sw-lede">
           If you have any questions or concerns, feel free to reach out. I’m open
           to opportunities that align with my skills and ambitions.
         </p>
 
-        <form onSubmit={handleSendMail} className="mt-8 flex flex-col gap-5">
+        <form onSubmit={handleSendMail} className="mt-8 flex flex-col gap-5" noValidate>
           <div className="flex flex-col gap-2">
             <label htmlFor="contact-name" className="sw-label">Your Name</label>
             <input
               id="contact-name"
               className="sw-field"
               type="text"
+              autoComplete="name"
               value={userInput.name}
-              onChange={(e) =>
-                setUserInput({ ...userInput, name: e.target.value })
-              }
+              onChange={update("name")}
               onBlur={checkRequired}
             />
           </div>
@@ -79,20 +79,21 @@ function ContactForm() {
               id="contact-email"
               className="sw-field"
               type="email"
+              autoComplete="email"
+              aria-invalid={error.email || undefined}
+              aria-describedby={error.email ? "contact-email-error" : undefined}
               value={userInput.email}
-              onChange={(e) =>
-                setUserInput({ ...userInput, email: e.target.value })
-              }
+              onChange={update("email")}
               onBlur={() =>
                 setError((prev) => ({
                   ...prev,
-                  email: !isValidEmail(userInput.email),
+                  email: Boolean(userInput.email) && !isValidEmail(userInput.email),
                 }))
               }
             />
             {error.email && (
-              <p className="sw-field-error">
-                Please provide a valid email.
+              <p id="contact-email-error" className="sw-field-error">
+                Enter a valid email address, like name@example.com.
               </p>
             )}
           </div>
@@ -104,24 +105,46 @@ function ContactForm() {
               className="sw-field"
               rows="5"
               value={userInput.message}
-              onChange={(e) =>
-                setUserInput({ ...userInput, message: e.target.value })
-              }
+              onChange={update("message")}
               onBlur={checkRequired}
             />
           </div>
 
           {error.required && (
-            <p className="sw-field-error">All fields are required.</p>
+            <p className="sw-field-error">Fill in your name, email and message.</p>
           )}
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="sw-btn sw-btn-primary self-start"
-          >
-            {isLoading ? "Sending…" : <>Send Message <TbMailForward size={16} /></>}
-          </button>
+          <div className="flex flex-wrap items-center gap-5">
+            <button
+              type="submit"
+              disabled={isSending}
+              className="sw-btn sw-btn-primary"
+            >
+              {isSending ? "Sending…" : <>Send message <TbMailForward size={16} /></>}
+            </button>
+
+            <AnimatePresence mode="wait">
+              {(status.state === "sent" || status.state === "error") && (
+                <motion.p
+                  key={status.state}
+                  role="status"
+                  className={`text-xs leading-relaxed ${status.state === "sent" ? "text-[var(--sw-silver)]" : "text-[var(--sw-danger-text)]"}`}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {status.message}
+                  {status.state === "error" && email && (
+                    <>
+                      {" "}
+                      <a href={`mailto:${email}`} className="underline underline-offset-4">{email}</a>
+                    </>
+                  )}
+                </motion.p>
+              )}
+            </AnimatePresence>
+          </div>
         </form>
       </div>
     </div>

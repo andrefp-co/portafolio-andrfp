@@ -1,4 +1,5 @@
 // @flow strict
+import SectionHeading from "@/app/components/helper/section-heading";
 import Link from 'next/link';
 import BlogCard from './blog-card';
 
@@ -8,8 +9,7 @@ function Blog({ blogs }) {
   return (
     <section id='blogs' className="sw-section sw-section-raised">
       <div className="sw-container">
-        <p className="sw-eyebrow">Writing</p>
-        <h2 className="sw-head">From the blog.</h2>
+        <SectionHeading eyebrow="Writing" title="From the blog." />
 
         <div className="sw-grid mt-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {

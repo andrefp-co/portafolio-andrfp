@@ -1,13 +1,13 @@
 // @flow strict
 
+import SectionHeading from "@/app/components/helper/section-heading";
 import { skillGroups } from "@/utils/data/skills";
 
 function Skills() {
   return (
-    <section id="skills" className="sw-section">
+    <section id="skills" className="sw-section sw-section-raised">
       <div className="sw-container">
-        <p className="sw-eyebrow">Skills</p>
-        <h2 className="sw-head">Tools I work with.</h2>
+        <SectionHeading eyebrow="Skills" title="Tools I work with." />
 
         <div className="sw-rows mt-10">
           {skillGroups.map((group) => (

@@ -1,12 +1,12 @@
 // @flow strict
+import SectionHeading from "@/app/components/helper/section-heading";
 import { educations } from "@/utils/data/educations";
 
 function Education() {
   return (
     <section id="education" className="sw-section">
       <div className="sw-container">
-        <p className="sw-eyebrow">Education</p>
-        <h2 className="sw-head">Academic background.</h2>
+        <SectionHeading eyebrow="Education" title="Academic background." />
 
         <div className="sw-rows mt-10">
           {educations.map(education => (

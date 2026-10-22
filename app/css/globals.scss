@@ -463,4 +463,69 @@
   .sw-mono-img {
     filter: grayscale(1);
   }
+
+  /* ── Motion: scramble overlay (scramble-text.jsx) ─────────────────────── */
+  .sx-host {
+    position: relative;
+  }
+
+  .sx-ghost {
+    position: absolute;
+    left: 0;
+    top: 0;
+    white-space: pre;
+    pointer-events: none;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    line-height: inherit;
+  }
+
+  /* ── Motion: dither reveal canvas (dither-image.jsx) ──────────────────── */
+  .dither-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    background: var(--sw-black);
+    image-rendering: pixelated;
+  }
+
+  /* ── Hero ─────────────────────────────────────────────────────────────── */
+  /* A soft light falloff over the coordinate grid, brightest behind the
+     instrument panel, so the hero has depth without introducing a hue. */
+  .sw-hero-grid::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(60% 70% at 78% 45%, rgba(255, 255, 255, 0.05), transparent 70%);
+  }
+
+  .sw-live-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--sw-white);
+    animation: sw-blink 1.6s steps(2, jump-none) infinite;
+  }
+
+  @keyframes sw-blink {
+    50% {
+      opacity: 0.25;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sx-ghost,
+    .dither-layer {
+      display: none;
+    }
+
+    .sw-live-dot {
+      animation: none;
+    }
+  }
 }

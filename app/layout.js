@@ -1,10 +1,9 @@
 import { personalData } from "@/utils/data/personal-data";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { Bebas_Neue, DM_Mono } from "next/font/google";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import Footer from "./components/footer";
 import ScrollToTop from "./components/helper/scroll-to-top";
+import MotionProvider from "./components/motion/motion-provider";
 import Navbar from "./components/navbar";
 import "./css/globals.scss";
 
@@ -54,13 +53,19 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${dmMono.variable} ${bebasNeue.variable}`}>
       <body>
-        <ToastContainer theme="dark" />
-        <Navbar />
-        <main className="min-h-screen relative">
-          {children}
-          <ScrollToTop />
-        </main>
-        <Footer />
+        {/* Without JavaScript the dither reveal never runs; never let its
+            canvas cover an image in that case. */}
+        <noscript>
+          <style>{".dither-layer{display:none}"}</style>
+        </noscript>
+        <MotionProvider>
+          <Navbar />
+          <main className="min-h-screen relative">
+            {children}
+            <ScrollToTop />
+          </main>
+          <Footer />
+        </MotionProvider>
       </body>
       {process.env.NEXT_PUBLIC_GTM && <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM} />}
     </html>

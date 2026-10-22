@@ -1,4 +1,6 @@
 // @flow strict
+import SectionHeading from '@/app/components/helper/section-heading';
+import LocalTime from '@/app/components/motion/local-time';
 import { personalData } from '@/utils/data/personal-data';
 import Link from 'next/link';
 import { BiLogoLinkedin } from "react-icons/bi";
@@ -6,6 +8,7 @@ import { FaFacebook, FaStackOverflow } from 'react-icons/fa';
 import { FaXTwitter } from "react-icons/fa6";
 import { IoLogoGithub } from "react-icons/io";
 import ContactForm from './contact-form';
+import CopyEmail from './copy-email';
 
 const socials = [
   { label: "GitHub", href: personalData.github, Icon: IoLogoGithub },
@@ -19,29 +22,27 @@ function ContactSection() {
   return (
     <section id="contact" className="sw-section">
       <div className="sw-container">
-        <p className="sw-eyebrow">Contact</p>
-        <h2 className="sw-head">Get in touch.</h2>
+        <SectionHeading eyebrow="Contact" title="Get in touch." />
 
         <div className="mt-10 grid grid-cols-1 items-start gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:gap-16">
-          <ContactForm />
+          <ContactForm email={personalData.email} />
 
-          <div>
+          <div className="min-w-0">
             <div className="sw-rows">
               <div className="border-b border-[var(--sw-rule)] py-5">
                 <span className="sw-label">Email</span>
-                <a href={`mailto:${personalData.email}`} className="mt-2 inline-block break-all text-sm text-white underline decoration-[var(--sw-gray)] underline-offset-4 hover:decoration-white">
-                  {personalData.email}
-                </a>
+                <CopyEmail email={personalData.email} />
               </div>
               <div className="border-b border-[var(--sw-rule)] py-5">
                 <span className="sw-label">Phone</span>
-                <a href={`tel:${personalData.phone.replace(/[^\d+]/g, '')}`} className="mt-2 inline-block text-sm text-white">
-                  {personalData.phone}
-                </a>
+                <p className="mt-2 text-sm text-white">{personalData.phone}</p>
               </div>
               <div className="border-b border-[var(--sw-rule)] py-5">
                 <span className="sw-label">Location</span>
                 <p className="mt-2 text-sm text-white">{personalData.address}</p>
+                <p className="mt-1 text-xs text-[var(--sw-gray)]">
+                  Local time <LocalTime timeZone={personalData.timeZone} />
+                </p>
               </div>
             </div>
 

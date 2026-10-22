@@ -1,6 +1,6 @@
 {
   "name": "portafolio-andrfp",
-  "description": "Personal portfolio of Andres Pe\u00f1a",
+  "description": "Personal portfolio of Andres Peña",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -17,7 +17,6 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-icons": "^4.11.0",
-    "react-toastify": "^10.0.4",
     "resend": "^6.6.0",
     "sharp": "^0.33.5"
   },
