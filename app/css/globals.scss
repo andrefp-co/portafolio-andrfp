@@ -317,6 +317,22 @@
     transition: transform var(--sw-dur-ctrl) var(--sw-ease-out);
   }
 
+  /* On touch screens, standalone text links get an invisible 44px-tall hit
+     area so they are easy to tap without changing the layout. */
+  @media (pointer: coarse) {
+    .sw-link,
+    .sw-tap {
+      position: relative;
+    }
+
+    .sw-link::before,
+    .sw-tap::before {
+      content: "";
+      position: absolute;
+      inset: -12px -6px;
+    }
+  }
+
   @media (hover: hover) and (pointer: fine) {
     .sw-link:hover {
       color: var(--sw-white);
@@ -696,6 +712,80 @@
     text-transform: uppercase;
   }
 
+  /* Wide tables scroll inside the column instead of the page. */
+  @media (max-width: 640px) {
+    .sw-prose table {
+      display: block;
+      overflow-x: auto;
+    }
+  }
+
+  .sw-prose h2,
+  .sw-prose h3 {
+    position: relative;
+    scroll-margin-top: 96px;
+  }
+
+  /* Heading permalink, shown on hover in the left gutter on wide screens. */
+  .sw-anchor {
+    position: absolute;
+    left: -1.1em;
+    top: 0;
+    color: var(--sw-gray);
+    text-decoration: none !important;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .sw-prose h2:hover .sw-anchor,
+  .sw-prose h3:hover .sw-anchor {
+    opacity: 1;
+  }
+
+  @media (max-width: 1023px) {
+    .sw-anchor {
+      display: none;
+    }
+  }
+
+  .sw-code {
+    position: relative;
+  }
+
+  .sw-code pre {
+    padding-top: 40px;
+  }
+
+  .sw-code-lang {
+    position: absolute;
+    left: 20px;
+    top: 12px;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--sw-gray);
+  }
+
+  .sw-code-copy {
+    position: absolute;
+    right: 8px;
+    top: 6px;
+    padding: 6px 10px;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--sw-silver);
+    border: 1px solid var(--sw-border);
+    background: var(--sw-black);
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .sw-code-copy:hover,
+  .sw-code-copy[data-copied] {
+    color: var(--sw-white);
+    border-color: var(--sw-white);
+  }
+
   /* ── Vault terminal ───────────────────────────────────────────────────── */
   .vt-screen {
     position: relative;
@@ -727,6 +817,11 @@
 
   .vt-dim {
     color: #7c7c7c;
+  }
+
+  /* Box-drawing glyphs need a system monospace; DM Mono does not carry them. */
+  .vt-banner {
+    font-family: ui-monospace, Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
   }
 
   /* Handling strip above and below the restricted terminal. */

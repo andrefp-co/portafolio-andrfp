@@ -116,7 +116,7 @@ export default function HeroFeed() {
       <div className="absolute inset-x-0 top-0 px-6 pt-5 text-[10px] uppercase tracking-[0.2em] text-white/85">
         Feed 01 · <span ref={timeRef} className="tabular-nums">T+00:00.00</span>
       </div>
-      <span ref={coordRef} className="absolute bottom-5 right-6 text-[10px] uppercase tracking-[0.2em] tabular-nums text-white/70" aria-hidden="true">
+      <span ref={coordRef} className="absolute right-6 top-5 text-[10px] xl:bottom-5 xl:top-auto uppercase tracking-[0.2em] tabular-nums text-white/70" aria-hidden="true">
         X 0.62  Y 0.48
       </span>
     </motion.figure>

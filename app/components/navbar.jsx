@@ -88,7 +88,7 @@ function Navbar() {
         transition={{ duration: 0.35, ease: EASE }}
       >
         <div className="flex h-[76px] items-center justify-between px-5 sm:px-10">
-          <Link href="/" className="text-[13px] font-medium uppercase tracking-[0.3em] text-white">
+          <Link href="/" className="sw-tap text-[13px] font-medium uppercase tracking-[0.3em] text-white">
             {personalData.name}
           </Link>
 

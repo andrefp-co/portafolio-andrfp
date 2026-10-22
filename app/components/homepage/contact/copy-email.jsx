@@ -29,7 +29,7 @@ export default function CopyEmail({ email }) {
       <a
         id="contact-email-address"
         href={`mailto:${email}`}
-        className="break-all text-sm text-[var(--sw-white)] underline decoration-[var(--sw-gray)] underline-offset-4 hover:decoration-[var(--sw-white)]"
+        className="sw-tap break-all text-sm text-[var(--sw-white)] underline decoration-[var(--sw-gray)] underline-offset-4 hover:decoration-[var(--sw-white)]"
       >
         {email}
       </a>

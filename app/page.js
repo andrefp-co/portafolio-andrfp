@@ -1,5 +1,7 @@
-import { getPosts, getResearch } from "@/utils/content";
+import { getBlogIndex, getResearch } from "@/utils/content";
 import { personalData } from "@/utils/data/personal-data";
+import BookShelf from "./components/books/book-shelf";
+import LearnCta from "./components/helper/learn-cta";
 import AboutSection from "./components/homepage/about";
 import Blog from "./components/homepage/blog";
 import ContactSection from "./components/homepage/contact";
@@ -32,7 +34,7 @@ async function getData() {
 
 export default async function Home() {
   const blogs = await getData();
-  const posts = getPosts();
+  const writing = getBlogIndex();
   const research = getResearch();
 
   return (
@@ -45,7 +47,9 @@ export default async function Home() {
       <ResearchTeaser entries={research} />
       <Skills />
       <Education />
-      <Blog posts={posts} blogs={blogs} />
+      <Blog items={writing} blogs={blogs} />
+      <BookShelf />
+      <LearnCta tone="paper" />
       <ContactSection />
     </div>
   )

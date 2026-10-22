@@ -19,6 +19,7 @@ export default function ResearchList({ entries }) {
               <h3 className="font-[family-name:var(--sw-font-display)] text-[clamp(30px,3.4vw,42px)] leading-[1.02] tracking-[0.02em] text-[var(--sw-white)]">
                 {entry.title}
               </h3>
+              {entry.authors && <p className="mt-2 text-xs tracking-[0.04em] text-[var(--sw-gray)]">{entry.authors}</p>}
               <p className="sw-cell-body mt-3 max-w-[64ch]">{entry.summary}</p>
               {entry.highlight && (
                 <p className="mt-4 text-xs uppercase tracking-[0.14em] text-[var(--sw-silver)]">{entry.highlight}</p>
