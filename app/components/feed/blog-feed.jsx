@@ -1,5 +1,7 @@
 "use client";
 
+import { absolute } from "@/utils/seo";
+import { toast } from "@/utils/toast";
 import { AnimatePresence, LayoutGroup, motion, useScroll, useTransform } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -26,12 +28,13 @@ function ProfileHeader({ profile, counts, onTab }) {
   const [copied, setCopied] = useState(false);
 
   const shareProfile = async () => {
+    const url = absolute("/blog");
     try {
-      await navigator.clipboard.writeText(window.location.href.split("#")[0]);
+      await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      // Clipboard blocked; nothing else to do.
+      toast(url);
     }
   };
 

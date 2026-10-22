@@ -6,6 +6,7 @@ import Footer from "./components/footer";
 import ScrollToTop from "./components/helper/scroll-to-top";
 import MotionProvider from "./components/motion/motion-provider";
 import Navbar from "./components/navbar";
+import Toaster from "./components/helper/toaster";
 import "./css/globals.scss";
 
 const dmMono = DM_Mono({
@@ -82,6 +83,7 @@ export default function RootLayout({ children }) {
           <main className="min-h-screen relative">
             {children}
             <ScrollToTop />
+            <Toaster />
           </main>
           <Footer />
         </MotionProvider>

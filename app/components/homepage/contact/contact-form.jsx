@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { TbMailForward } from "react-icons/tb";
 import ProtectedEmail from "../../helper/protected-email";
+import { PREVIEW } from "@/utils/preview";
 
 const EMPTY = { name: "", email: "", message: "" };
 
@@ -43,6 +44,11 @@ function ContactForm() {
 
     if (!isValidEmail(userInput.email)) {
       setError((prev) => ({ ...prev, email: true }));
+      return;
+    }
+
+    if (PREVIEW) {
+      setStatus({ state: "error", message: "This preview has no server, so it can't send messages. The form sends from andres.swort.net." });
       return;
     }
 

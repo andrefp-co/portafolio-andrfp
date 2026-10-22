@@ -1,3 +1,6 @@
+import { PREVIEW } from "./preview";
+import { toast } from "./toast";
+
 // Contact details are stored encoded so they never appear as plain text in
 // the HTML or the JavaScript bundle, where address harvesters look. They are
 // decoded in the browser at the moment they are shown or used.
@@ -19,7 +22,17 @@ export function mailtoHref(subject = "", body = "") {
   return `mailto:${decodeEmail()}${query ? `?${query}` : ""}`;
 }
 
-// Opens the visitor's mail app. Call from a click handler only.
+// Opens the visitor's mail app, and always shows the address too: on a
+// computer with no mail app set up a mailto link does nothing at all. In the
+// preview, where mail links never work, the address is copied instead. Call
+// from a click handler only.
 export function openMail(subject, body) {
+  const address = decodeEmail();
+  if (PREVIEW) {
+    navigator.clipboard?.writeText(address).catch(() => {});
+    toast(`Email ${address} (copied)${subject ? `, subject: ${subject}` : ""}`);
+    return;
+  }
   window.location.href = mailtoHref(subject, body);
+  toast(`Opening your mail app. The address is ${address}`);
 }

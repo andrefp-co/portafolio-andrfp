@@ -2,6 +2,7 @@
 
 import { TERMS_VERSION, terms } from "@/utils/data/vault-terms";
 import { cameFromSite } from "@/utils/nav-history";
+import { PREVIEW } from "@/utils/preview";
 import { decodeEmail } from "@/utils/obfuscate";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
@@ -391,8 +392,10 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
   // Back to the page the visitor came from, at the same scroll position, when
   // it is on this site; otherwise the link itself goes to the home page. A
   // real link (not router.push) so it also works in the static preview.
+  // In the preview's embedded frame, history.back() can step the host page
+  // back instead, so the preview always follows the link.
   const leave = (e) => {
-    if (cameFromSite() && window.history.length > 1) {
+    if (!PREVIEW && cameFromSite() && window.history.length > 1) {
       e.preventDefault();
       window.history.back();
     }

@@ -143,24 +143,6 @@ export default function HeroStage({ children }) {
       <motion.div className="sw-container relative w-full py-20 lg:py-24" style={reduce ? undefined : { y: contentY, opacity: contentOpacity }}>
         {children}
       </motion.div>
-
-      {/* Scroll cue. */}
-      <motion.div
-        aria-hidden="true"
-        className="absolute bottom-7 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-[10px] uppercase tracking-[0.24em] text-white/60 sm:bottom-9 sm:flex"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.6, duration: 0.8 }}
-      >
-        Scroll
-        <span className="relative block h-8 w-px overflow-hidden bg-white/15">
-          <motion.span
-            className="absolute inset-x-0 top-0 h-3 bg-white/80"
-            animate={reduce ? undefined : { y: [-12, 32] }}
-            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </span>
-      </motion.div>
     </section>
   );
 }

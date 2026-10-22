@@ -70,7 +70,7 @@ export default function ResearchPage() {
           <p className="sw-eyebrow">Programs</p>
           <h2 className="sw-head">Systems and builds</h2>
           <div className="mt-10">
-            <ResearchList entries={programs} />
+            <ResearchList entries={programs} columns={3} />
           </div>
         </div>
       </section>

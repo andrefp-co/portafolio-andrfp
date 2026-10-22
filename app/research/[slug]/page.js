@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PREVIEW } from "@/utils/preview";
 import LearnCta from "../../components/helper/learn-cta";
 import PageHeader from "../../components/helper/page-header";
 import { getResearch, getResearchEntry } from "@/utils/content";
@@ -75,7 +76,7 @@ export default async function ResearchEntryPage({ params }) {
         {entry.authors && <p className="mt-5 text-sm tracking-[0.04em] text-[var(--sw-silver)]">{entry.authors}</p>}
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <span className="sw-status">{entry.status}</span>
-          {isPaper && entry.pdf && (
+          {isPaper && entry.pdf && !PREVIEW && (
             <a href={entry.pdf} target="_blank" rel="noopener noreferrer" className="sw-btn sw-btn-primary">
               Read the PDF{entry.pages ? ` · ${entry.pages} pp.` : ""}
             </a>

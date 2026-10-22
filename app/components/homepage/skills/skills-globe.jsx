@@ -75,6 +75,10 @@ function placeTools(groups) {
 // The rotation that brings a region's centre to face the viewer.
 const facing = (gi, n) => -((gi * 360) / n) * DEG;
 
+// Which discipline a scroll position sits on, as a continuous index: 1.5 is
+// halfway through the turn from the second to the third.
+const along = (p, n) => Math.min(n - 1, Math.max(0, p * n - 0.5));
+
 // "Tools I work with": a dotted Earth with every tool on its surface. The
 // section pins while it is read; scrolling turns the globe to each discipline
 // in turn (with a little drift inside each step) and the list follows. A drag
@@ -95,13 +99,13 @@ export default function SkillsGlobe({ groups }) {
   // Progress through the pinned track, and how far the section has come in.
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ["start start", "end end"] });
   const { scrollYProgress: entry } = useScroll({ target: trackRef, offset: ["start end", "start start"] });
-  const motionRef = useRef({ ay: facing(0, n), ax: TILT, vy: 0, vx: 0, dragging: false, lastX: 0, lastY: 0, drift: 0 });
+  // ay: rendered rotation; offset: what a drag adds on top of the scroll
+  // position, which eases back to zero after the drag ends.
+  const motionRef = useRef({ ay: facing(0, n), ax: TILT, offset: 0, vy: 0, vx: 0, dragging: false, lastX: 0, lastY: 0 });
 
   useMotionValueEvent(scrollYProgress, "change", (p) => {
     if (reduce) return;
-    const f = Math.min(n - 0.001, Math.max(0, p * n));
-    const i = Math.floor(f);
-    motionRef.current.drift = (f - i - 0.5) * 0.7;
+    const i = Math.round(along(p, n));
     setStep((s) => (s === i ? s : i));
   });
 
@@ -138,26 +142,42 @@ export default function SkillsGlobe({ groups }) {
     });
     io.observe(stage);
 
+    const smoothstep = (x) => x * x * (3 - 2 * x);
+    // Per-tool highlight, eased toward its target every frame.
+    const glow = items.map(() => 1);
+    const DEG72 = (2 * Math.PI) / n;
+
     const frame = (now) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
       const stepNow = activeRef.current;
 
-      if (!s.dragging) {
-        // Inertia from a fling, then ease to the current discipline (plus
-        // the scroll drift), or a slow spin when nothing is selected.
-        s.ay += s.vy * dt;
+      // Where the scroll says the globe should face: it holds on each
+      // discipline, then turns smoothly to the next.
+      let f;
+      let goal;
+      if (reduce || stepNow === null) {
+        f = stepNow ?? -1;
+        goal = stepNow !== null ? facing(stepNow, n) : reduce ? s.ay : s.ay + 0.14 * dt;
+      } else {
+        f = along(scrollYProgress.get(), n);
+        const i = Math.floor(f);
+        const t = smoothstep(Math.min(1, Math.max(0, (f - i - 0.2) / 0.6)));
+        goal = facing(i, n) - DEG72 * t;
+      }
+
+      if (s.dragging) {
+        s.offset = s.ay - goal;
+      } else {
+        // A fling keeps turning, then the offset settles back to zero.
+        s.offset += s.vy * dt;
+        s.vy *= Math.pow(0.03, dt);
+        s.vx *= Math.pow(0.03, dt);
         s.ax += s.vx * dt;
-        s.vy *= Math.pow(0.04, dt);
-        s.vx *= Math.pow(0.04, dt);
-        s.ax += (TILT - s.ax) * Math.min(1, dt * 1.2);
-        if (stepNow !== null) {
-          const goal = facing(stepNow, n) + (reduce ? 0 : s.drift);
-          const delta = Math.atan2(Math.sin(goal - s.ay), Math.cos(goal - s.ay));
-          s.ay += delta * Math.min(1, dt * (reduce ? 60 : 3));
-        } else if (!reduce) {
-          s.ay += 0.14 * dt;
-        }
+        s.offset *= Math.exp(-dt * 1.4);
+        s.ax += (TILT - s.ax) * (1 - Math.exp(-dt * 2));
+        // Critically damped follow: no overshoot, no stepping.
+        s.ay += (goal + s.offset - s.ay) * (1 - Math.exp(-dt * (reduce ? 30 : 7)));
       }
 
       // The globe gathers itself as the section scrolls in.
@@ -197,9 +217,12 @@ export default function SkillsGlobe({ groups }) {
         if (!el) return;
         const [x, y, z] = rotate(item.p, s.ay, s.ax);
         const front = (z + 1) / 2;
-        const match = stepNow === null || item.group === stepNow;
-        const scale = (0.55 + front * 0.6) * (match && stepNow !== null ? 1.08 : 1);
-        const opacity = (match ? 0.1 + front * 0.9 : 0.03 + front * 0.12) * ease;
+        // 1 for the discipline in view, fading over the turn to the next.
+        const want = f < 0 ? 1 : Math.max(0, 1 - Math.abs(f - item.group) * 1.6);
+        glow[i] += (want - glow[i]) * (1 - Math.exp(-dt * 8));
+        const g = glow[i];
+        const scale = (0.55 + front * 0.6) * (1 + 0.08 * g);
+        const opacity = (0.04 + front * 0.12 + g * (0.06 + front * 0.78)) * ease;
         el.style.transform = `translate3d(${c + x * R}px, ${c + y * R}px, 0) translate(-50%, -50%) scale(${scale.toFixed(3)})`;
         el.style.opacity = opacity.toFixed(3);
         el.style.zIndex = String(Math.round(front * 100));
@@ -255,7 +278,7 @@ export default function SkillsGlobe({ groups }) {
       window.removeEventListener("pointerup", up);
       window.removeEventListener("pointercancel", up);
     };
-  }, [items, dots, n, reduce, entry]);
+  }, [items, dots, n, reduce, entry, scrollYProgress]);
 
   // Choosing a discipline scrolls to its step, so the page and the globe
   // never disagree. Without motion it simply selects it.

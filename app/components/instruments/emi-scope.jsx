@@ -194,7 +194,7 @@ export default function EmiScope({ className = "" }) {
   const current = MODES.find((m) => m.key === mode);
 
   return (
-    <figure ref={wrapRef} className={`sw-panel m-0 flex flex-col ${className}`}>
+    <figure ref={wrapRef} className={`sw-ink sw-panel m-0 flex flex-col ${className}`}>
       <div className="sw-panel-bar">
         <span className="sw-label">Conducted emissions</span>
         <span className="sw-label">Concept model</span>

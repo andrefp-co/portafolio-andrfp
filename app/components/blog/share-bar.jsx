@@ -1,13 +1,17 @@
 "use client";
 
+import { PREVIEW } from "@/utils/preview";
+import { absolute } from "@/utils/seo";
 import { motion } from "motion/react";
 import { useState } from "react";
 
 // Copy link, the platforms people actually share engineering posts on, and
-// the phone's own share sheet when it has one.
+// the phone's own share sheet when it has one. Every link shares the page's
+// address on the live site, and the platforms are plain links (window.open
+// is blocked in some embedded viewers).
 export default function ShareBar({ title, path, className = "", grid = false }) {
   const [copied, setCopied] = useState(false);
-  const url = () => (typeof window === "undefined" ? path : new URL(path, window.location.origin).href);
+  const url = () => absolute(path);
 
   const copy = async () => {
     try {
@@ -15,7 +19,7 @@ export default function ShareBar({ title, path, className = "", grid = false }) 
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
     } catch {
-      window.prompt("Copy this link:", url());
+      window.prompt?.("Copy this link:", url());
     }
   };
 
@@ -27,7 +31,6 @@ export default function ShareBar({ title, path, className = "", grid = false }) 
     }
   };
 
-  const open = (href) => window.open(href, "_blank", "noopener,noreferrer");
   const enc = encodeURIComponent;
 
   const button = `sw-btn sw-btn-ghost !px-3 !py-2 !text-[10px] ${grid ? "w-full justify-center" : ""}`;
@@ -37,33 +40,34 @@ export default function ShareBar({ title, path, className = "", grid = false }) 
       <motion.button type="button" whileTap={{ scale: 0.95 }} onClick={copy} className={button} aria-live="polite">
         {copied ? "Link copied" : "Copy link"}
       </motion.button>
-      <motion.button
-        type="button"
+      <motion.a
+        href={`https://www.linkedin.com/sharing/share-offsite/?url=${enc(url())}`}
+        target="_blank"
+        rel="noopener noreferrer"
         whileTap={{ scale: 0.95 }}
-        onClick={() => open(`https://www.linkedin.com/sharing/share-offsite/?url=${enc(url())}`)}
         className={button}
       >
         LinkedIn
-      </motion.button>
-      <motion.button
-        type="button"
+      </motion.a>
+      <motion.a
+        href={`https://x.com/intent/post?text=${enc(title)}&url=${enc(url())}`}
+        target="_blank"
+        rel="noopener noreferrer"
         whileTap={{ scale: 0.95 }}
-        onClick={() => open(`https://x.com/intent/post?text=${enc(title)}&url=${enc(url())}`)}
         className={button}
       >
         X
-      </motion.button>
-      <motion.button
-        type="button"
-        whileTap={{ scale: 0.95 }}
-        onClick={() => (window.location.href = `mailto:?subject=${enc(title)}&body=${enc(url())}`)}
-        className={button}
-      >
-        Email
-      </motion.button>
-      <motion.button type="button" whileTap={{ scale: 0.95 }} onClick={native} className={`${button} sm:hidden`}>
-        Share…
-      </motion.button>
+      </motion.a>
+      {!PREVIEW && (
+        <motion.a href={`mailto:?subject=${enc(title)}&body=${enc(url())}`} whileTap={{ scale: 0.95 }} className={button}>
+          Email
+        </motion.a>
+      )}
+      {!PREVIEW && (
+        <motion.button type="button" whileTap={{ scale: 0.95 }} onClick={native} className={`${button} sm:hidden`}>
+          Share…
+        </motion.button>
+      )}
     </div>
   );
 }

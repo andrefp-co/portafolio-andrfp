@@ -3,6 +3,7 @@
 import { motion, useInView, useReducedMotion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
+import { PREVIEW } from "@/utils/preview";
 import { useEffect, useRef } from "react";
 
 const EASE = [0.22, 1, 0.36, 1];
@@ -210,14 +211,14 @@ export default function Dossier({ content, viewer, onLock, onLeave, termsVersion
                           />
                         ))}
                       </div>
-                      <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                      {!PREVIEW && <div className="mt-4 flex flex-col gap-3 sm:flex-row">
                         <a href={section.document.src} target="_blank" rel="noopener noreferrer" className="border border-black bg-black px-6 py-3 text-center text-[11px] uppercase tracking-[0.14em] text-white transition-colors hover:bg-white hover:text-black">
                           Open the PDF
                         </a>
                         <a href={section.document.download} className="border border-black/30 px-6 py-3 text-center text-[11px] uppercase tracking-[0.14em] text-black transition-colors hover:border-black">
                           Download
                         </a>
-                      </div>
+                      </div>}
                     </div>
                   )}
                   {section.video && (

@@ -1,5 +1,8 @@
 "use client";
 
+import { PREVIEW } from "@/utils/preview";
+import { absolute } from "@/utils/seo";
+import { toast } from "@/utils/toast";
 import { AnimatePresence, motion, useInView, useReducedMotion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -79,17 +82,24 @@ export function ActionBar({ item, liked, saved, onLike, onSave, className = "" }
     if (on && !reduce) setBurst((b) => b + 1);
   };
 
+  // The phone's share sheet where there is one, otherwise copy the link (the
+  // live-site address), and if the clipboard is refused too, show it.
   const share = async () => {
-    const url = new URL(item.external ? item.href : item.href || "/blog", window.location.href).href;
-    try {
-      if (navigator.share && matchMedia("(pointer: coarse)").matches) await navigator.share({ title: item.title || "Andres Peña", url });
-      else {
-        await navigator.clipboard.writeText(url);
-        setShared(true);
-        setTimeout(() => setShared(false), 1500);
+    const url = item.external ? item.href : absolute(item.href || "/blog");
+    if (!PREVIEW && navigator.share && matchMedia("(pointer: coarse)").matches) {
+      try {
+        await navigator.share({ title: item.title || "Andres Peña", url });
+        return;
+      } catch (e) {
+        if (e?.name === "AbortError") return;
       }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setShared(true);
+      setTimeout(() => setShared(false), 1500);
     } catch {
-      // Dismissed.
+      toast(url);
     }
   };
 
@@ -321,7 +331,7 @@ export default function PostCard({ item, liked, saved, onLike, onSave, onTag, on
                   Read the abstract →
                 </Link>
               )}
-              {item.pdf && (
+              {item.pdf && !PREVIEW && (
                 <a href={item.pdf} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full border border-[var(--sw-border-strong)] px-3 py-1.5 text-[11px] text-[var(--sw-white)] transition-colors hover:border-[var(--sw-white)]">
                   <IconDoc /> PDF{item.pages ? ` · ${item.pages} pp.` : ""}
                 </a>

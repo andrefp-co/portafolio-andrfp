@@ -20,7 +20,7 @@ function ResearchTeaser({ entries }) {
           }
         />
         <div className="mt-10">
-          <ResearchList entries={entries} />
+          <ResearchList entries={entries} featured />
         </div>
       </div>
     </section>

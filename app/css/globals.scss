@@ -555,6 +555,31 @@
     color: #181818;
   }
 
+  /* Ink surface: the dark palette again, for an instrument or device that
+     sits on a paper section and must stay dark. */
+  .sw-ink {
+    --sw-white: #ffffff;
+    --sw-white-soft: #f8f8f8;
+    --sw-silver: #bfc2c5;
+    --sw-gray: #8d9297;
+    --sw-dim: #8e8e8e;
+    --sw-body: #9a9a9a;
+    --sw-rule: #1c1c1c;
+    --sw-grid-rule: #212121;
+    --sw-border: rgba(255, 255, 255, 0.13);
+    --sw-border-strong: rgba(255, 255, 255, 0.24);
+    --sw-black: #050505;
+    --sw-black-raised: #0a0a0b;
+    --sw-cell: #0b0b0b;
+    --sw-graphite: #111214;
+    --sw-graphite-light: #1a1c1f;
+    --sw-grid-line-soft: rgba(255, 255, 255, 0.062);
+    --sw-grid-line-faint: rgba(255, 255, 255, 0.045);
+    --sw-danger-text: #ca7875;
+    color-scheme: dark;
+    color: var(--sw-white-soft);
+  }
+
   .sw-paper ::selection {
     background: rgba(24, 24, 24, 0.16);
     color: #0a0a0a;

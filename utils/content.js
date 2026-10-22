@@ -6,6 +6,7 @@ import { Marked } from "marked";
 import { articles } from "./data/articles";
 import { books } from "./data/books";
 import { moments } from "./data/moments";
+import { press, pressHref } from "./data/press";
 
 const ROOT = path.join(process.cwd(), "content");
 
@@ -202,6 +203,23 @@ export function getFeed() {
     search: `${a.title} ${a.text} ${a.source} ${(a.tags ?? []).join(" ")}`.toLowerCase(),
   }));
 
+  const coverage = press.map((p) => ({
+    id: `press-${p.id}`,
+    kind: "article",
+    href: pressHref(p),
+    external: true,
+    author: { name: "SWORT Aerospace", handle: "swort.net", avatar: "/media/brand/swort-emblem-light.png" },
+    sort: p.date ?? "2026-08-17",
+    dateLabel: p.date ? shortDay(p.date) : p.outlets[0],
+    title: p.title,
+    text: p.text,
+    source: `${p.outlets.join(" · ")} · ${p.kind}`,
+    image: imageOf("/media/feed/swort-card.jpg", "The SWORT emblem"),
+    video: null,
+    tags: ["Press", "SWORT"],
+    search: `${p.title} ${p.text} ${p.outlets.join(" ")} press`.toLowerCase(),
+  }));
+
   const photos = moments.map((m) => ({
     id: `photo-${m.id}`,
     kind: "photo",
@@ -232,7 +250,7 @@ export function getFeed() {
     search: `${b.title} ${b.volume ?? ""} ${b.subtitle ?? ""} ${b.blurb ?? ""} book`.toLowerCase(),
   }));
 
-  return [...essays, ...papers, ...links, ...photos, ...bookPosts].sort(
+  return [...essays, ...papers, ...links, ...coverage, ...photos, ...bookPosts].sort(
     (a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)) || String(b.sort).localeCompare(String(a.sort))
   );
 }

@@ -1,10 +1,12 @@
 "use client";
 
 import { isValidEmail } from "@/utils/check-email";
+import { PREVIEW } from "@/utils/preview";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
 const EASE = [0.22, 1, 0.36, 1];
+const PREVIEW_NOTE = "This preview has no server, so orders can't go through here. Ordering works on andres.swort.net.";
 const field =
   "w-full border border-[var(--sw-border-strong)] bg-transparent px-3 py-2.5 text-[14px] text-[var(--sw-white)] outline-none transition-colors placeholder:text-[var(--sw-gray)] focus:border-[var(--sw-white)]";
 
@@ -41,6 +43,7 @@ export default function OrderSheet({ book, open, onClose, checkout }) {
   const busy = state.status === "sending";
 
   const pay = async () => {
+    if (PREVIEW) return setState({ status: "error", message: PREVIEW_NOTE });
     setState({ status: "sending", message: "" });
     try {
       const res = await fetch("/api/checkout", {
@@ -70,6 +73,7 @@ export default function OrderSheet({ book, open, onClose, checkout }) {
       setState({ status: "error", message: "Tell us where to ship the book." });
       return;
     }
+    if (PREVIEW) return setState({ status: "error", message: PREVIEW_NOTE });
     setState({ status: "sending", message: "" });
     try {
       const res = await fetch("/api/order", {
