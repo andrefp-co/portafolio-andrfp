@@ -1,111 +1,24 @@
-export const skillsData = [
-  'HTML',
-  'CSS',
-  'Javascript',
-  'PHP',
-  'React',
-  'Next JS',
-  'C',
-  'C++',
-  'MySQL',
-  'PostgreSQL',
-  'Git',
-  'AWS',
-  'Python',
-  'Matlab',
-  'Go',
-  'Ruby',
-  'Firebase',
-  'MaterialUI',
-  'Go',
-	'Linux', 
-  'Julia'
-]
-
-// Choose your skills from below. Make sure it's in the same format and spelled correctly.
-// Couldn't find the required skills? Raise an issue on github at https://github.com/hhhrrrttt222111/developer-portfolio/issues/new
-
-
-// AVAILABLE SKILLS
-
-/* 
-  HTML
-  CSS
-  JS 
-  React
-  Next JS
-  Nuxt JS
-  Node JS
-  Vue
-  Angular
-  Docker
-  Photoshop
-  Illustrator
-  Svelte
-  GCP
-  Azure
-  Fastify
-  Haxe
-  Ionic
-  Markdown
-  Microsoft Office
-  Picsart
-  Sketch
-  Unity
-  WolframAlpha
-  Adobe XD
-  After Effects
-  Bootstrap
-  Bulma
-  CapacitorJs
-  Coffeescript
-  MemSQL
-  C
-  C++
-  C#
-  Python
-  Java
-  Julia
-  Matlab
-  Swift
-  Ruby
-  Kotlin
-  Go
-  PHP
-  Flutter
-  Dart
-  Typescript
-  Swift
-  Git
-  Figma
-  Canva
-  Ubuntu
-  Bootstrap
-  MongoDB
-  Tailwind
-  ViteJS
-  VuetifyJS
-  MySQL
-  PostgreSQL
-  Prisma
-  AWS
-  Firebase
-  Blender
-  Premiere Pro
-  Adobe Audition
-  Deno
-  Django
-  Gimp
-  Graphql
-  Lightroom
-  MaterialUI
-  Nginx
-  Numpy
-  OpenCV
-  Pytorch
-  Selenium
-  Strapi
-  Tensorflow
-  Webex
-  Wordpress
-*/
+// Grouped by discipline. Every entry comes from the tools named in the
+// projects, experience, and hero data, or from the previous flat skills list.
+export const skillGroups = [
+  {
+    discipline: "Embedded & firmware",
+    skills: ["C", "C++", "MicroPython", "ESP32", "Arduino", "Linux"],
+  },
+  {
+    discipline: "Hardware & electronics",
+    skills: ["Altium", "LTSpice", "PCB design", "IMU sensors", "Telemetry systems", "VESC"],
+  },
+  {
+    discipline: "Simulation & CAD",
+    skills: ["MATLAB", "Simulink", "ANSYS", "SolidWorks", "Fusion 360", "Onshape"],
+  },
+  {
+    discipline: "Software & web",
+    skills: ["Python", "JavaScript", "React", "Next.js", "Go", "Ruby", "PHP", "Julia", "HTML", "CSS", "MaterialUI"],
+  },
+  {
+    discipline: "Data & infrastructure",
+    skills: ["PostgreSQL", "MySQL", "Firebase", "AWS", "Git"],
+  },
+];

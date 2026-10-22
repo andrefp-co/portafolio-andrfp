@@ -25,7 +25,7 @@ function AboutSection() {
               {personalData.description}
             </p>
             <div className="mt-8 border-t border-[var(--sw-rule)] pt-6">
-              <span className="sw-label">Based at</span>
+              <span className="sw-label">Based in</span>
               <p className="mt-2 text-sm text-[var(--sw-white-soft)]">{personalData.address}</p>
             </div>
             <div className="mt-8">

@@ -10,17 +10,19 @@ export function timeConverter(isoTime) {
   const months = Math.floor(days / 30);
   const years = Math.floor(months / 12);
 
+  const ago = (value, unit) => `${value} ${unit}${value === 1 ? '' : 's'} ago`;
+
   if (seconds < 60) {
-    return `${seconds} seconds ago`;
+    return ago(seconds, 'second');
   } else if (minutes < 60) {
-    return `${minutes} minutes ago`;
+    return ago(minutes, 'minute');
   } else if (hours < 24) {
-    return `${hours} hours ago`;
+    return ago(hours, 'hour');
   } else if (days < 30) {
-    return `${days} days ago`;
+    return ago(days, 'day');
   } else if (months < 12) {
-    return `${months} months ago`;
+    return ago(months, 'month');
   } else {
-    return `${years} years ago`;
+    return ago(years, 'year');
   }
 }

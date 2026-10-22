@@ -35,7 +35,7 @@ function HeroSection() {
           </div>
 
           <div className="mt-10 flex flex-wrap gap-2">
-            {socials.map(({ label, href, Icon }) => (
+            {socials.filter(({ href }) => href).map(({ label, href, Icon }) => (
               <Link key={label} href={href} target="_blank" aria-label={label} className="sw-icon-btn">
                 <Icon size={18} />
               </Link>

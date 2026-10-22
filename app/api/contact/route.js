@@ -1,30 +1,50 @@
-import emailjs from '@emailjs/browser';
+import { isValidEmail } from "@/utils/check-email";
+import { NextResponse } from "next/server";
+import { Resend } from "resend";
 
-export default function ContactForm() {
-  const sendEmail = async (e) => {
-    e.preventDefault();
-    try {
-      await emailjs.sendForm(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,   // service ID
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,  // template ID
-        e.target,
-        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY   // public key
-      );
-      alert('Email sent!');
-    } catch (error) {
-      console.error(error);
-      alert('Failed to send email.');
-    }
-  };
+const MAX_LENGTH = { name: 120, email: 200, message: 5000 };
 
-  return (
-    <form onSubmit={sendEmail}>
-      <input name="name" required placeholder="Your Name" />
-      <input name="email" required placeholder="Your Email" />
-      <textarea name="message" required placeholder="Your Message" />
-      <button type="submit">Send</button>
-    </form>
-  );
+export async function POST(request) {
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ message: "Send the form as JSON." }, { status: 400 });
+  }
+
+  const name = String(body?.name ?? "").trim();
+  const email = String(body?.email ?? "").trim();
+  const message = String(body?.message ?? "").trim();
+
+  if (!name || !email || !message) {
+    return NextResponse.json({ message: "Fill in your name, email and message." }, { status: 400 });
+  }
+  if (!isValidEmail(email)) {
+    return NextResponse.json({ message: "Enter a valid email address." }, { status: 400 });
+  }
+  if (name.length > MAX_LENGTH.name || email.length > MAX_LENGTH.email || message.length > MAX_LENGTH.message) {
+    return NextResponse.json({ message: "That message is too long. Keep it under 5,000 characters." }, { status: 400 });
+  }
+
+  const { RESEND_API_KEY, EMAIL_TO, EMAIL_FROM } = process.env;
+  if (!RESEND_API_KEY || !EMAIL_TO) {
+    console.error("Contact form: RESEND_API_KEY or EMAIL_TO is not set.");
+    return NextResponse.json({ message: "The contact form isn't set up yet. Email me directly instead." }, { status: 503 });
+  }
+
+  const resend = new Resend(RESEND_API_KEY);
+  const { error } = await resend.emails.send({
+    from: EMAIL_FROM || "Portfolio <onboarding@resend.dev>",
+    to: EMAIL_TO,
+    replyTo: email,
+    subject: `Portfolio message from ${name}`,
+    text: `From: ${name} <${email}>\n\n${message}`,
+  });
+
+  if (error) {
+    console.error("Contact form: Resend rejected the message.", error);
+    return NextResponse.json({ message: "Your message didn't go through. Email me directly instead." }, { status: 502 });
+  }
+
+  return NextResponse.json({ message: "Message sent." });
 }
-
-

@@ -3,10 +3,14 @@
 import { personalData } from "@/utils/data/personal-data";
 import BlogCard from "../components/homepage/blog/blog-card";
 
+export const metadata = {
+  title: "Blog",
+};
+
 async function getBlogs() {
   // A dev.to outage should show an empty list, not an error page.
   try {
-    const res = await fetch(`https://dev.to/api/articles?andrfp=${personalData.devUsername}`)
+    const res = await fetch(`https://dev.to/api/articles?username=${personalData.devUsername}`)
 
     if (!res.ok) {
       return [];

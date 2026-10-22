@@ -1,3 +1,4 @@
+import { personalData } from "@/utils/data/personal-data";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { Bebas_Neue, DM_Mono } from "next/font/google";
 import { ToastContainer } from "react-toastify";
@@ -19,10 +20,34 @@ const bebasNeue = Bebas_Neue({
   variable: "--font-bebas-neue",
 });
 
+const description =
+  "Andres Peña is an electrical engineering student and full-stack developer in the Washington, DC area, working on embedded firmware, avionics, and aerospace R&D.";
+
 export const metadata = {
-  title: "Portfolio of Andres - Electrical Engineer",
-  description:
-    "This is the portfolio of Andres. I am a full stack developer and a self taught developer. I love to learn new things and I am always open to collaborating with others. I am a quick learner and I am always looking for new challenges.",
+  metadataBase: new URL("https://andres.swort.net"),
+  title: {
+    default: `${personalData.name} | Electrical Engineer`,
+    template: `%s | ${personalData.name}`,
+  },
+  description,
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: personalData.name,
+    title: `${personalData.name} | Electrical Engineer`,
+    description,
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${personalData.name} | Electrical Engineer`,
+    description,
+  },
+};
+
+export const viewport = {
+  themeColor: "#050505",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }) {
@@ -37,7 +62,7 @@ export default function RootLayout({ children }) {
         </main>
         <Footer />
       </body>
-      <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM} />
+      {process.env.NEXT_PUBLIC_GTM && <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM} />}
     </html>
   );
 }
