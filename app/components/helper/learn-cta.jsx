@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
+import { useReducedMotion } from "@/utils/use-reduced-motion";
 
 const EASE = [0.22, 1, 0.36, 1];
 export const LEARN_URL = "https://swort.net/learn";

@@ -3,7 +3,8 @@
 import SectionHeading from "@/app/components/helper/section-heading";
 import { LAND_ROWS } from "@/utils/data/land-dots";
 import { scrollToY } from "@/utils/scroll";
-import { motion, useMotionValueEvent, useReducedMotion, useScroll } from "motion/react";
+import { motion, useMotionValueEvent, useScroll } from "motion/react";
+import { useReducedMotion } from "@/utils/use-reduced-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   SiAltiumdesigner, SiArduino, SiC, SiCplusplus, SiDassaultsystemes, SiDocker, SiEasyeda,

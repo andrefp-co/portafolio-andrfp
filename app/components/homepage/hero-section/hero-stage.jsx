@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useInView, useMotionValue, useMotionValueEvent, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
+import { motion, useInView, useMotionValue, useMotionValueEvent, useScroll, useSpring, useTransform } from "motion/react";
+import { useReducedMotion } from "@/utils/use-reduced-motion";
 import { useEffect, useRef } from "react";
 import { preload } from "react-dom";
 

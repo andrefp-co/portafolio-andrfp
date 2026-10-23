@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useInView, useReducedMotion } from "motion/react";
+import { motion, useInView } from "motion/react";
+import { useReducedMotion } from "@/utils/use-reduced-motion";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 // The hydraulic brake result as a stop, not a photo. Two cars brake from the

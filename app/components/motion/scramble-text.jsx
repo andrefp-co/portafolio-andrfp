@@ -1,6 +1,7 @@
 "use client";
 
-import { useInView, useReducedMotion } from "motion/react";
+import { useInView } from "motion/react";
+import { useReducedMotion } from "@/utils/use-reduced-motion";
 import { useCallback, useEffect, useRef } from "react";
 
 // Ported from swort.net's scramble-text.js: short labels resolve out of glyph

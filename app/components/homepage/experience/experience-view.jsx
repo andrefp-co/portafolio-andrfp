@@ -1,7 +1,7 @@
 "use client";
 
 import SectionHeading from "@/app/components/helper/section-heading";
-import { useReducedMotion } from "motion/react";
+import { useReducedMotion } from "@/utils/use-reduced-motion";
 import { useSyncExternalStore } from "react";
 import ExperienceReel from "./reel";
 import Timeline from "./timeline";

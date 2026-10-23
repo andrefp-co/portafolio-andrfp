@@ -4,7 +4,8 @@ import { TERMS_VERSION, terms } from "@/utils/data/vault-terms";
 import { cameFromSite } from "@/utils/nav-history";
 import { PREVIEW } from "@/utils/preview";
 import { decodeEmail } from "@/utils/obfuscate";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
+import { useReducedMotion } from "@/utils/use-reduced-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
@@ -58,8 +59,10 @@ const HELP = [
 
 const QUICK = {
   shell: ["unlock", "help", "ls", "cat terms.txt", "exit"],
+  name: ["cancel"],
   org: ["skip"],
   agree: ["yes", "no"],
+  password: ["cancel"],
 };
 
 const PROMPTS = {
@@ -69,6 +72,9 @@ const PROMPTS = {
   agree: "Type 'yes' to accept these terms: ",
   password: "Password: ",
 };
+
+// The same prompts, short enough for the input bar on a phone.
+const BAR_LABELS = { shell: "$", name: "Name", org: "Org", agree: "Accept", password: "Code" };
 
 let lineId = 0;
 const line = (text, kind = "plain") => ({ id: ++lineId, text, kind });
@@ -93,6 +99,16 @@ const subscribeSecond = (onTick) => {
 };
 const secondSnapshot = () => Math.floor(Date.now() / 1000);
 
+// Touch screens get a visible input bar above the keyboard instead of the
+// invisible one laid over the prompt line.
+const coarseQuery = "(pointer: coarse)";
+const subscribeCoarse = (onChange) => {
+  const mq = window.matchMedia(coarseQuery);
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+};
+const isCoarse = () => window.matchMedia(coarseQuery).matches;
+
 function ZuluClock() {
   const s = useSyncExternalStore(subscribeSecond, secondSnapshot, () => null);
   if (s === null) return <span>&nbsp;</span>;
@@ -108,6 +124,7 @@ function ZuluClock() {
 export default function VaultTerminal({ authorized = false, viewer = null, content = null, demoCode, demoContent, next = null }) {
   const router = useRouter();
   const reduce = useReducedMotion();
+  const touch = useSyncExternalStore(subscribeCoarse, isCoarse, () => false);
   const [lines, setLines] = useState([]);
   // boot | shell | name | org | agree | password | checking | granting | open
   const [phase, setPhase] = useState("boot");
@@ -125,6 +142,7 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
   const history = useRef([]);
   const historyIndex = useRef(-1);
   const inputRef = useRef(null);
+  const rootRef = useRef(null);
   const screenRef = useRef(null);
   const timers = useRef([]);
   const grantStarted = useRef(false);
@@ -203,11 +221,35 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
     if (el) el.scrollTop = el.scrollHeight;
   }, [lines, phase]);
 
+  // Fit the screen to the part of the window the on-screen keyboard leaves
+  // visible, so the prompt and the input stay above it.
+  useEffect(() => {
+    const vv = window.visualViewport;
+    const el = rootRef.current;
+    if (!vv || !el) return;
+    const fit = () => {
+      el.style.height = `${vv.height}px`;
+      el.style.transform = vv.offsetTop ? `translateY(${vv.offsetTop}px)` : "";
+      const screen = screenRef.current;
+      if (screen) screen.scrollTop = screen.scrollHeight;
+    };
+    fit();
+    vv.addEventListener("resize", fit);
+    vv.addEventListener("scroll", fit);
+    return () => {
+      vv.removeEventListener("resize", fit);
+      vv.removeEventListener("scroll", fit);
+    };
+  }, []);
+
   const focusInput = () => inputRef.current?.focus({ preventScroll: true });
   const typing = ["shell", "name", "org", "agree", "password"].includes(phase);
+  // With a keyboard, the prompt is always ready to type into. On a phone the
+  // on-screen keyboard only opens when the visitor taps the input bar, so it
+  // doesn't cover the terminal uninvited.
   useEffect(() => {
-    if (typing) focusInput();
-  }, [typing, phase]);
+    if (typing && !touch) focusInput();
+  }, [typing, phase, touch]);
 
   const prompt = PROMPTS[phase] ?? "";
 
@@ -343,6 +385,12 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
     setPhase("shell");
   };
 
+  const cancel = () => {
+    setValue("");
+    print(line(`${prompt}^C`), line(""));
+    setPhase("shell");
+  };
+
   const submit = (raw) => {
     if (phase === "shell") return runCommand(raw);
     if (phase === "name") return submitName(raw);
@@ -351,19 +399,18 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
     if (phase === "password") return submitPassword(raw);
   };
 
+  // Enter, and the Go or Send key on a phone keyboard, submit the form.
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const current = value;
+    setValue("");
+    submit(current);
+  };
+
   const onKeyDown = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const current = value;
-      setValue("");
-      submit(current);
-      return;
-    }
     if ((e.key === "Escape" || (e.key === "c" && e.ctrlKey)) && phase !== "shell") {
       e.preventDefault();
-      setValue("");
-      print(line(`${prompt}^C`), line(""));
-      setPhase("shell");
+      cancel();
       return;
     }
     if (phase === "shell" && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
@@ -403,8 +450,31 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
 
   const echo = phase === "password" ? "" : value;
 
+  // 16px text: iOS zooms the page into any smaller input when it is focused.
+  const input = (
+    <input
+      ref={inputRef}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onKeyDown={onKeyDown}
+      type={phase === "password" ? "password" : "text"}
+      autoComplete={phase === "name" ? "name" : phase === "org" ? "organization" : phase === "password" ? "current-password" : "off"}
+      autoCapitalize={phase === "name" || phase === "org" ? "words" : "off"}
+      autoCorrect="off"
+      spellCheck={false}
+      enterKeyHint={phase === "password" ? "go" : "send"}
+      aria-label={phase === "password" ? "Access code" : prompt.replace(/[:$ ]+$/, "") || "Terminal command"}
+      placeholder={touch ? (phase === "shell" ? "Type a command" : phase === "password" ? "Access code" : "") : undefined}
+      className={
+        touch
+          ? "min-h-[44px] min-w-0 flex-1 border border-white/25 bg-transparent px-3 text-[16px] text-white placeholder:text-[#6f6f6f] focus:border-white focus:outline-none"
+          : "absolute inset-0 h-full w-full cursor-text text-[16px] opacity-0"
+      }
+    />
+  );
+
   return (
-    <div data-lenis-prevent className="vt-screen vx-noprint fixed inset-0 z-[100] flex flex-col overflow-hidden">
+    <div ref={rootRef} data-lenis-prevent className="vt-screen vx-noprint fixed inset-x-0 top-0 z-[100] flex h-[100dvh] flex-col overflow-hidden">
       <header className="relative z-10 flex items-center justify-between gap-4 border-b border-white/10 px-4 py-2.5 text-[10px] uppercase tracking-[0.2em] text-[#8a8a8a] sm:px-6">
         <span className="truncate">SWORT/OS 1.0 · tty1</span>
         <span className="flex shrink-0 items-center gap-4">
@@ -467,7 +537,7 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
             key="terminal"
             ref={screenRef}
             className="relative flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6"
-            onClick={focusInput}
+            onClick={touch ? undefined : focusInput}
             exit={{ opacity: 0, transition: { duration: 0.3 } }}
           >
             <div className="mx-auto max-w-4xl">
@@ -511,20 +581,11 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
                   {/* The password prompt, like Linux, shows nothing as you type. */}
                   <span className="whitespace-pre-wrap break-all">{echo}</span>
                   <span className="vt-caret" aria-hidden="true" />
-                  <input
-                    ref={inputRef}
-                    value={value}
-                    onChange={(e) => setValue(e.target.value)}
-                    onKeyDown={onKeyDown}
-                    type={phase === "password" ? "password" : "text"}
-                    autoComplete={phase === "name" ? "name" : phase === "org" ? "organization" : phase === "password" ? "current-password" : "off"}
-                    autoCapitalize={phase === "name" || phase === "org" ? "words" : "off"}
-                    autoCorrect="off"
-                    spellCheck={false}
-                    enterKeyHint={phase === "password" ? "go" : "send"}
-                    aria-label={phase === "password" ? "Access code" : prompt.replace(/[:$ ]+$/, "") || "Terminal command"}
-                    className="absolute inset-0 h-full w-full cursor-text opacity-0"
-                  />
+                  {!touch && (
+                    <form onSubmit={onSubmit} className="contents">
+                      {input}
+                    </form>
+                  )}
                 </div>
               )}
 
@@ -539,8 +600,12 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
                       whileTap={{ scale: 0.94 }}
                       onClick={(e) => {
                         e.stopPropagation();
+                        if (cmd === "cancel") return cancel();
                         setValue("");
                         submit(cmd);
+                        // The next step needs typing: open the keyboard now,
+                        // while the tap still counts as the visitor's own.
+                        if ((phase === "shell" && cmd === "unlock") || (phase === "agree" && cmd === "yes")) focusInput();
                       }}
                       className="min-h-[40px] border border-white/20 px-3 py-2 text-[11px] text-[#bdbdbd] hover:border-white hover:text-white"
                     >
@@ -564,6 +629,20 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
         )}
       </AnimatePresence>
 
+      {touch && typing && (
+        <form
+          onSubmit={onSubmit}
+          className="relative z-10 flex items-center gap-2 border-t border-white/10 bg-[#050505] px-4 pt-3 pb-[max(12px,env(safe-area-inset-bottom))]"
+        >
+          <span className="shrink-0 text-[11px] uppercase tracking-[0.14em] text-[#8a8a8a]" aria-hidden="true">
+            {BAR_LABELS[phase]}
+          </span>
+          {input}
+          <button type="submit" className="min-h-[44px] shrink-0 border border-white bg-white px-4 text-[11px] uppercase tracking-[0.14em] text-black active:bg-[#d6d6d6]">
+            Enter
+          </button>
+        </form>
+      )}
     </div>
   );
 }

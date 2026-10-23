@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useInView, useReducedMotion } from "motion/react";
+import { motion, useInView } from "motion/react";
+import { useReducedMotion } from "@/utils/use-reduced-motion";
 import { useEffect, useRef, useState } from "react";
 
 // Why a hybrid EMI filter: an inverter's switching harmonics, seen on a
