@@ -1,11 +1,15 @@
 // app/components/homepage/experience/index.jsx
+import SectionHeading from "@/app/components/helper/section-heading";
 import { experiences } from "@/utils/data/experience";
-import ExperienceView from "./experience-view";
+import Timeline from "./timeline";
 
 function Experience() {
   return (
-    <section id="experience" className="relative border-t border-[var(--sw-rule)]">
-      <ExperienceView items={experiences} />
+    <section id="experience" className="sw-section sw-section-raised">
+      <div className="sw-container">
+        <SectionHeading eyebrow="Experience" title="Engineering roles." />
+        <Timeline items={experiences} />
+      </div>
     </section>
   );
 }

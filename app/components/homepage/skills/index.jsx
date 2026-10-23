@@ -7,7 +7,7 @@ import SkillsGlobe from "./skills-globe";
 // while the globe turns through each discipline.
 function Skills() {
   return (
-    <section id="skills" className="relative border-t border-[var(--sw-rule)]">
+    <section id="skills" className="sw-section-raised relative border-t border-[var(--sw-rule)]">
       <SkillsGlobe groups={skillGroups} />
     </section>
   );

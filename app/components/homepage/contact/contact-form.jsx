@@ -71,7 +71,7 @@ function ContactForm() {
 
   return (
     <div className="min-w-0">
-      <div className="max-w-3xl border border-[var(--sw-border)] bg-[var(--sw-cell)] p-6 lg:p-8">
+      <div className="sw-paper max-w-3xl border border-[var(--sw-border)] p-6 lg:p-8">
         <p className="sw-lede">
           If you have any questions or concerns, feel free to reach out. I’m open
           to opportunities that align with my skills and ambitions.
