@@ -41,16 +41,16 @@ export default async function Home() {
   return (
     <div suppressHydrationWarning >
       <JsonLd data={graph(person, website, organization, bookRecord(), { "@type": "ProfilePage", "@id": "https://andres.swort.net/#profile", url: "https://andres.swort.net", mainEntity: { "@id": person["@id"] }, isPartOf: { "@id": website["@id"] } })} />
-      {/* Who → what I've done and built → what I build with → what I've
-          found, what was written about it, and what I've written → how to
-          reach me. One dark surface throughout. */}
+      {/* Who, and what's been written about the work → what I've done and
+          built → what I build with → what I've found and written → how to
+          reach me. Sections alternate dark and paper. */}
       <HeroSection />
+      <Press />
       <AboutSection />
       <Experience />
       <Projects />
       <Skills />
       <ResearchTeaser entries={research} />
-      <Press />
       <BookShelf checkout={checkoutStatus()} variant="compact" learn={false} />
       <Blog items={writing} blogs={blogs} />
       <ContactSection />

@@ -7,7 +7,7 @@ function ResearchTeaser({ entries }) {
   if (!entries?.length) return null;
 
   return (
-    <section id="research" className="sw-section">
+    <section id="research" className="sw-section sw-paper">
       <div className="sw-container">
         <SectionHeading
           eyebrow="Research"

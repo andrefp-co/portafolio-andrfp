@@ -5,7 +5,7 @@ import ProjectCard from './project-card';
 const Projects = () => {
 
   return (
-    <section id='projects' className="sw-section">
+    <section id='projects' className="sw-section sw-paper">
       <div className="sw-container">
         <SectionHeading eyebrow="Projects" title="Selected engineering work." />
 

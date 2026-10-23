@@ -4,13 +4,13 @@ import { motion, useInView, useScroll, useSpring } from "motion/react";
 import Link from "next/link";
 import { useRef } from "react";
 import { openMail } from "@/utils/obfuscate";
+import Telemetry from "../../instruments/telemetry";
 import Carousel from "../../motion/carousel";
 
 const EASE = [0.22, 1, 0.36, 1];
 
 function TimelineItem({ exp }) {
   const ref = useRef(null);
-  const images = [exp.cover, ...(exp.photos ?? [])].filter(Boolean);
   // The node lights up once the drawn rail reaches this role.
   const reached = useInView(ref, { once: true, margin: "0px 0px -40% 0px" });
 
@@ -18,7 +18,7 @@ function TimelineItem({ exp }) {
     <li
       ref={ref}
       className={`relative grid grid-cols-1 gap-3 border-b border-[var(--sw-rule)] py-8 pl-10 md:grid-cols-[minmax(0,200px)_1fr] md:gap-7 md:pl-12 ${
-        images.length ? "lg:grid-cols-[minmax(0,150px)_1fr_minmax(0,340px)]" : ""
+        exp.images?.length || exp.instrument ? "lg:grid-cols-[minmax(0,150px)_1fr_minmax(0,340px)]" : ""
       }`}
     >
       <motion.span
@@ -38,15 +38,6 @@ function TimelineItem({ exp }) {
             <p key={i} className="sw-cell-body">{line}</p>
           ))}
         </div>
-        {exp.tools?.length > 0 && (
-          <ul className="mt-5 flex flex-wrap gap-1.5" aria-label="Tools">
-            {exp.tools.map((tool) => (
-              <li key={tool} className="border border-[var(--sw-border-strong)] px-2.5 py-1 text-[10.5px] uppercase tracking-[0.1em] text-[var(--sw-silver)]">
-                {tool}
-              </li>
-            ))}
-          </ul>
-        )}
         {exp.link && (
           <div className="mt-5">
             <a href={exp.link} target="_blank" rel="noopener noreferrer" className="sw-link">
@@ -83,7 +74,11 @@ function TimelineItem({ exp }) {
           </motion.div>
         )}
       </div>
-      {images.length > 0 && (
+      {exp.instrument === "telemetry" ? (
+        <div className="mt-2 max-w-[480px] md:col-start-2 lg:col-start-auto lg:mt-1">
+          <Telemetry />
+        </div>
+      ) : exp.images?.length > 0 && (
         <motion.div
           className="mt-2 max-w-[480px] md:col-start-2 lg:col-start-auto lg:mt-1"
           initial={{ opacity: 0, y: 16, scale: 0.98 }}
@@ -91,7 +86,7 @@ function TimelineItem({ exp }) {
           viewport={{ once: true, margin: "0px 0px -10% 0px" }}
           transition={{ duration: 0.7, ease: EASE }}
         >
-          <Carousel images={images} sizes="(min-width: 1024px) 340px, 480px" />
+          <Carousel images={exp.images} sizes="(min-width: 1024px) 340px, 480px" />
         </motion.div>
       )}
     </li>

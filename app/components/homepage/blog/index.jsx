@@ -44,7 +44,7 @@ function Blog({ items = [], blogs = [] }) {
   if (!tiles.length && !blogs.length) return null;
 
   return (
-    <section id='blogs' className="sw-section">
+    <section id='blogs' className="sw-section sw-paper">
       <div className="sw-container">
         <SectionHeading
           eyebrow="Writing"
