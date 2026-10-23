@@ -2,11 +2,11 @@
 
 import { absolute } from "@/utils/seo";
 import { toast } from "@/utils/toast";
-import { AnimatePresence, LayoutGroup, motion, useScroll, useTransform } from "motion/react";
+import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { IconClose, IconGrid, IconLink, IconPin2, IconPlay, IconSearch } from "./icons";
+import { IconClose, IconGrid, IconLink, IconPin2, IconPlay, IconSearch, IconShare } from "./icons";
 import Lightbox from "./lightbox";
 import PostCard, { Avatar, hashtag } from "./post-card";
 import StoryViewer from "./story-viewer";
@@ -21,10 +21,9 @@ const TABS = [
   { id: "saved", label: "Saved" },
 ];
 
+// A profile header like the ones on social apps: photo, name and handle,
+// the post counts, the bio, then the buttons. No banner image.
 function ProfileHeader({ profile, counts, onTab }) {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const coverY = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
   const [copied, setCopied] = useState(false);
 
   const shareProfile = async () => {
@@ -38,51 +37,48 @@ function ProfileHeader({ profile, counts, onTab }) {
     }
   };
 
+  const button = "flex h-10 items-center justify-center rounded-lg text-[12px] font-medium transition-colors";
+
   return (
-    <header ref={ref}>
-      <div className="relative h-[160px] overflow-hidden border-b border-[var(--sw-rule)] sm:h-[220px]">
-        <motion.div className="absolute inset-0" style={{ y: coverY }}>
-          <Image src={profile.cover} alt="" fill priority sizes="(min-width: 1024px) 680px, 100vw" className="object-cover" />
+    <header className="px-4 pt-6 sm:px-5 sm:pt-8">
+      <div className="flex items-center gap-5 sm:gap-8">
+        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.5, ease: EASE }}>
+          <Avatar author={profile.author} size={92} />
         </motion.div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60" />
+        <div className="min-w-0 flex-1">
+          <h1 className="truncate text-[19px] font-semibold leading-tight text-[var(--sw-white)] sm:text-[21px]">
+            {profile.author.name}
+          </h1>
+          <p className="mt-1 text-[13px] text-[var(--sw-gray)]">@{profile.author.handle}</p>
+          <ul className="mt-3 flex gap-5 sm:gap-7">
+            {counts.map(([label, value, tab]) => (
+              <li key={label}>
+                <button type="button" onClick={() => onTab(tab)} className="flex flex-col items-start leading-tight hover:opacity-80">
+                  <span className="text-[16px] font-semibold tabular-nums text-[var(--sw-white)]">{value}</span>
+                  <span className="text-[12px] text-[var(--sw-gray)]">{label}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
-      <div className="px-4 sm:px-5">
-        <div className="flex items-end justify-between gap-3">
-          <motion.div
-            className="-mt-12 rounded-full border-4 border-[var(--sw-black)] sm:-mt-16"
-            initial={{ scale: 0.85, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6, ease: EASE }}
-          >
-            <Avatar author={profile.author} size={104} />
-          </motion.div>
-          <div className="flex gap-2 pt-3">
-            <button type="button" onClick={shareProfile} className="flex h-10 items-center rounded-full border border-[var(--sw-border-strong)] px-4 text-[11px] uppercase tracking-[0.12em] text-[var(--sw-white)] transition-colors hover:border-[var(--sw-white)]" aria-live="polite">
-              {copied ? "Copied" : "Share"}
-            </button>
-            <a href={profile.linkedIn} target="_blank" rel="noopener noreferrer" className="flex h-10 items-center rounded-full bg-[var(--sw-white)] px-4 text-[11px] uppercase tracking-[0.12em] text-[var(--sw-black)] transition-opacity hover:opacity-85">
-              Follow
-            </a>
-          </div>
-        </div>
+      <p className="mt-4 max-w-[56ch] text-[14px] leading-relaxed text-[var(--sw-silver)]">{profile.bio}</p>
+      <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[12.5px] text-[var(--sw-gray)]">
+        <span className="flex items-center gap-1.5"><IconPin2 /> {profile.location}</span>
+        <a href="https://swort.net" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[#7fa6d8] hover:underline"><IconLink /> swort.net</a>
+      </p>
 
-        <h1 className="mt-3 font-[family-name:var(--sw-font-display)] text-[38px] leading-none tracking-[0.02em] text-[var(--sw-white)]">{profile.author.name}</h1>
-        <p className="mt-1 text-[13px] text-[var(--sw-gray)]">@{profile.author.handle}</p>
-        <p className="mt-3 max-w-[56ch] text-[14px] leading-relaxed text-[var(--sw-silver)]">{profile.bio}</p>
-        <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[12.5px] text-[var(--sw-gray)]">
-          <span className="flex items-center gap-1.5"><IconPin2 /> {profile.location}</span>
-          <a href="https://swort.net" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[#7fa6d8] hover:underline"><IconLink /> swort.net</a>
-          <Link href="/#contact" className="hover:text-[var(--sw-white)]">Contact</Link>
-        </p>
-        <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-[13px]">
-          {counts.map(([label, value, tab]) => (
-            <button key={label} type="button" onClick={() => onTab(tab)} className="flex min-h-[32px] items-center gap-1.5 hover:underline hover:underline-offset-4">
-              <span className="text-[var(--sw-white)]">{value}</span>
-              <span className="text-[var(--sw-gray)]">{label}</span>
-            </button>
-          ))}
-        </div>
+      <div className="mt-4 grid grid-cols-[1fr_1fr_auto] gap-2">
+        <a href={profile.linkedIn} target="_blank" rel="noopener noreferrer" className={`${button} bg-[var(--sw-white)] text-[var(--sw-black)] hover:bg-[#d9d9d9]`}>
+          Follow
+        </a>
+        <Link href="/#contact" className={`${button} bg-[#1c1c1c] text-[var(--sw-white)] hover:bg-[#262626]`}>
+          Message
+        </Link>
+        <button type="button" onClick={shareProfile} aria-label="Share profile" aria-live="polite" className={`${button} min-w-10 bg-[#1c1c1c] px-3 text-[var(--sw-white)] hover:bg-[#262626]`}>
+          {copied ? "Copied" : <IconShare width={16} height={16} />}
+        </button>
       </div>
     </header>
   );

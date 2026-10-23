@@ -4,7 +4,7 @@ import ExperienceView from "./experience-view";
 
 function Experience() {
   return (
-    <section id="experience" className="sw-section-raised relative border-t border-[var(--sw-rule)]">
+    <section id="experience" className="relative border-t border-[var(--sw-rule)]">
       <ExperienceView items={experiences} />
     </section>
   );

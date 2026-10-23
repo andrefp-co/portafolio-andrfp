@@ -13,7 +13,6 @@ export const experiences = [
     duration: "2023 – Present",
     link: "https://www.swort.net",
     cover: { src: "/media/feed/swort-ssil-electronics.jpg", alt: "Avionics hardware installed in an open airframe bay" },
-    photos: [{ src: "/media/feed/swort-avionics-board.jpg", alt: "A SWORT avionics board" }],
     tools: ["STM32H7", "PCB", "C/C++", "X8"],
     // Shows the partner card that opens the restricted file at /vault.
     partnerAccess: true,

@@ -217,7 +217,7 @@ export function getFeed() {
       title: p.title,
       text: p.text,
       source: `${outlets.join(" · ")} · ${p.kind}`,
-      image: imageOf(p.image, `${p.outlet} page carrying the story`),
+      image: null,
       video: null,
       tags: ["Press", "SWORT"],
       search: `${p.title} ${p.text} ${outlets.join(" ")} press`.toLowerCase(),
@@ -280,14 +280,14 @@ export function getStories(feed) {
   // Circle covers read best as photos, so a few highlights name theirs.
   const covers = {
     psp: "/media/feed/psp-toad-render.jpg",
-    csia: "/media/project-uav.jpg",
+    csia: "/media/figures/c4_self_occlusion.png",
     papers: "/media/figures/gate-conditioning-page1.jpg",
     swort: "/media/brand/swort-emblem-light.png",
   };
   return stories.map((s) => {
     const first = s.items.find((i) => i.image || i.video);
     const cover = covers[s.id] ?? first?.video?.poster ?? first?.image?.src ?? null;
-    return { ...s, cover, contain: s.id === "swort", figure: s.id === "papers" };
+    return { ...s, cover, contain: s.id === "swort", figure: s.id === "papers" || s.id === "csia" };
   });
 }
 

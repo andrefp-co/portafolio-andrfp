@@ -1,6 +1,6 @@
 import { checkoutStatus } from "@/utils/checkout";
 import { getFeed, getStories, getTopics } from "@/utils/content";
-import { absolute, breadcrumbs, graph, person } from "@/utils/seo";
+import { OG_IMAGE, absolute, breadcrumbs, graph, person } from "@/utils/seo";
 import JsonLd from "../components/helper/json-ld";
 import { books } from "@/utils/data/books";
 import { personalData } from "@/utils/data/personal-data";
@@ -20,9 +20,9 @@ export const metadata = {
     url: "/blog",
     title: "Blog | Andres Peña",
     description: blogDescription,
-    images: [{ url: "/media/feed/swort-avionics-board.jpg", width: 1440, height: 810, alt: "A SWORT avionics board" }],
+    images: [OG_IMAGE],
   },
-  twitter: { card: "summary_large_image", title: "Blog | Andres Peña", description: blogDescription, images: ["/media/feed/swort-avionics-board.jpg"] },
+  twitter: { card: "summary_large_image", title: "Blog | Andres Peña", description: blogDescription, images: [OG_IMAGE.url] },
 };
 
 async function getDevToPosts() {
@@ -39,7 +39,6 @@ async function getDevToPosts() {
 
 const profile = {
   author: { name: personalData.name, handle: "andrfp", avatar: personalData.profile },
-  cover: "/media/feed/swort-avionics-board.jpg",
   bio: "Embedded systems and avionics. Founder and technical lead at SWORT Aerospace: flight controllers, sensor integrity and electronics test. Posts, papers and notes from the bench.",
   location: personalData.address,
   linkedIn: personalData.linkedIn,
