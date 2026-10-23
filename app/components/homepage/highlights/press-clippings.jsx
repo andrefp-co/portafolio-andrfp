@@ -1,7 +1,8 @@
 "use client";
 
 import { press, pressLink } from "@/utils/data/press";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
+import { useReducedMotion } from "@/utils/use-reduced-motion";
 import Image from "next/image";
 
 const EASE = [0.22, 1, 0.36, 1];

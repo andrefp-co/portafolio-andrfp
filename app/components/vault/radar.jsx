@@ -1,6 +1,6 @@
 "use client";
 
-import { useReducedMotion } from "motion/react";
+import { useReducedMotion } from "@/utils/use-reduced-motion";
 import { useEffect, useRef } from "react";
 
 // A plan-position radar scope drawn on canvas: range rings, bearing ticks, a

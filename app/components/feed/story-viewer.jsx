@@ -1,7 +1,8 @@
 "use client";
 
 import { lockScroll } from "@/utils/scroll";
-import { AnimatePresence, motion, useAnimationFrame, useMotionValue, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion, useAnimationFrame, useMotionValue } from "motion/react";
+import { useReducedMotion } from "@/utils/use-reduced-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
