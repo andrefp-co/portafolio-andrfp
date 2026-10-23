@@ -233,7 +233,7 @@ function LinkPreview({ item }) {
               width={1200}
               height={628}
               sizes="(min-width: 1024px) 640px, 100vw"
-              className={`w-full ${item.image.figure ? "max-h-[300px] object-contain" : `aspect-[1.91/1] object-cover ${item.image.src.startsWith("/media/press/") ? "object-top" : ""}`}`}
+              className={`w-full ${item.image.figure ? "max-h-[300px] object-contain" : "aspect-[1.91/1] object-cover"}`}
             />
           </span>
         )

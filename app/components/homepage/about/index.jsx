@@ -11,7 +11,7 @@ function AboutSection() {
   const currentSchool = educations[0];
 
   return (
-    <section id="about" className="sw-section sw-paper">
+    <section id="about" className="sw-section">
       <div className="sw-container">
         <SectionHeading eyebrow="About" title="Who I am." />
 

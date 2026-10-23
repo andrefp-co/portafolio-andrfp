@@ -1,8 +1,7 @@
-// Press coverage of SWORT, one entry per outlet page. `image` is a clipping
-// of that page (masthead and headline). `url` is the article on the outlet's
-// own site. Where it is still null, the clipping opens the same story on an
-// outlet that has a URL (and says so), or isn't a link at all. Paste the
-// URLs in when you have them.
+// Press coverage of SWORT, one entry per outlet page. `url` is the article
+// on the outlet's own site. Where it is still null, the entry opens the same
+// story on an outlet that has a URL (and says so), or isn't a link at all.
+// Paste the URLs in when you have them.
 //
 // The CSIA announcement is a press release distributed by AB Newswire and
 // carried by AP News, FinancialContent, openPR and Big News Network sites,
@@ -21,7 +20,6 @@ export const press = [
     title: CSIA,
     text: CSIA_TEXT,
     kind: "Press release via AB Newswire",
-    image: "/media/press/ap-news.jpg",
     url: "https://apnews.com/press-release/getnews/press-release-3e66bf5a8bf9d516cb206e68393fb0e7",
   },
   {
@@ -33,7 +31,6 @@ export const press = [
     title: CSIA,
     text: CSIA_TEXT,
     kind: "Press release via AB Newswire",
-    image: "/media/press/financialcontent.jpg",
     url: null,
   },
   {
@@ -45,7 +42,6 @@ export const press = [
     title: CSIA,
     text: CSIA_TEXT,
     kind: "Press release via AB Newswire",
-    image: "/media/press/openpr.jpg",
     url: null,
   },
   {
@@ -57,7 +53,6 @@ export const press = [
     title: "SWORT Aerospace Expands Its Aerospace Electronics and Research Capabilities to Support Commercial and Defense Innovation",
     text: "SWORT Aerospace, the operating brand of SWORT LLC, is expanding its work in aerospace electronics, embedded systems, and advanced engineering research as it continues to develop technologies that support commercial aviation, autonomous aircraft, and defense applications.",
     kind: "Press release",
-    image: "/media/press/big-news-network.jpg",
     url: null,
   },
   {
@@ -69,7 +64,6 @@ export const press = [
     title: "SWORT Aerospace Is Betting the Real Aircraft Problem Is Knowing Which Sensor to Believe",
     text: "A three-minute read from Growth Illustrated's staff on SWORT's sensor-trust work.",
     kind: "Article",
-    image: "/media/press/growth-illustrated.jpg",
     url: "https://growthillustrated.com/swort-aerospace-is-betting-the-real-aircraft-problem-is-knowing-which-sensor-to-believe/",
   },
 ];

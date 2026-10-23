@@ -135,6 +135,8 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
   const [org, setOrg] = useState(viewer?.org ?? "");
   const [agreed, setAgreed] = useState(Boolean(viewer));
   const [demoViewer, setDemoViewer] = useState(null);
+  // The file as the unlock request returned it: { viewer, content }.
+  const [unlocked, setUnlocked] = useState(null);
   const [grantLog, setGrantLog] = useState([]);
   const [radarMode, setRadarMode] = useState("scan");
   const [progress, setProgress] = useState(0);
@@ -149,9 +151,9 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
   const exitRef = useRef(null);
   const submitted = useRef(false);
 
-  const activeViewer = viewer || demoViewer;
-  const isAuthorized = authorized || Boolean(demoViewer);
-  const dossier = content || (demoViewer ? demoContent : null);
+  const activeViewer = viewer || demoViewer || unlocked?.viewer;
+  const isAuthorized = authorized || Boolean(demoViewer) || Boolean(unlocked);
+  const dossier = content || (demoViewer ? demoContent : null) || unlocked?.content;
 
   const later = useCallback((fn, ms, always = false) => {
     timers.current.push(setTimeout(fn, reduce && !always ? 0 : ms));
@@ -214,6 +216,17 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
     later(() => setGranted(true), start + 20 * 50 + 250);
     later(() => setPhase("open"), start + 20 * 50 + 1900);
   }, [isAuthorized, dossier, phase, activeViewer, later]);
+
+  // Never wait on the server forever: if the file hasn't arrived, say so and
+  // hand the prompt back.
+  useEffect(() => {
+    if (phase !== "checking" || dossier) return;
+    const id = setTimeout(() => {
+      print(line("vault: no answer from the server; check your connection and try again", "fail"), line(""));
+      setPhase("shell");
+    }, 15000);
+    return () => clearTimeout(id);
+  }, [phase, dossier, print]);
 
   // Keep the newest line in view.
   useEffect(() => {
@@ -373,7 +386,9 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
         body: JSON.stringify({ code, agreed: true, terms: TERMS_VERSION, name, org }),
       });
       if (res.ok) {
-        router.refresh();
+        const data = await res.json().catch(() => null);
+        if (data?.content) setUnlocked({ viewer: data.viewer, content: data.content });
+        else router.refresh();
         return;
       }
       if (res.status === 401) return failLogin();
@@ -429,6 +444,7 @@ export default function VaultTerminal({ authorized = false, viewer = null, conte
   const lock = async () => {
     if (demoCode === undefined) await fetch("/api/vault", { method: "DELETE" }).catch(() => {});
     setDemoViewer(null);
+    setUnlocked(null);
     grantStarted.current = false;
     setGranted(false);
     setLines([line("vault locked.", "dim"), line("")]);

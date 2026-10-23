@@ -66,8 +66,6 @@ export const articles = [
     text: "SWORT Aerospace builds commercial sensor-integrity technology and protected architectures for autonomous and mission-critical aerospace systems.",
     url: "https://swort.net/investors.html",
     source: "swort.net",
-    image: "/media/feed/swort-avionics-board.jpg",
-    imageAlt: "A SWORT avionics board",
     tags: ["SWORT", "Sensor integrity"],
   },
   {
